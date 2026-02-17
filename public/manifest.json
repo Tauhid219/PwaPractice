@@ -1,0 +1,30 @@
+{
+    "name": "Kider - Preschool",
+    "short_name": "Kider",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#FE5D37",
+    "description": "The Best Kindergarten School For Your Child",
+    "icons": [
+        {
+            "src": "icons/app-icon.svg",
+            "sizes": "192x192 512x512",
+            "type": "image/svg+xml"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "frontend/img/carousel-1.jpg",
+            "sizes": "1280x720",
+            "type": "image/jpeg",
+            "form_factor": "wide"
+        },
+        {
+            "src": "frontend/img/classes-1.jpg",
+            "sizes": "400x400",
+            "type": "image/jpeg",
+            "form_factor": "narrow"
+        }
+    ]
+}
