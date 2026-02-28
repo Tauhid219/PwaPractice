@@ -16,10 +16,11 @@ class QuestionFactory extends Factory
      */
     public function definition(): array
     {
+        $faker = \Faker\Factory::create();
         return [
             'chapter_id' => \App\Models\Chapter::factory(),
-            'question_text' => $this->faker->realText(50) . '?',
-            'answer_text' => $this->faker->word(),
+            'question_text' => $faker->realText(50) . '?',
+            'answer_text' => $faker->word(),
         ];
     }
 }
