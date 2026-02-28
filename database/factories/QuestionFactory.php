@@ -18,8 +18,8 @@ class QuestionFactory extends Factory
     {
         return [
             'chapter_id' => \App\Models\Chapter::factory(),
-            'question_text' => fake()->realText(50) . '?',
-            'answer_text' => fake()->word(),
+            'question_text' => $this->faker->realText(50) . '?',
+            'answer_text' => $this->faker->word(),
         ];
     }
 }

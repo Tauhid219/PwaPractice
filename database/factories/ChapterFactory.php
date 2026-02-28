@@ -16,12 +16,12 @@ class ChapterFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->unique()->words(2, true);
+        $name = $this->faker->unique()->words(2, true);
         return [
             'category_id' => \App\Models\Category::factory(),
             'name' => ucwords($name),
             'slug' => str($name)->slug(),
-            'order' => fake()->numberBetween(1, 20),
+            'order' => $this->faker->numberBetween(1, 20),
         ];
     }
 }

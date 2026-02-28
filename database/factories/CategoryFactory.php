@@ -16,13 +16,13 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->unique()->word();
+        $name = $this->faker->unique()->word();
         return [
             'name' => ucfirst($name),
             'slug' => str($name)->slug(),
             'icon' => 'fa-book',
-            'description' => fake()->sentence(),
-            'order' => fake()->numberBetween(1, 10),
+            'description' => $this->faker->sentence(),
+            'order' => $this->faker->numberBetween(1, 10),
         ];
     }
 }
