@@ -1,11 +1,11 @@
 {
-    "name": "Kider - Preschool",
-    "short_name": "Kider",
+    "name": "জিনিয়াস কিডস - কুইজ গাইডবুক",
+    "short_name": "Genius Kids",
     "start_url": "./",
     "display": "standalone",
     "background_color": "#ffffff",
-    "theme_color": "#FE5D37",
-    "description": "The Best Kindergarten School For Your Child",
+    "theme_color": "#0d6efd",
+    "description": "জিনিয়াস কিডস কুইজ প্রতিযোগিতার স্মার্ট গাইডবুক",
     "icons": [
         {
             "src": "icons/app-icon.svg",

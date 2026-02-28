@@ -1,14 +1,6 @@
-const CACHE_NAME = "kider-pwa-v4";
+const CACHE_NAME = "genius-kids-pwa-v1";
 const urlsToCache = [
     "/",
-    "/about",
-    "/classes",
-    "/facility",
-    "/team",
-    "/call-to-action",
-    "/appointment",
-    "/testimonial",
-    "/contact",
     "/offline.html",
     "/manifest.json",
     "/frontend/css/bootstrap.min.css",
@@ -65,50 +57,60 @@ self.addEventListener("activate", (event) => {
 
 // Fetch SW
 self.addEventListener("fetch", (event) => {
-    // Skip cross-origin requests regarding Google Fonts CSS causing CORS issues generally needing specific handling
-    // or keep simple network-first/cache-fallback strategy
+    // 1. network-first for backend html/data requests (category, chapter, question routes)
+    // 2. cache-first for static assets (images, css, js)
 
-    event.respondWith(
-        caches.match(event.request).then((response) => {
-            // Cache hit - return response
-            if (response) {
-                return response;
-            }
+    const isHTMLRequest = event.request.headers.get("accept").includes("text/html");
+    const isStaticAsset = event.request.url.match(/\.(js|css|png|jpg|jpeg|svg|gif|woff2?|ttf|eot)$/i);
 
-            // Clone the request stream
-            const fetchRequest = event.request.clone();
-
-            return fetch(fetchRequest)
-                .then((response) => {
-                    // Check if we received a valid response
-                    if (
-                        !response ||
-                        response.status !== 200 ||
-                        response.type !== "basic"
-                    ) {
-                        // Keep processing even if type is 'cors' or 'opaque' for CDN resources
-                        if (response.type === 'opaque') {
-                            // Opaque responses can be cached
-                        } else if (!response || response.status !== 200) {
-                            return response;
-                        }
-                    }
-
-                    // Clone the response stream
-                    const responseToCache = response.clone();
-
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseToCache);
+    if (isStaticAsset) {
+        // Cache-first for static assets
+        event.respondWith(
+            caches.match(event.request).then((cachedResponse) => {
+                if (cachedResponse) return cachedResponse;
+                return fetch(event.request).then((networkResponse) => {
+                    return caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, networkResponse.clone());
+                        return networkResponse;
                     });
-
-                    return response;
+                });
+            })
+        );
+    } else if (isHTMLRequest || event.request.mode === 'navigate') {
+        // Network-first for HTML pages (dynamic logic) width fallback to cache
+        event.respondWith(
+            fetch(event.request)
+                .then((networkResponse) => {
+                    return caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, networkResponse.clone());
+                        return networkResponse;
+                    });
                 })
                 .catch(() => {
-                    // If offline and request is for a page, show offline page
-                    if (event.request.mode === 'navigate') {
+                    // If network fails, try cache
+                    return caches.match(event.request).then((cachedResponse) => {
+                        if (cachedResponse) {
+                            return cachedResponse;
+                        }
+                        // If no cache, return offline page
                         return caches.match('/offline.html');
-                    }
+                    });
+                })
+        );
+    } else {
+        // Default Stale-While-Revalidate for other requests
+        event.respondWith(
+            caches.match(event.request).then((cachedResponse) => {
+                const fetchPromise = fetch(event.request).then((networkResponse) => {
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, networkResponse.clone());
+                    });
+                    return networkResponse;
+                }).catch(() => {
+                    // Ignore fetch err for background sync
                 });
-        })
-    );
+                return cachedResponse || fetchPromise;
+            })
+        );
+    }
 });
