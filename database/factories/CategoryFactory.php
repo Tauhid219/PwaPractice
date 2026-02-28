@@ -16,14 +16,13 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
-        $faker = \Faker\Factory::create();
-        $name = $faker->unique()->word();
+        $name = 'Category ' . \Illuminate\Support\Str::random(5);
         return [
-            'name' => ucfirst($name),
-            'slug' => str($name)->slug(),
+            'name' => $name,
+            'slug' => \Illuminate\Support\Str::slug($name),
             'icon' => 'fa-book',
-            'description' => $faker->sentence(),
-            'order' => $faker->numberBetween(1, 10),
+            'description' => 'Description for ' . $name,
+            'order' => rand(1, 10),
         ];
     }
 }
