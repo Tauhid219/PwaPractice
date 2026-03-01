@@ -29,8 +29,7 @@
                 <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                     <div class="classes-item">
                         <div class="bg-light rounded-circle w-75 mx-auto p-3 text-center mb-3 mt-4">
-                            <i class="fa fa-book-open fa-3x text-primary mb-3"></i>
-                            <div class="badge bg-primary text-white rounded-pill px-3 py-1">অধ্যায় {{ $chapter->order }}</div>
+                            <i class="fa fa-book-open fa-3x text-primary mb-3 mt-2"></i>
                         </div>
                         <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
                             <a class="d-block text-center h3 mt-3 mb-4" href="{{ route('chapter.questions', $chapter->slug) }}">{{ $chapter->name }}</a>

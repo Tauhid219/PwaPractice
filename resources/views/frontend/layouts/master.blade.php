@@ -55,22 +55,15 @@
 
         @include('frontend.layouts.footer')
 
-        <!-- Back to Top -->
-        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-        
-        <!-- Offline Progress Toast -->
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
-            <div id="offline-toast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        <div id="offline-toast-text" class="mb-2">অফলাইন ডেটা প্রস্তুত হচ্ছে...</div>
-                        <div class="progress" style="height: 5px;">
-                            <div id="offline-progress-bar" class="progress-bar bg-warning" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
+        <!-- Install Overlay Spinner -->
+        <div id="install-overlay" class="d-none position-fixed w-100 vh-100 top-0 start-0 d-flex flex-column align-items-center justify-content-center" style="background: rgba(0,0,0,0.85); z-index: 9999;">
+            <div class="spinner-border text-primary mb-3" style="width: 4rem; height: 4rem;" role="status"></div>
+            <h3 class="text-white mb-2">অ্যাপ ডেটা ডাউনলোড হচ্ছে...</h3>
+            <p class="text-white-50">দয়া করে ব্রাউজার কিংবা পেজ বন্ধ করবেন না</p>
+            <div class="progress w-50 mt-3" style="height: 10px; border-radius: 10px;">
+                <div id="overlay-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%;"></div>
             </div>
+            <h5 id="overlay-progress-text" class="text-white mt-3 fw-bold">0%</h5>
         </div>
     </div>
 
@@ -89,7 +82,7 @@
         // SW Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js?v=' + new Date().getTime())
+                navigator.serviceWorker.register('/sw.js')
                     .then((registration) => {
                         console.log('ServiceWorker registration successful with scope: ', registration.scope);
                     })
@@ -104,11 +97,8 @@
         const installBtn = document.getElementById('install-btn');
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
-            // Stash the event so it can be triggered later.
             deferredPrompt = e;
-            // Update UI to notify the user they can add to home screen
             if(installBtn) {
                 installBtn.classList.remove('d-none');
             }
@@ -116,15 +106,17 @@
 
         if(installBtn) {
             installBtn.addEventListener('click', (e) => {
-                // hide our user interface that shows our A2HS button
                 installBtn.classList.add('d-none');
-                // Show the prompt
                 if(deferredPrompt) {
                     deferredPrompt.prompt();
-                    // Wait for the user to respond to the prompt
                     deferredPrompt.userChoice.then((choiceResult) => {
                         if (choiceResult.outcome === 'accepted') {
                             console.log('User accepted the A2HS prompt');
+                            // Start downloading offline data once accepted
+                            document.getElementById('install-overlay').classList.remove('d-none');
+                            if (navigator.serviceWorker.controller) {
+                                navigator.serviceWorker.controller.postMessage({ type: 'START_OFFLINE_SYNC' });
+                            }
                         } else {
                             console.log('User dismissed the A2HS prompt');
                         }
@@ -135,39 +127,33 @@
         }
         
         window.addEventListener('appinstalled', (evt) => {
-            // Log that the app was successfully installed
             console.log('App was successfully installed');
             if(installBtn) {
                installBtn.classList.add('d-none');
             }
-            alert('অ্যাপ ইন্সটল সফল হয়েছে! এখন এটি অফলাইনেও কাজ করবে।');
         });
 
         // Listen for cache progress from Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', (event) => {
-                const toastEl = document.getElementById('offline-toast');
-                const toast = new bootstrap.Toast(toastEl);
-                const progressBar = document.getElementById('offline-progress-bar');
-                const toastText = document.getElementById('offline-toast-text');
+                const overlay = document.getElementById('install-overlay');
+                const overlayBar = document.getElementById('overlay-progress-bar');
+                const overlayText = document.getElementById('overlay-progress-text');
 
                 if (event.data && event.data.type === 'INSTALL_PROGRESS') {
-                    if (!toastEl.classList.contains('show')) {
-                        toast.show();
+                    if (overlay && overlay.classList.contains('d-none')) {
+                        overlay.classList.remove('d-none');
                     }
-                    progressBar.style.width = event.data.progress + '%';
-                    progressBar.setAttribute('aria-valuenow', event.data.progress);
-                    toastText.innerText = 'অফলাইন ডেটা সিঙ্ক হচ্ছে... ' + event.data.progress + '%';
+                    overlayBar.style.width = event.data.progress + '%';
+                    overlayText.innerText = event.data.progress + '%';
                 } else if (event.data && event.data.type === 'INSTALL_COMPLETE') {
-                    progressBar.style.width = '100%';
-                    progressBar.setAttribute('aria-valuenow', 100);
-                    progressBar.classList.remove('bg-warning');
-                    progressBar.classList.add('bg-success');
-                    toastText.innerText = 'অফলাইন মোড রেডি! ইন্টারনেট ছাড়াই কুইজ পড়া যাবে।';
+                    overlayBar.style.width = '100%';
+                    overlayText.innerText = '100%';
                     
                     setTimeout(() => {
-                        toast.hide();
-                    }, 5000);
+                        overlay.classList.add('d-none');
+                        alert('অ্যাপ ইন্সটল এবং ডেটা ডাউনলোড সফল হয়েছে! এখন এটি ইন্টারনেট ছাড়াই কাজ করবে।');
+                    }, 500);
                 }
             });
         }
