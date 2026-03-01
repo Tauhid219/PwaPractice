@@ -1,4 +1,4 @@
-const CACHE_NAME = "genius-kids-pwa-v1";
+const CACHE_NAME = "genius-kids-pwa-v2";
 const urlsToCache = [
     "/",
     "/offline.html",
@@ -88,7 +88,7 @@ self.addEventListener("fetch", (event) => {
                 })
                 .catch(() => {
                     // If network fails, try cache
-                    return caches.match(event.request).then((cachedResponse) => {
+                    return caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
                         if (cachedResponse) {
                             return cachedResponse;
                         }
