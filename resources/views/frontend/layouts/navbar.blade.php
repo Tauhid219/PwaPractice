@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0">
     <a href="{{ url('/') }}" class="navbar-brand">
-        <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>Kider</h1>
+        <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>জিনিয়াস কিডস</h1>
     </a>
     <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
         <span class="navbar-toggler-icon"></span>
@@ -23,6 +23,6 @@
             </div>
             <a href="{{ url('/contact') }}" class="nav-item nav-link {{ Request::is('contact') ? 'active' : '' }}">Contact Us</a>
         </div>
-        <a href="" class="btn btn-primary rounded-pill px-3 d-none d-lg-block">Join Us<i class="fa fa-arrow-right ms-3"></i></a>
+        <a href="javascript:void(0)" id="install-btn" class="btn btn-primary rounded-pill px-3 d-none">অ্যাপ ইনস্টল করুন <i class="fa fa-download ms-2"></i></a>
     </div>
 </nav>
