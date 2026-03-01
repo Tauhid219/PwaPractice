@@ -57,6 +57,21 @@
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+        
+        <!-- Offline Progress Toast -->
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+            <div id="offline-toast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <div id="offline-toast-text" class="mb-2">অফলাইন ডেটা প্রস্তুত হচ্ছে...</div>
+                        <div class="progress" style="height: 5px;">
+                            <div id="offline-progress-bar" class="progress-bar bg-warning" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- JavaScript Libraries -->
@@ -125,7 +140,37 @@
             if(installBtn) {
                installBtn.classList.add('d-none');
             }
+            alert('অ্যাপ ইন্সটল সফল হয়েছে! এখন এটি অফলাইনেও কাজ করবে।');
         });
+
+        // Listen for cache progress from Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                const toastEl = document.getElementById('offline-toast');
+                const toast = new bootstrap.Toast(toastEl);
+                const progressBar = document.getElementById('offline-progress-bar');
+                const toastText = document.getElementById('offline-toast-text');
+
+                if (event.data && event.data.type === 'INSTALL_PROGRESS') {
+                    if (!toastEl.classList.contains('show')) {
+                        toast.show();
+                    }
+                    progressBar.style.width = event.data.progress + '%';
+                    progressBar.setAttribute('aria-valuenow', event.data.progress);
+                    toastText.innerText = 'অফলাইন ডেটা সিঙ্ক হচ্ছে... ' + event.data.progress + '%';
+                } else if (event.data && event.data.type === 'INSTALL_COMPLETE') {
+                    progressBar.style.width = '100%';
+                    progressBar.setAttribute('aria-valuenow', 100);
+                    progressBar.classList.remove('bg-warning');
+                    progressBar.classList.add('bg-success');
+                    toastText.innerText = 'অফলাইন মোড রেডি! ইন্টারনেট ছাড়াই কুইজ পড়া যাবে।';
+                    
+                    setTimeout(() => {
+                        toast.hide();
+                    }, 5000);
+                }
+            });
+        }
     </script>
 </body>
 

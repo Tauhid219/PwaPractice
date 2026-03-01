@@ -1,4 +1,4 @@
-const CACHE_NAME = "genius-kids-pwa-v2";
+const CACHE_NAME = "genius-kids-pwa-v3";
 const urlsToCache = [
     "/",
     "/offline.html",
@@ -18,23 +18,64 @@ const urlsToCache = [
     "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
 ];
 
+// Helper function to send messages to active clients
+async function sendMessageToClients(message) {
+    const clients = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
+    for (const client of clients) {
+        client.postMessage(message);
+    }
+}
+
 // Install SW
 self.addEventListener("install", (event) => {
     self.skipWaiting();
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
+        (async () => {
+            const cache = await caches.open(CACHE_NAME);
             console.log("Opened cache");
-            // Use cache.addAll cautiously with external resources. 
-            // If any single URL fails to fetch, the entire cache operation fails.
-            // So we map them individually to allow partial caching success.
-            return Promise.all(
-                urlsToCache.map(url => {
-                    return cache.add(url).catch(error => {
-                        console.error('Failed to cache:', url, error);
-                    });
+
+            // 1. Cache static URLs first
+            let totalUrls = urlsToCache.length;
+            let cachedCount = 0;
+
+            await Promise.all(
+                urlsToCache.map(async (url) => {
+                    try {
+                        await cache.add(url);
+                        cachedCount++;
+                        await sendMessageToClients({ type: 'INSTALL_PROGRESS', progress: Math.round((cachedCount / totalUrls) * 50) });
+                    } catch (error) {
+                        console.error('Failed to cache static:', url, error);
+                    }
                 })
             );
-        })
+
+            // 2. Fetch and cache dynamic URLs (Categories & Chapters) from our new API endpoint
+            try {
+                const response = await fetch('/offline-urls');
+                if (response.ok) {
+                    const dynamicUrls = await response.json();
+                    totalUrls += dynamicUrls.length;
+
+                    await Promise.all(
+                        dynamicUrls.map(async (url) => {
+                            try {
+                                await cache.add(url);
+                                cachedCount++;
+                                await sendMessageToClients({ type: 'INSTALL_PROGRESS', progress: Math.min(100, Math.round((cachedCount / totalUrls) * 100)) });
+                            } catch (e) {
+                                console.error('Failed to cache dynamic url:', url, e);
+                            }
+                        })
+                    );
+                }
+            } catch (apiError) {
+                console.warn('Could not fetch dynamic URLs during install (offline).', apiError);
+            }
+
+            // Tell the UI that caching is complete
+            await sendMessageToClients({ type: 'INSTALL_COMPLETE' });
+        })()
     );
 });
 

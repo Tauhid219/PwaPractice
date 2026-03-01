@@ -34,6 +34,23 @@ class FrontendController extends Controller
         return view('frontend.questions', compact('chapter', 'questions'));
     }
 
+    public function getOfflineUrls()
+    {
+        $urls = ['/']; // Home
+
+        $categories = \App\Models\Category::all();
+        foreach ($categories as $category) {
+            $urls[] = '/category/' . $category->slug;
+        }
+
+        $chapters = \App\Models\Chapter::all();
+        foreach ($chapters as $chapter) {
+            $urls[] = '/chapter/' . $chapter->slug;
+        }
+
+        return response()->json($urls);
+    }
+
     public function classes()
     {
         return view('frontend.classes');
