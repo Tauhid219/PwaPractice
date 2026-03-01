@@ -28,15 +28,14 @@
                 @forelse($category->chapters as $chapter)
                 <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                     <div class="classes-item">
-                        <div class="bg-light rounded-circle w-75 mx-auto p-3 text-center mb-3 mt-4">
-                            <i class="fa fa-book-open fa-3x text-primary mb-3"></i>
-                        </div>
-                        <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
-                            <a class="d-block text-center h3 mt-3 mb-4" href="{{ route('frontend.questions', $chapter->slug) }}">{{ $chapter->name }}</a>
-                            <div class="d-flex align-items-center justify-content-center mb-4">
-                                <a href="{{ route('frontend.questions', $chapter->slug) }}" class="btn btn-primary px-4 py-2">শুরু করুন <i class="fa fa-arrow-right ms-2"></i></a>
+                            <div class="p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                <i class="fa fa-book fa-3x text-primary mb-3"></i>
+                                <div class="badge bg-primary text-white rounded-pill px-3 py-1 mb-2">অধ্যায় {{ $chapter->order }}</div>
+                                <a class="d-block text-center h3 mt-3 mb-4" href="{{ route('chapter.questions', $chapter->slug) }}">{{ $chapter->name }}</a>
+                                <div class="mt-auto">
+                                    <a href="{{ route('chapter.questions', $chapter->slug) }}" class="btn btn-primary px-4 py-2">শুরু করুন <i class="fa fa-arrow-right ms-2"></i></a>
+                                </div>
                             </div>
-                        </div>
                     </div>
                 </div>
                 @empty

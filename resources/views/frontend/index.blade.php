@@ -24,17 +24,16 @@
                 <p>যেকোনো বিষয়ে ক্লিক করে অধ্যায় অনুযায়ী প্রশ্ন ও উত্তর পড়ুন</p>
             </div>
             
-            <div class="row g-4">
+            <div class="row g-4 justify-content-center">
                 @foreach($categories as $category)
-                <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <a href="{{ route('frontend.chapters', $category->slug) }}" class="text-decoration-none">
-                        <div class="facility-item h-100">
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <a href="{{ route('category.chapters', $category->slug) }}" class="text-decoration-none">
+                        <div class="classes-item border-primary">
                             <div class="facility-icon bg-primary">
                                 <span class="bg-primary"></span>
                                 <i class="fa {{ $category->icon }} fa-3x text-primary"></i>
                                 <span class="bg-primary"></span>
                             </div>
-                            <div class="facility-text bg-primary">
                                 <h3 class="text-primary mb-3">{{ $category->name }}</h3>
                                 <p class="mb-0 text-dark">{{ $category->description }}</p>
                             </div>

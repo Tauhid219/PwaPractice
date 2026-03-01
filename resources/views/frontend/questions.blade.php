@@ -7,10 +7,10 @@
         <div class="container py-5">
             <h1 class="display-2 text-white animated slideInDown mb-4">{{ $chapter->name }}</h1>
             <nav aria-label="breadcrumb animated slideInDown">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('frontend.chapters', $chapter->category->slug) }}">{{ $chapter->category->name }}</a></li>
-                    <li class="breadcrumb-item text-white active" aria-current="page">{{ $chapter->name }}</li>
+                <ol class="breadcrumb justify-content-center mb-0 text-white">
+                    <li class="breadcrumb-item"><a href="{{ url('/') }}">হোম</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('category.chapters', $chapter->category->slug) }}">{{ $chapter->category->name }}</a></li>
+                    <li class="breadcrumb-item text-white-50 active" aria-current="page">{{ $chapter->name }}</li>
                 </ol>
             </nav>
         </div>
@@ -48,8 +48,8 @@
                         @endforelse
                     </div>
 
-                    <div class="d-flex justify-content-between mt-5">
-                        <a href="{{ route('frontend.chapters', $chapter->category->slug) }}" class="btn btn-outline-primary px-4 py-2"><i class="fa fa-arrow-left me-2"></i> অধ্যায় তালিকায় ফিরে যান</a>
+                    <div class="mt-4 text-center">
+                        <a href="{{ route('category.chapters', $chapter->category->slug) }}" class="btn btn-outline-primary px-4 py-2"><i class="fa fa-arrow-left me-2"></i> অধ্যায় তালিকায় ফিরে যান</a>
                     </div>
                 </div>
             </div>
