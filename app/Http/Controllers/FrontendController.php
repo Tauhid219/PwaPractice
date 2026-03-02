@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Chapter;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -37,13 +39,13 @@ class FrontendController extends Controller
     public function getOfflineUrls()
     {
         $urls = ['/']; // Home
-
-        $categories = \App\Models\Category::all();
+        
+        $categories = Category::all();
         foreach ($categories as $category) {
             $urls[] = '/category/' . $category->slug;
         }
 
-        $chapters = \App\Models\Chapter::all();
+        $chapters = Chapter::all();
         foreach ($chapters as $chapter) {
             $urls[] = '/chapter/' . $chapter->slug;
         }
