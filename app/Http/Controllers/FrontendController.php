@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Chapter;
+use App\Models\Question;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
 {
     public function index()
     {
-        $categories = \App\Models\Category::orderBy('order')->get();
+        $categories = Category::orderBy('order')->get();
         return view('frontend.index', compact('categories'));
     }
 
@@ -21,7 +22,7 @@ class FrontendController extends Controller
 
     public function categoryChapters($slug)
     {
-        $category = \App\Models\Category::with(['chapters' => function ($query) {
+        $category = Category::with(['chapters' => function ($query) {
             $query->orderBy('order');
         }])->where('slug', $slug)->firstOrFail();
 
@@ -30,8 +31,8 @@ class FrontendController extends Controller
 
     public function chapterQuestions($slug)
     {
-        $chapter = \App\Models\Chapter::with('category')->where('slug', $slug)->firstOrFail();
-        $questions = \App\Models\Question::where('chapter_id', $chapter->id)->get();
+        $chapter = Chapter::with('category')->where('slug', $slug)->firstOrFail();
+        $questions = Question::where('chapter_id', $chapter->id)->get();
 
         return view('frontend.questions', compact('chapter', 'questions'));
     }

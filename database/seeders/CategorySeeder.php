@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Category;
+use App\Models\Chapter;
+use App\Models\Question;
 
 class CategorySeeder extends Seeder
 {
@@ -24,11 +27,11 @@ class CategorySeeder extends Seeder
             $catData['order'] = $index + 1;
             $catData['description'] = $catData['name'] . ' বিষয়ক প্রশ্ন ও উত্তর।';
 
-            $category = \App\Models\Category::create($catData);
+            $category = Category::create($catData);
 
             // Create 3 chapters per category
             for ($i = 1; $i <= 3; $i++) {
-                $chapter = \App\Models\Chapter::create([
+                $chapter = Chapter::create([
                     'category_id' => $category->id,
                     'name' => 'অধ্যায় ' . $i,
                     'slug' => $category->slug . '-chapter-' . $i,
@@ -37,7 +40,7 @@ class CategorySeeder extends Seeder
 
                 // Create 5 questions per chapter
                 for ($j = 1; $j <= 5; $j++) {
-                    \App\Models\Question::create([
+                    Question::create([
                         'chapter_id' => $chapter->id,
                         'question_text' => 'এটি ' . $category->name . ' বিষয়ের একটি নমুনা প্রশ্ন ' . $j . '?',
                         'answer_text' => 'নমুনা উত্তর ' . $j,

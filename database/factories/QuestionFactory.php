@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Chapter;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Question>
@@ -17,8 +18,8 @@ class QuestionFactory extends Factory
     public function definition(): array
     {
         return [
-            'chapter_id' => \App\Models\Chapter::factory(),
-            'question_text' => 'Sample Question ' . \Illuminate\Support\Str::random(10) . '?',
+            'chapter_id' => Chapter::factory(),
+            'question_text' => 'নমুনা প্রশ্ন ' . rand(100, 999) . '?',
             'answer_text' => 'Sample Answer ' . \Illuminate\Support\Str::random(5),
         ];
     }
