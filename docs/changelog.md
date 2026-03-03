@@ -61,9 +61,27 @@
 - ব্যাকগ্রাউন্ড 다운로드 এর সময় ইউজার যাতে অন্য পেজে চলে না যান, সেজন্য একটি ফুল-স্ক্রিন ব্লক করা প্রোগ্রেস ওভারলে (Spinner & Overlay) যোগ করা হয়েছে। ডাউনলোড ১০০% হলে সাকসেস মেসেজ আসবে।
 - অধ্যায় লিস্টের ডিজাইন থেকে বই আইকনের নিচে থাকা ডাবল লেখা (অধ্যায় X) সরিয়ে ফেলা হয়েছে।
 
+---
+
 #### 🛠️ Refactoring (Phase 3.6: Best Practices)
 - Laravel-এর PSR-12 কোডিং স্ট্যান্ডার্ড মেনে `FrontendController`, `CategorySeeder`, `ChapterFactory` এবং `QuestionFactory` ফাইলে ইনলাইন মডেল কল (`\App\Models\Category`) বাদ দিয়ে ফাইলের শুরুতে `use` স্টেটমেন্ট ডিক্লেয়ার করা হয়েছে।
-- `FrontendController` এর মেথডগুলোর নাম ভুলবশত পরিবর্তন হয়ে যাওয়ায় যে রাউটিং এরর হয়েছিলো, তা ফিক্স করা হয়েছে।
+
+---
+
+### ০৩ মার্চ ২০২৬
+
+#### ⚙️ Admin Panel & Import (Phase 4)
+- **Authentication:** Laravel Breeze প্যাকেজ দিয়ে লগইন সিস্টেম এবং Dashboard স্ক্যাফোল্ডিং ইন্টিগ্রেট করা হয়েছে।
+- **Role Management:** `users` টেবিলে `is_admin` ফ্ল্যাগ এবং `IsAdmin` মিডলওয়্যার যুক্ত করে অ্যাডমিন রাউট প্রোটেক্ট করা হয়েছে।
+- **Admin Routing:** `routes/web.php` এ `/admin` প্রিফিক্স দিয়ে `Category`, `Chapter`, ও `Question` ম্যানেজমেন্টের জন্য Resource রাউট তৈরি করা হয়েছে। 
+- **CRUD Operations:** `admin/categories`, `admin/chapters`, এবং `admin/questions` এর জন্য সম্পূর্ণ Create, Read, Update, Delete লজিক এবং Blade UI তৈরি করা হয়েছে। 
+- **Excel/CSV Bulk Import:** `maatwebsite/excel` প্যাকেজের মাধ্যমে `QuestionImport` ক্লাস তৈরি করে ফ্রন্টএন্ড থেকে চ্যাপ্টার সিলেক্ট করে ডাইরেক্ট Excel/CSV ফাইল থেকে একশো/হাজার প্রশ্ন একসাথে আপলোড করার সিস্টেম যোগ করা হয়েছে।
+
+#### 🐛 Bugfixes (Phase 4.5)
+- cPanel সার্ভারের সাথে লোকাল PHP ভার্সন কনফ্লিক্টের কারণে 500 Server Error আসছিলো। `composer.json` ফাইলটিকে কঠোরভাবে PHP 8.2 এর জন্য অপ্টিমাইজ করে `composer.lock` রি-জেনারেট করা হয়েছে যেন লাইভ সার্ভারে কোনো PHP Extension এরর না হয়। 
+- Frontend URL গুলো লারাভেলের ডিফল্ট `welcome` পেইজ দ্বারা ওভাররাইড হয়েছিলো, যা রিস্টোর করা হয়েছে। 
+- `npm run build` দিয়ে Vite JS (Breeze) এর প্রোডাকশন অ্যাসেটগুলো কম্পাইল করে সার্ভারের জন্য প্রস্তুত করা হয়েছে।
+- মোবাইল ডিভাইসে (Collapsed Navbar) ফ্রন্টএন্ডের `Login/Admin Panel` এবং `Logout` বাটন দৃশ্যমান না হওয়ায় Bootstrap-এর হিডেন ক্লাস রিমুভ করে ফিক্স করা হয়েছে। সেই সাথে অ্যাডমিন ড্যাশবোর্ড থেকে ফ্রন্টএন্ডে যাওয়ার জন্য `View Site` লিংক অ্যাড করা হয়েছে।
 
 ---
 
