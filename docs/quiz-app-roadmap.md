@@ -85,11 +85,22 @@ PDF/Doc → AI (structured format) → Google Sheets (verify) → CSV/XLSX → L
 
 ---
 
+### ধাপ ৪.৫: Professional UI & UX (New Request)
+> **লক্ষ্য:** প্রিমিয়াম ইউজার এক্সপেরিয়েন্স তৈরি
+
+**কাজ:**
+- [ ] ডেস্কটপ ভিউ: বামদিকে ফিক্সড ক্যাটাগরি সাইডবার
+- [ ] মোবাইল ভিউ: নিচে বটম নেভিগেশন বার বা হরাইজন্টাল স্লাইডার
+- [ ] UI Interaction Sound (বাটনে বা অ্যাকর্ডিয়নে ক্লিক করলে 'Pop' বা 'Click' সাউন্ড)
+
+---
+
 ### ধাপ ৫: কুইজ লজিক (Practice Mode)
 > **লক্ষ্য:** ইউজার এক্সপেরিয়েন্স তৈরি
 
 **কাজ:**
 - [ ] ফ্ল্যাশকার্ড মোড (প্রশ্ন দেখাও → ক্লিক করলে উত্তর দেখাও)
+- [ ] Quiz Feedback Sound (সঠিক উত্তরে 'Ting', ভুল হলে 'Buzzer')
 - [ ] প্রগ্রেস বার
 - [ ] "পড়েছি" মার্ক করার অপশন
 - [ ] র‍্যান্ডম প্রশ্ন মোড
@@ -115,7 +126,8 @@ graph LR
     A["ধাপ ১<br>DB + Models"] --> B["ধাপ ২<br>Frontend UI"]
     B --> C["ধাপ ৩<br>PWA Offline"]
     C --> D["ধাপ ৪<br>Admin + Import"]
-    D --> E["ধাপ ৫<br>Quiz Logic"]
+    D --> D2["ধাপ ৪.৫<br>UI & UX"]
+    D2 --> E["ধাপ ৫<br>Quiz Logic"]
     E --> F["ধাপ ৬<br>User System"]
 ```
 
