@@ -24,19 +24,19 @@
             <a href="{{ url('/contact') }}" class="nav-item nav-link {{ Request::is('contact') ? 'active' : '' }}">Contact Us</a> --}}
         </div>
         
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
             @auth
                 @if(auth()->user()->is_admin)
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary rounded-pill px-3 d-none d-lg-block">Admin Panel</a>
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary rounded-pill px-3">Admin Panel</a>
                 @else
-                    <a href="{{ route('dashboard') }}" class="btn btn-outline-primary rounded-pill px-3 d-none d-lg-block">Dashboard</a>
+                    <a href="{{ route('dashboard') }}" class="btn btn-outline-primary rounded-pill px-3">Dashboard</a>
                 @endif
                 <form method="POST" action="{{ route('logout') }}" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-danger rounded-pill px-3 d-none d-lg-block">Logout</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-3">Logout</button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="btn btn-outline-primary rounded-pill px-3 d-none d-lg-block">Login</a>
+                <a href="{{ route('login') }}" class="btn btn-outline-primary rounded-pill px-3">Login</a>
             @endauth
 
             <a href="javascript:void(0)" id="install-btn" class="btn btn-primary rounded-pill px-3 d-none">অ্যাপ ইনস্টল করুন <i class="fa fa-download ms-2"></i></a>
