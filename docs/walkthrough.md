@@ -117,6 +117,22 @@ PwaPractice/
 ### পরবর্তী ধাপ
 - **ধাপ ৪:** Admin Panel তৈরি ও Excel/CSV Data Import (কন্টেন্ট ম্যানেজমেন্টের জন্য)
 
+## ধাপ ৪: Admin Panel ও Excel Data Import
+**তারিখ:** ০৩ মার্চ ২০২৬
+
+### কী করা হয়েছে
+- **Laravel Breeze Install:** Authentication (Login/Register) সিস্টেম ইন্সটল করা হয়েছে। 
+- **Admin Role Setup:** `users` টেবিলে `is_admin` কলাম এবং `IsAdmin` মিডলওয়্যার তৈরি করে শুধু অ্যাডমিনদের জন্য সিকিউর রাউট গ্রুপ সেটআপ করা হয়েছে।
+- **Admin Dashboard:** `admin.dashboard` ভিউ তৈরি করা হয়েছে যেখানে ক্যাটাগরি, চ্যাপ্টার এবং প্রশ্নের মোট সংখ্যা দেখাবে। 
+- **CRUD Controllers & Views:** Category, Chapter এবং Question ম্যানেজ করার জন্য আলাদা Controller এবং Views (index, create, edit) তৈরি করা হয়েছে।
+- **Excel/CSV Import:** `maatwebsite/excel` প্যাকেজটি ইন্সটল করে `QuestionImport` ক্লাস তৈরি করা হয়েছে। Question index পেজে একটি Import Modal যোগ করা হয়েছে যেখান থেকে নির্দিষ্ট চ্যাপ্টার সিলেক্ট করে Excel/CSV ফাইলের মাধ্যমে একাধিক প্রশ্ন আপলোড করা যাবে।
+
+### টেস্টিং
+- *Note:* XAMPP MySQL সার্ভার বন্ধ থাকায় লোকাল মেশিনে টেস্টিং হয়নি, তবে প্রোডাকশনে `php artisan migrate:fresh --seed` রান করলেই `admin@example.com` (পাসওয়ার্ড: password) নামের ডিফল্ট অ্যাডমিন একাউন্ট তৈরি হয়ে যাবে এবং পুরো অ্যাডমিন প্যানেল এক্সেস করা যাবে।
+
+### পরবর্তী ধাপ
+- **ধাপ ৫:** কুইজ লজিক (Practice Mode) অর্থাৎ ফ্রন্টএন্ডে কুইজ ফ্ল্যাশকার্ড এবং প্রগ্রেস ট্র্যাকিং ইমপ্লিমেন্ট করা।
+
 ---
 
 <!-- নতুন ধাপ এখানে যোগ হবে -->
