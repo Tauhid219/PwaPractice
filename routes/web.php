@@ -6,10 +6,13 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ChapterController;
 use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\FrontendController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Frontend Routes
+Route::get('/', [FrontendController::class, 'index'])->name('home');
+Route::get('/category/{slug}', [FrontendController::class, 'categoryChapters'])->name('category.chapters');
+Route::get('/chapter/{slug}', [FrontendController::class, 'chapterQuestions'])->name('chapter.questions');
+Route::get('/offline-urls', [FrontendController::class, 'getOfflineUrls']);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
