@@ -60,12 +60,13 @@ questions   → id, chapter_id, question_text, answer_text
 
 ---
 
-### ধাপ ৩: PWA অফলাইন টেস্ট
-> **লক্ষ্য:** অফলাইনে কুইজ ডেটা লোড হয় কিনা
+### ধাপ ৩: PWA Online-Only Configuration (অফলাইন সাপোর্ট বাতিল)
+> **লক্ষ্য:** অ্যাপ ইন্সটল হবে কিন্তু সবসময় লাইভ/রিয়েল-টাইম ডেটা দেখাবে
 
 **কাজ:**
-- [ ] Service Worker — কুইজ ডেটা ক্যাশিং
-- [ ] অফলাইনে ক্যাটাগরি ও প্রশ্ন দেখা যায় কিনা পরীক্ষা
+- [ ] Service Worker মডিফাই করা — অফলাইন 캐শিং রিমুভ করা
+- [ ] "Network Only" স্ট্র্যাটেজি ব্যবহার করা যেন সবসময় রিয়েল-টাইম চেঞ্জ দেখা যায়
+- [ ] প্রফেশনাল Fallback অফলাইন পেজ তৈরি করা (ইন্টারনেট না থাকলে সুন্দর মেসেজ দেখাবে)
 - [ ] `manifest.json` আপডেট (জিনিয়াস কিডস ব্র্যান্ডিং)
 
 ---
@@ -124,7 +125,7 @@ PDF/Doc → AI (structured format) → Google Sheets (verify) → CSV/XLSX → L
 ```mermaid
 graph LR
     A["ধাপ ১<br>DB + Models"] --> B["ধাপ ২<br>Frontend UI"]
-    B --> C["ধাপ ৩<br>PWA Offline"]
+    B --> C["ধাপ ৩<br>PWA Online Setup"]
     C --> D["ধাপ ৪<br>Admin + Import"]
     D --> D2["ধাপ ৪.৫<br>UI & UX"]
     D2 --> E["ধাপ ৫<br>Quiz Logic"]

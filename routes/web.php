@@ -12,7 +12,7 @@ use App\Http\Controllers\FrontendController;
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/category/{slug}', [FrontendController::class, 'categoryChapters'])->name('category.chapters');
 Route::get('/chapter/{slug}', [FrontendController::class, 'chapterQuestions'])->name('chapter.questions');
-Route::get('/offline-urls', [FrontendController::class, 'getOfflineUrls']);
+Route::view('/offline', 'offline')->name('offline');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
