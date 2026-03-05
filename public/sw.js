@@ -1,4 +1,4 @@
-const CACHE_NAME = "genius-kids-pwa-v7";
+const CACHE_NAME = "genius-kids-pwa-v8";
 const urlsToCache = [
     "/offline",
     "/manifest.json",
@@ -47,12 +47,31 @@ self.addEventListener("activate", (event) => {
 
 // Fetch SW
 self.addEventListener("fetch", (event) => {
-    // Exclude API requests or non-GET requests from caching
+    // Exclude non-GET requests
     if (event.request.method !== 'GET') {
         return;
     }
 
-    const isHTMLRequest = event.request.headers.get("accept").includes("text/html") || event.request.mode === 'navigate';
+    // Navigation requests (page loads) — Network-only with offline fallback
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request)
+                .catch(() => {
+                    return caches.match('/offline').then((cachedOfflineResponse) => {
+                        if (cachedOfflineResponse) {
+                            return cachedOfflineResponse;
+                        }
+                        // Last resort: return a simple offline response
+                        return new Response(
+                            '<html><body><h1>ইন্টারনেট কানেকশন নেই</h1><p>অনুগ্রহ করে ইন্টারনেট সংযোগ চেক করুন।</p><button onclick="location.reload()">আবার চেষ্টা করুন</button></body></html>',
+                            { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+                        );
+                    });
+                })
+        );
+        return;
+    }
+
     const isStaticAsset = event.request.url.match(/\.(js|css|png|jpg|jpeg|svg|gif|woff2?|ttf|eot|ico)$/i);
 
     if (isStaticAsset) {
@@ -67,34 +86,18 @@ self.addEventListener("fetch", (event) => {
                         cache.put(event.request, networkResponse.clone());
                         return networkResponse;
                     });
+                }).catch(() => {
+                    // Silently fail for uncached static assets when offline
+                    return new Response('', { status: 408 });
                 });
             })
         );
-    } else if (isHTMLRequest) {
-        // Handle /offline route properly to avoid loops
-        if (event.request.url.includes('/offline')) {
-            event.respondWith(
-                caches.match('/offline').then(cached => {
-                    return cached || fetch(event.request);
-                })
-            );
-            return;
-        }
-
-        // Network-only for HTML logic with fallback to /offline
-        event.respondWith(
-            fetch(event.request)
-                .catch(() => {
-                    // Try to show cached offline page
-                    return caches.match('/offline').then((cachedOfflineResponse) => {
-                        if (cachedOfflineResponse) {
-                            return cachedOfflineResponse;
-                        }
-                    });
-                })
-        );
     } else {
-        // Network-only for everything else
-        event.respondWith(fetch(event.request));
+        // Network-only for everything else (API calls, etc.)
+        event.respondWith(
+            fetch(event.request).catch(() => {
+                return new Response('', { status: 408 });
+            })
+        );
     }
 });
