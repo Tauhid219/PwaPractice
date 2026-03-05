@@ -1,4 +1,4 @@
-@extends('layouts.frontend')
+@extends('frontend.layouts.master')
 
 @section('content')
 <div class="container-xxl py-5 page-header position-relative mb-5">

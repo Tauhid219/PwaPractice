@@ -114,9 +114,26 @@
                             console.log('User accepted the A2HS prompt');
                             // Start downloading offline data once accepted
                             document.getElementById('install-overlay').classList.remove('d-none');
+                            
+                            // Ensure message is sent even if controller is not yet active on first load
                             if (navigator.serviceWorker.controller) {
                                 navigator.serviceWorker.controller.postMessage({ type: 'START_OFFLINE_SYNC' });
+                            } else {
+                                navigator.serviceWorker.ready.then(reg => {
+                                    if (reg.active) {
+                                        reg.active.postMessage({ type: 'START_OFFLINE_SYNC' });
+                                    }
+                                });
                             }
+
+                            // Safety fallback: if SW message doesn't return, close overlay after 3 seconds
+                            setTimeout(() => {
+                                const overlay = document.getElementById('install-overlay');
+                                if (overlay && !overlay.classList.contains('d-none')) {
+                                    overlay.classList.add('d-none');
+                                    alert('অ্যাপ ইন্সটল সফল হয়েছে!');
+                                }
+                            }, 3000);
                         } else {
                             console.log('User dismissed the A2HS prompt');
                         }
