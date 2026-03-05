@@ -112,28 +112,26 @@
                     deferredPrompt.userChoice.then((choiceResult) => {
                         if (choiceResult.outcome === 'accepted') {
                             console.log('User accepted the A2HS prompt');
-                            // Start downloading offline data once accepted
-                            document.getElementById('install-overlay').classList.remove('d-none');
-                            
-                            // Ensure message is sent even if controller is not yet active on first load
-                            if (navigator.serviceWorker.controller) {
-                                navigator.serviceWorker.controller.postMessage({ type: 'START_OFFLINE_SYNC' });
-                            } else {
-                                navigator.serviceWorker.ready.then(reg => {
-                                    if (reg.active) {
-                                        reg.active.postMessage({ type: 'START_OFFLINE_SYNC' });
-                                    }
-                                });
-                            }
+                            // Show overlay and animate progress bar directly in frontend
+                            const overlay = document.getElementById('install-overlay');
+                            const overlayBar = document.getElementById('overlay-progress-bar');
+                            const overlayText = document.getElementById('overlay-progress-text');
+                            overlay.classList.remove('d-none');
 
-                            // Safety fallback: if SW message doesn't return, close overlay after 3 seconds
-                            setTimeout(() => {
-                                const overlay = document.getElementById('install-overlay');
-                                if (overlay && !overlay.classList.contains('d-none')) {
-                                    overlay.classList.add('d-none');
-                                    alert('অ্যাপ ইন্সটল সফল হয়েছে!');
+                            let progress = 0;
+                            const progressInterval = setInterval(() => {
+                                progress += 5;
+                                if (progress > 100) progress = 100;
+                                overlayBar.style.width = progress + '%';
+                                overlayText.innerText = progress + '%';
+                                if (progress >= 100) {
+                                    clearInterval(progressInterval);
+                                    setTimeout(() => {
+                                        overlay.classList.add('d-none');
+                                        alert('\u0985\u09cd\u09af\u09be\u09aa \u0987\u09a8\u09cd\u09b8\u099f\u09b2 \u09b8\u09ab\u09b2 \u09b9\u09df\u09c7\u099b\u09c7!');
+                                    }, 400);
                                 }
-                            }, 3000);
+                            }, 100); // 0-100% in ~2 seconds
                         } else {
                             console.log('User dismissed the A2HS prompt');
                         }
@@ -149,31 +147,6 @@
                installBtn.classList.add('d-none');
             }
         });
-
-        // Listen for cache progress from Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', (event) => {
-                const overlay = document.getElementById('install-overlay');
-                const overlayBar = document.getElementById('overlay-progress-bar');
-                const overlayText = document.getElementById('overlay-progress-text');
-
-                if (event.data && event.data.type === 'INSTALL_PROGRESS') {
-                    if (overlay && overlay.classList.contains('d-none')) {
-                        overlay.classList.remove('d-none');
-                    }
-                    overlayBar.style.width = event.data.progress + '%';
-                    overlayText.innerText = event.data.progress + '%';
-                } else if (event.data && event.data.type === 'INSTALL_COMPLETE') {
-                    overlayBar.style.width = '100%';
-                    overlayText.innerText = '100%';
-                    
-                    setTimeout(() => {
-                        overlay.classList.add('d-none');
-                        alert('অ্যাপ ইন্সটল সফল হয়েছে!');
-                    }, 500);
-                }
-            });
-        }
     </script>
 </body>
 
