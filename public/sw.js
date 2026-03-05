@@ -1,4 +1,4 @@
-const CACHE_NAME = "genius-kids-pwa-v5";
+const CACHE_NAME = "genius-kids-pwa-v6";
 const urlsToCache = [
     "/offline",
     "/manifest.json",
@@ -16,6 +16,14 @@ const urlsToCache = [
     "https://code.jquery.com/jquery-3.4.1.min.js",
     "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
 ];
+
+// Helper function to send messages to active clients
+async function sendMessageToClients(message) {
+    const clients = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
+    for (const client of clients) {
+        client.postMessage(message);
+    }
+}
 
 // Install SW
 self.addEventListener("install", (event) => {
@@ -45,6 +53,27 @@ self.addEventListener("activate", (event) => {
     return self.clients.claim();
 });
 
+// Listen for messages from the frontend
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'START_OFFLINE_SYNC') {
+        event.waitUntil(
+            (async () => {
+                // Since it's online-only now, just simulate a very fast progress bar 
+                // for the UI UX during installation.
+                let progress = 0;
+                const interval = setInterval(async () => {
+                    progress += 20;
+                    await sendMessageToClients({ type: 'INSTALL_PROGRESS', progress });
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        await sendMessageToClients({ type: 'INSTALL_COMPLETE' });
+                    }
+                }, 400); // 2 second simulation
+            })()
+        );
+    }
+});
+
 // Fetch SW
 self.addEventListener("fetch", (event) => {
     // Exclude API requests or non-GET requests from caching
@@ -71,6 +100,16 @@ self.addEventListener("fetch", (event) => {
             })
         );
     } else if (isHTMLRequest) {
+        // Handle /offline route properly to avoid loops
+        if (event.request.url.includes('/offline')) {
+            event.respondWith(
+                caches.match('/offline').then(cached => {
+                    return cached || fetch(event.request);
+                })
+            );
+            return;
+        }
+
         // Network-only for HTML logic with fallback to /offline
         event.respondWith(
             fetch(event.request)

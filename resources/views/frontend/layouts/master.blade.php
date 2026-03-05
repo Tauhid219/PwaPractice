@@ -58,7 +58,7 @@
         <!-- Install Overlay Spinner -->
         <div id="install-overlay" class="d-none position-fixed w-100 vh-100 top-0 start-0 d-flex flex-column align-items-center justify-content-center" style="background: rgba(0,0,0,0.85); z-index: 9999;">
             <div class="spinner-border text-primary mb-3" style="width: 4rem; height: 4rem;" role="status"></div>
-            <h3 class="text-white mb-2">অ্যাপ ডেটা ডাউনলোড হচ্ছে...</h3>
+            <h3 class="text-white mb-2">অ্যাপ প্রস্তুত করা হচ্ছে...</h3>
             <p class="text-white-50">দয়া করে ব্রাউজার কিংবা পেজ বন্ধ করবেন না</p>
             <div class="progress w-50 mt-3" style="height: 10px; border-radius: 10px;">
                 <div id="overlay-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%;"></div>
@@ -152,7 +152,7 @@
                     
                     setTimeout(() => {
                         overlay.classList.add('d-none');
-                        alert('অ্যাপ ইন্সটল এবং ডেটা ডাউনলোড সফল হয়েছে! এখন এটি ইন্টারনেট ছাড়াই কাজ করবে।');
+                        alert('অ্যাপ ইন্সটল সফল হয়েছে!');
                     }, 500);
                 }
             });
