@@ -14,11 +14,11 @@
                         @method('PUT')
                         
                         <div class="mb-4">
-                            <label for="chapter_id" class="block text-gray-700 text-sm font-bold mb-2">Chapter</label>
-                            <select name="chapter_id" id="chapter_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                                @foreach($chapters as $chapter)
-                                    <option value="{{ $chapter->id }}" {{ $question->chapter_id == $chapter->id ? 'selected' : '' }}>
-                                        {{ $chapter->category->name }} - {{ $chapter->name }}
+                            <label for="category_id" class="block text-gray-700 text-sm font-bold mb-2">Category</label>
+                            <select name="category_id" id="category_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ $question->category_id == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
                                     </option>
                                 @endforeach
                             </select>

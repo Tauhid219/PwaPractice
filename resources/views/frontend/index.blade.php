@@ -30,7 +30,7 @@
             <div class="row g-4 justify-content-center">
                 @foreach($categories as $category)
                 <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <a href="{{ route('category.chapters', $category->slug) }}" class="text-decoration-none">
+                    <a href="{{ route('category.levels', $category->slug) }}" class="text-decoration-none">
                         <div class="facility-item h-100">
                             <div class="facility-icon bg-primary">
                                 <span class="bg-primary"></span>

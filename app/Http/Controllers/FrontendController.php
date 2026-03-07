@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Chapter;
+use App\Models\Level;
 use App\Models\Question;
 use Illuminate\Http\Request;
 
@@ -20,21 +20,38 @@ class FrontendController extends Controller
         return view('frontend.about');
     }
 
-    public function categoryChapters($slug)
+    public function categoryLevels($slug)
     {
-        $category = Category::with(['chapters' => function ($query) {
-            $query->orderBy('order');
-        }])->where('slug', $slug)->firstOrFail();
+        $category = Category::where('slug', $slug)->firstOrFail();
+        
+        $levels = Level::whereHas('questions', function($q) use ($category) {
+            $q->where('category_id', $category->id);
+        })->get();
 
-        return view('frontend.chapters', compact('category'));
+        if ($levels->isEmpty()) {
+            $levels = Level::all();
+        }
+
+        return view('frontend.levels', compact('category', 'levels'));
     }
 
-    public function chapterQuestions($slug)
+    public function levelQuestions($categorySlug, $levelId)
     {
-        $chapter = Chapter::with('category')->where('slug', $slug)->firstOrFail();
-        $questions = Question::where('chapter_id', $chapter->id)->get();
+        $category = Category::where('slug', $categorySlug)->firstOrFail();
+        $level = Level::findOrFail($levelId);
+        
+        $query = Question::where('category_id', $category->id)
+                         ->where('level_id', $level->id);
+                         
+        if (!auth()->check() && $levelId > 1) {
+            // Unauthenticated users can only view level 1 properly.
+            // Though route should protect this, adding explicit fallback check
+            abort(403, 'এই লেভেলের প্রশ্নগুলো দেখতে অনুগ্রহ করে লগিন করুন।');
+        }
 
-        return view('frontend.questions', compact('chapter', 'questions'));
+        $questions = $query->take(5)->get(); // Specifically 5 questions per level based on user preference
+
+        return view('frontend.questions', compact('category', 'level', 'questions'));
     }
 
 

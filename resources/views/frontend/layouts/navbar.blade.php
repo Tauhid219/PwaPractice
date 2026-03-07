@@ -29,7 +29,7 @@
                 @if(auth()->user()->is_admin)
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary rounded-pill px-3">Admin Panel</a>
                 @else
-                    <a href="{{ route('dashboard') }}" class="btn btn-outline-primary rounded-pill px-3">Dashboard</a>
+                    <a href="{{ route('profile.edit') }}" class="btn btn-outline-primary rounded-pill px-3">Profile</a>
                 @endif
                 <form method="POST" action="{{ route('logout') }}" class="d-inline">
                     @csrf

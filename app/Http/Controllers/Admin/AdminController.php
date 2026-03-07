@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Chapter;
 use App\Models\Question;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -13,9 +13,9 @@ class AdminController extends Controller
     public function index()
     {
         $categoryCount = Category::count();
-        $chapterCount = Chapter::count();
         $questionCount = Question::count();
+        $userCount = User::count();
 
-        return view('admin.dashboard', compact('categoryCount', 'chapterCount', 'questionCount'));
+        return view('admin.dashboard', compact('categoryCount', 'questionCount', 'userCount'));
     }
 }

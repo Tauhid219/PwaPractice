@@ -38,15 +38,14 @@
 **Database Structure:**
 ```text
 categories    → id, name, slug, icon, description, order
-chapters      → id, category_id, name, slug, order
-questions     → id, chapter_id, question_text, answer_text, level_id
+questions     → id, category_id, question_text, answer_text, level_id
 levels        → id, name, required_score_to_unlock
-user_progress → user_id, chapter_id/level_id, status (locked, active, completed)
+user_progress → user_id, category_id/level_id, status (locked, active, completed)
 quiz_attempts → user_id, level_id, score, passed
 ```
 
 **কাজ:**
-- [x] Migrations তৈরি (categories, chapters, questions)
+- [x] Migrations তৈরি (categories, questions)
 - [x] Models তৈরি + relationships
 - [ ] লেভেল (Levels) ও ইউজার প্রগ্রেস (User Progress) এর মাইগ্রেশন ও মডেল তৈরি
 - [x] Seeder — স্যাম্পল প্রশ্ন দিয়ে
@@ -60,7 +59,8 @@ quiz_attempts → user_id, level_id, score, passed
 - [x] হোম পেজ — Category কার্ড/তালিকা
 - [x] Chapter listing পেজ
 - [x] Admin authentication & ড্যাশবোর্ড
-- [x] Category / Chapter / Question CRUD
+- [x] Category / Question CRUD
+- [ ] Admin to Admin রোল ম্যানেজমেন্ট (User Management)
 - [x] Excel/CSV Import ফিচার (৯৮০ প্রশ্ন দ্রুত ইনপুট)
 
 ---
@@ -79,11 +79,12 @@ quiz_attempts → user_id, level_id, score, passed
 > **লক্ষ্য:** ইউজারদের ধাপে ধাপে শেখানো
 
 **কাজ:**
-- [ ] ইউজার রেজিস্ট্রেশন/লগিন বাধ্যতামূলক করা (পড়ার জন্য)
-- [ ] লেভেল অনুসারে প্রশ্ন ভাগ করা (প্রথম লেভেল ফ্রি/অ্যাক্সেসযোগ্য, বাকিগুলো লক)
-- [ ] ফ্ল্যাশকার্ড মোডে প্রশ্ন দেখানো (প্রশ্ন → ক্লিক → উত্তর)
-- [ ] "পড়েছি" (Mark as Read) অপশন যুক্ত করা
-- [ ] নির্দিষ্ট লেভেলের সব প্রশ্ন পড়া হলে কুইজ বাটন আনলক হবে
+- [x] ইউজার রেজিস্ট্রেশন/লগিন বাধ্যতামূলক করা (পড়ার জন্য)
+- [x] ক্যাটাগরির ভেতরে লেভেল সিলেকশন পেজ দেখানো (প্রথম লেভেল ফ্রি/অ্যাক্সেসযোগ্য, বাকিগুলো লক)
+- [x] ফ্ল্যাশকার্ড মোড বাদ দিয়ে অ্যাকর্ডিয়ন ভিউতে লেভেলভিত্তিক প্রশ্ন দেখানো (অধ্যায় লেয়ার রিমুভড)
+- [x] ফ্রন্টএন্ডে স্টুডেন্ট প্রোফাইল ડ্যাশবোর্ড ও রোল-ভিত্তিক রিডাইরেক্ট (Role-based auth)
+- [x] "পড়েছি" (Mark as Read) অপশন যুক্ত করা (উইথ LocalStorage state)
+- [x] নির্দিষ্ট লেভেলের সব প্রশ্ন পড়া হলে কুইজ বাটন আনলক হবে
 
 ---
 

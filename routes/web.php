@@ -6,12 +6,13 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ChapterController;
 use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\FrontendController;
 
 // Frontend Routes
 Route::get('/', [FrontendController::class, 'index'])->name('home');
-Route::get('/category/{slug}', [FrontendController::class, 'categoryChapters'])->name('category.chapters');
-Route::get('/chapter/{slug}', [FrontendController::class, 'chapterQuestions'])->name('chapter.questions');
+Route::get('/category/{slug}', [FrontendController::class, 'categoryLevels'])->name('category.levels');
+Route::get('/category/{slug}/level/{level}', [FrontendController::class, 'levelQuestions'])->name('level.questions');
 Route::view('/offline', 'offline')->name('offline');
 
 Route::get('/dashboard', function () {
@@ -28,9 +29,9 @@ Route::middleware('auth')->group(function () {
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::resource('categories', CategoryController::class);
-    Route::resource('chapters', ChapterController::class);
     Route::post('questions/import', [QuestionController::class, 'import'])->name('questions.import');
     Route::resource('questions', QuestionController::class);
+    Route::resource('users', UserController::class)->only(['index', 'update']);
 });
 
 require __DIR__.'/auth.php';

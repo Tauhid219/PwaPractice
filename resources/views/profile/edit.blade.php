@@ -1,29 +1,45 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+@extends('frontend.layouts.master')
+@section('title', 'My Profile')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
+@section('content')
+<!-- Page Header End -->
+<div class="container-xxl py-5 page-header position-relative mb-5">
+    <div class="container py-5">
+        <h1 class="display-2 text-white animated slideInDown mb-4">আমার প্রোফাইল</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+                <li class="breadcrumb-item text-white active" aria-current="page">Profile</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="bg-light rounded p-5 mb-4 shadow-sm">
+                    <h3 class="mb-4"><i class="fa fa-user text-primary me-2"></i> প্রোফাইল আপডেট করুন</h3>
                     @include('profile.partials.update-profile-information-form')
                 </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
+                
+                <div class="bg-light rounded p-5 mb-4 shadow-sm">
+                    <h3 class="mb-4"><i class="fa fa-lock text-primary me-2"></i> পাসওয়ার্ড পরিবর্তন</h3>
                     @include('profile.partials.update-password-form')
                 </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
+                
+                <div class="text-center mt-4">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-danger px-4 rounded-pill">
+                            <i class="fa fa-sign-out-alt me-2"></i> লগআউট করুন
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+</div>
+@endsection

@@ -10,7 +10,7 @@
     </a>
 
     @auth
-        <a href="{{ auth()->user()->is_admin ? route('admin.dashboard') : route('dashboard') }}" class="text-center text-decoration-none text-muted">
+        <a href="{{ auth()->user()->is_admin ? route('admin.dashboard') : route('profile.edit') }}" class="text-center text-decoration-none text-muted">
             <i class="fa fa-user fs-4"></i>
             <span class="d-block" style="font-size: 12px;">প্রোফাইল</span>
         </a>
@@ -32,7 +32,7 @@
         <div class="row g-3">
             @foreach($globalCategories as $mobileCategory)
             <div class="col-6">
-                <a href="{{ route('category.chapters', $mobileCategory->slug) }}" class="text-decoration-none">
+                <a href="{{ route('category.levels', $mobileCategory->slug) }}" class="text-decoration-none">
                     <div class="card border-0 shadow-sm text-center py-3 {{ Request::is('category/' . $mobileCategory->slug . '*') ? 'bg-primary text-white' : 'bg-light text-dark' }}">
                         <i class="fa {{ $mobileCategory->icon }} fs-3 mb-2 {{ Request::is('category/' . $mobileCategory->slug . '*') ? 'text-white' : 'text-primary' }}"></i>
                         <h6 class="mb-0 {{ Request::is('category/' . $mobileCategory->slug . '*') ? 'text-white' : '' }}">{{ $mobileCategory->name }}</h6>

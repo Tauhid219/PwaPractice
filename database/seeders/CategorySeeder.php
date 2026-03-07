@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Category;
-use App\Models\Chapter;
 use App\Models\Question;
 
 class CategorySeeder extends Seeder
@@ -29,24 +28,21 @@ class CategorySeeder extends Seeder
 
             $category = Category::create($catData);
 
-            // Create 3 chapters per category
-            for ($i = 1; $i <= 3; $i++) {
-                $chapter = Chapter::create([
-                    'category_id' => $category->id,
-                    'name' => 'অধ্যায় ' . $i,
-                    'slug' => $category->slug . '-chapter-' . $i,
-                    'order' => $i,
-                ]);
-
-                // Create 5 questions per chapter
-                for ($j = 1; $j <= 5; $j++) {
-                    Question::create([
-                        'chapter_id' => $chapter->id,
-                        'level_id' => 1,
-                        'question_text' => 'এটি ' . $category->name . ' বিষয়ের একটি নমুনা প্রশ্ন ' . $j . '?',
-                        'answer_text' => 'নমুনা উত্তর ' . $j,
-                    ]);
+            // Create 15 dummy questions per category (5 per level: levels 1, 2, 3)
+            for ($i = 1; $i <= 15; $i++) {
+                $levelId = 1;
+                if ($i > 5 && $i <= 10) {
+                    $levelId = 2;
+                } elseif ($i > 10) {
+                    $levelId = 3;
                 }
+
+                Question::create([
+                    'category_id' => $category->id,
+                    'level_id' => $levelId,
+                    'question_text' => 'এটি ' . $category->name . ' লেভেল ' . $levelId . ' এর একটি নমুনা প্রশ্ন ' . $i . '?',
+                    'answer_text' => 'নমুনা উত্তর ' . $i,
+                ]);
             }
         }
     }

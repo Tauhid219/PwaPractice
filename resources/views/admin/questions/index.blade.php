@@ -37,14 +37,14 @@
                             <form action="{{ route('admin.questions.import') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="mb-4 text-left">
-                                    <label class="block text-gray-700 text-sm font-bold mb-2">Select Chapter</label>
-                                    <select name="chapter_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                                        <option value="">Choose a chapter...</option>
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Select Category</label>
+                                    <select name="category_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                        <option value="">Choose a category...</option>
                                         @php
-                                            $chapters = \App\Models\Chapter::with('category')->orderBy('category_id')->get();
+                                            $categories = \App\Models\Category::orderBy('order')->get();
                                         @endphp
-                                        @foreach($chapters as $chapter)
-                                            <option value="{{ $chapter->id }}">{{ $chapter->category->name }} - {{ $chapter->name }}</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -74,7 +74,7 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chapter</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Question</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Answer</th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -84,8 +84,7 @@
                             @foreach($questions as $question)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $question->chapter->category->name ?? '' }}<br>
-                                        <small>{{ $question->chapter->name ?? 'N/A' }}</small>
+                                        {{ $question->category->name ?? 'N/A' }}
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-900">
                                         {{ Str::limit($question->question_text, 50) }}
