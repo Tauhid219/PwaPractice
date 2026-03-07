@@ -54,6 +54,8 @@
         @yield('content')
 
         @include('frontend.layouts.footer')
+        
+        @include('frontend.layouts.bottom_nav')
 
         <!-- Install Overlay Spinner -->
         <div id="install-overlay" class="d-none position-fixed w-100 vh-100 top-0 start-0 d-flex flex-column align-items-center justify-content-center" style="background: rgba(0,0,0,0.85); z-index: 9999;">
@@ -147,7 +149,42 @@
                installBtn.classList.add('d-none');
             }
         });
+
+        // UI Audio Interaction Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const clickAudio = new Audio('{{ asset("frontend/sounds/click.mp3") }}');
+            const popAudio = new Audio('{{ asset("frontend/sounds/pop.mp3") }}');
+            
+            clickAudio.volume = 0.5;
+            popAudio.volume = 0.6;
+
+            // Buttons & Links get 'click' sound
+            document.querySelectorAll('a, .btn').forEach(el => {
+                el.addEventListener('mousedown', () => {
+                    if(!el.classList.contains('accordion-button')) {
+                        clickAudio.currentTime = 0;
+                        clickAudio.play().catch(e => {}); 
+                    }
+                });
+            });
+
+            // Accordion gets 'pop' sound
+            document.querySelectorAll('.accordion-button').forEach(el => {
+                el.addEventListener('mousedown', () => {
+                    popAudio.currentTime = 0;
+                    popAudio.play().catch(e => {});
+                });
+            });
+        });
     </script>
+    <style>
+        /* Mobile adjustment for bottom nav */
+        @media (max-width: 991.98px) {
+            body {
+                padding-bottom: 60px; /* Space for fixed bottom nav */
+            }
+        }
+    </style>
 </body>
 
 </html>

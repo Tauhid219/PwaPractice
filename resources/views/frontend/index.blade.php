@@ -19,8 +19,11 @@
     <!-- Categories Start -->
     <div class="container-xxl py-5">
         <div class="container">
-            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                <h1 class="mb-3">বিষয় নির্বাচন করুন</h1>
+            <div class="row g-4">
+                @include('frontend.layouts.sidebar')
+                <div class="col-lg-9">
+                    <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+                        <h1 class="mb-3">বিষয় নির্বাচন করুন</h1>
                 <p>যেকোনো বিষয়ে ক্লিক করে অধ্যায় অনুযায়ী প্রশ্ন ও উত্তর পড়ুন</p>
             </div>
             
@@ -42,6 +45,8 @@
                     </a>
                 </div>
                 @endforeach
+                    </div>
+                </div>
             </div>
         </div>
     </div>

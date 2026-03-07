@@ -19,8 +19,11 @@
     <!-- Chapters Start -->
     <div class="container-xxl py-5">
         <div class="container">
-            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                <h1 class="mb-3">অধ্যায় নির্বাচন করুন</h1>
+            <div class="row g-4">
+                @include('frontend.layouts.sidebar')
+                <div class="col-lg-9">
+                    <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+                        <h1 class="mb-3">অধ্যায় নির্বাচন করুন</h1>
                 <p>{{ $category->name }} বিষয়ের অন্তর্ভুক্ত সকল অধ্যায়</p>
             </div>
             
@@ -44,6 +47,8 @@
                     <h3>দুঃখিত, এই বিষয়ে এখনো কোনো অধ্যায় যুক্ত করা হয়নি।</h3>
                 </div>
                 @endforelse
+                    </div>
+                </div>
             </div>
         </div>
     </div>

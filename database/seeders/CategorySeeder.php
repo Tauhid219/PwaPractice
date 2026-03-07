@@ -42,6 +42,7 @@ class CategorySeeder extends Seeder
                 for ($j = 1; $j <= 5; $j++) {
                     Question::create([
                         'chapter_id' => $chapter->id,
+                        'level_id' => 1,
                         'question_text' => 'এটি ' . $category->name . ' বিষয়ের একটি নমুনা প্রশ্ন ' . $j . '?',
                         'answer_text' => 'নমুনা উত্তর ' . $j,
                     ]);

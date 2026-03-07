@@ -20,8 +20,11 @@
     <!-- Questions Start -->
     <div class="container-xxl py-5">
         <div class="container">
-            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                <h1 class="mb-3">প্রশ্ন ও উত্তর</h1>
+            <div class="row g-4">
+                @include('frontend.layouts.sidebar')
+                <div class="col-lg-9">
+                    <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+                        <h1 class="mb-3">প্রশ্ন ও উত্তর</h1>
                 <p>{{ $chapter->category->name }} > {{ $chapter->name }}</p>
             </div>
             
@@ -50,6 +53,9 @@
 
                     <div class="mt-4 text-center">
                         <a href="{{ route('category.chapters', $chapter->category->slug) }}" class="btn btn-outline-primary px-4 py-2"><i class="fa fa-arrow-left me-2"></i> অধ্যায় তালিকায় ফিরে যান</a>
+                    </div>
+                </div>
+                        </div>
                     </div>
                 </div>
             </div>
