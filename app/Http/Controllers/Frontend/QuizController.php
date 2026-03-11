@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Level;
 use App\Models\Question;
 use App\Models\QuizAttempt;
 use App\Models\UserProgress;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class QuizController extends Controller
@@ -18,17 +20,12 @@ class QuizController extends Controller
     {
         $category = Category::where('slug', $slug)->firstOrFail();
         
-        // Ensure user has access (for now, basic check, will be improved with middleware)
-        $progress = UserProgress::where('user_id', Auth::id())
-                                ->where('level_id', $level->id)
-                                ->first();
-
-        if (!$progress || $progress->status === 'locked') {
-            return redirect()->route('category.levels', $slug)->with('error', 'Please unlock this level first.');
-        }
-
-        // Fetch questions for this level
-        $questions = $level->questions()->inRandomOrder()->get();
+        // Access is handled by CheckLevelAccess middleware
+        // Fetch questions for this level and category
+        $questions = $level->questions()
+            ->where('category_id', $category->id)
+            ->inRandomOrder()
+            ->get();
 
         if ($questions->isEmpty()) {
             return redirect()->back()->with('error', 'No questions found for this level.');
@@ -49,7 +46,7 @@ class QuizController extends Controller
             'answers.*' => 'required|string'
         ]);
 
-        $questions = $level->questions;
+        $questions = $level->questions()->where('category_id', $category->id)->get();
         $score = 0;
         $totalQuestions = $questions->count();
 
@@ -76,15 +73,15 @@ class QuizController extends Controller
         // If passed, unlock or complete
         if ($passed) {
              UserProgress::updateOrCreate(
-                ['user_id' => Auth::id(), 'level_id' => $level->id],
+                ['user_id' => Auth::id(), 'category_id' => $category->id, 'level_id' => $level->id],
                 ['status' => 'completed']
             );
 
-            // Unlock next level logic
+            // Unlock next level logic for this specific category
             $nextLevel = Level::where('id', '>', $level->id)->orderBy('id', 'asc')->first();
             if ($nextLevel) {
                  UserProgress::firstOrCreate(
-                    ['user_id' => Auth::id(), 'level_id' => $nextLevel->id],
+                    ['user_id' => Auth::id(), 'category_id' => $category->id, 'level_id' => $nextLevel->id],
                     ['status' => 'active']
                 );
             }

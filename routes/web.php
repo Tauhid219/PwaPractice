@@ -28,8 +28,8 @@ Route::middleware('auth')->group(function () {
 
     // Quiz Routes
     Route::middleware(['check.level.access'])->group(function () {
-        Route::get('/category/{category:slug}/level/{level}/quiz', [QuizController::class, 'start'])->name('quiz.start');
-        Route::post('/category/{category:slug}/level/{level}/quiz', [QuizController::class, 'submit'])->name('quiz.submit');
+        Route::get('/category/{slug}/level/{level}/quiz', [QuizController::class, 'start'])->name('quiz.start');
+        Route::post('/category/{slug}/level/{level}/quiz', [QuizController::class, 'submit'])->name('quiz.submit');
     });
     Route::get('/quiz/attempt/{attempt}/result', [QuizController::class, 'result'])->name('quiz.result');
 

@@ -44,7 +44,7 @@
                                 </a>
                             @endif
                         @else
-                           <a href="{{ route('quiz.start', ['category' => $category->slug, 'level' => $level->id]) }}" class="btn btn-warning px-4 py-2 text-white">
+                           <a href="{{ route('quiz.start', ['slug' => $category->slug, 'level' => $level->id]) }}" class="btn btn-warning px-4 py-2 text-white">
                                 <i class="fa fa-play-circle me-2"></i> আবার কুইজ দিন
                            </a>
                         @endif

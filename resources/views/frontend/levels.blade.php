@@ -30,8 +30,18 @@
                     <div class="row g-4 justify-content-center">
                         @forelse($levels as $index => $level)
                         @php
-                            // For demo purposes, we allow Level 1 without login, or all levels if logged in.
-                            $isLocked = !auth()->check() && $index > 0;
+                            $isLocked = true;
+                            if ($level->is_free) {
+                                $isLocked = false;
+                            } elseif (auth()->check()) {
+                                $progress = \App\Models\UserProgress::where('user_id', auth()->id())
+                                                ->where('category_id', $category->id)
+                                                ->where('level_id', $level->id)
+                                                ->first();
+                                if ($progress && $progress->status !== 'locked') {
+                                    $isLocked = false;
+                                }
+                            }
                         @endphp
                         <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                             <div class="classes-item {{ $isLocked ? 'opacity-75' : '' }}">
@@ -39,10 +49,10 @@
                                     <i class="fa {{ $isLocked ? 'fa-lock' : 'fa-star' }} fa-3x {{ $isLocked ? 'text-secondary' : 'text-primary' }} mb-3 mt-2"></i>
                                 </div>
                                 <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
-                                    <a class="d-block text-center h3 mt-3 mb-4 {{ $isLocked ? 'text-muted' : '' }}" href="{{ $isLocked ? route('login') : route('level.questions', ['slug' => $category->slug, 'level' => $level->id]) }}">{{ $level->name }}</a>
+                                    <h3 class="mt-3 mb-4 {{ $isLocked ? 'text-muted' : '' }}">{{ $level->name }}</h3>
                                     <div class="d-flex align-items-center justify-content-center mb-4">
                                         @if($isLocked)
-                                            <a href="{{ route('login') }}" class="btn btn-secondary px-4 py-2">লক করা <i class="fa fa-lock ms-2"></i></a>
+                                            <button class="btn btn-secondary px-4 py-2" disabled>লক করা <i class="fa fa-lock ms-2"></i></button>
                                         @else
                                             <a href="{{ route('level.questions', ['slug' => $category->slug, 'level' => $level->id]) }}" class="btn btn-primary px-4 py-2">শুরু করুন <i class="fa fa-arrow-right ms-2"></i></a>
                                         @endif

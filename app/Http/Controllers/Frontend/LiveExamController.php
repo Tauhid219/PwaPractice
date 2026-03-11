@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Http\Controllers\Controller;
 use App\Models\LiveExam;
 use App\Models\LiveExamAttempt;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LiveExamController extends Controller

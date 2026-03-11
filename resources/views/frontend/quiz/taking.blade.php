@@ -23,7 +23,7 @@
                 <div class="bg-light rounded p-5">
                     <h2 class="mb-4 text-center">কুইজ শুরু!</h2>
                     
-                    <form action="{{ route('quiz.submit', ['category' => $category->slug, 'level' => $level->id]) }}" method="POST" id="quizForm">
+                    <form action="{{ route('quiz.submit', ['slug' => $category->slug, 'level' => $level->id]) }}" method="POST" id="quizForm">
                         @csrf
                         @foreach($questions as $index => $question)
                             <div class="mb-4 question-container" id="q_{{ $index }}" style="{{ $index === 0 ? '' : 'display: none;' }}">

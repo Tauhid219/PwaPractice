@@ -20,19 +20,43 @@ class CheckLevelAccess
             $level = \App\Models\Level::find($level);
         }
 
-        // If level is free, allow access
+        // Make sure user is logged in
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+
+        // If level is free, allow access without checking progress
         if ($level && $level->is_free) {
             return $next($request);
         }
 
-        // Check user progress
+        // Check user progress for paid or higher levels
+        $category = $request->route('category');
+        $categoryId = $category instanceof \App\Models\Category ? $category->id : null;
+        
+        if (!$categoryId) {
+            // Try to find category from slug or level questions
+            $slug = $request->route('slug') ?? $request->route('category');
+            if ($slug && is_string($slug)) {
+                $categoryObj = \App\Models\Category::where('slug', $slug)->first();
+                $categoryId = $categoryObj ? $categoryObj->id : null;
+            }
+            
+            if (!$categoryId && $level->questions()->first()) {
+                $categoryId = $level->questions()->first()->category_id;
+            }
+        }
+
         $progress = \App\Models\UserProgress::where('user_id', auth()->id())
+            ->where('category_id', $categoryId)
             ->where('level_id', $level->id)
             ->first();
 
+        // If no progress exists, or status is expressly locked, redirect
         if (!$progress || $progress->status === 'locked') {
-            return redirect()->route('category.levels', $request->route('category') ?? $level->questions()->first()->category->slug)
-                             ->with('error', 'এই লেভেলটি এখনও লক করা আছে। পূর্ববর্তী লেভেল পাস করুন।');
+            $categorySlug = $request->route('category') ?? ($level->questions()->first() ? $level->questions()->first()->category->slug : 'all');
+            return redirect()->route('category.levels', $categorySlug)
+                             ->with('error', 'এই লেভেলটি এখনও আনলক হয়নি। দয়া করে আগের লেভেলটি পাশ করুন।');
         }
 
         return $next($request);

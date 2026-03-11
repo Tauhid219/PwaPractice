@@ -6,7 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserProgress extends Model
 {
-    protected $fillable = ['user_id', 'level_id', 'status'];
+    protected $fillable = ['user_id', 'category_id', 'level_id', 'status'];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 
     public function user()
     {

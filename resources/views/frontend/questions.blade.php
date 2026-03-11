@@ -67,7 +67,11 @@
                     </div>
 
                     <div class="mt-5 text-center d-flex flex-column align-items-center">
-                        <a href="{{ route('quiz.start', ['category' => $category->slug, 'level' => $level->id]) }}" class="btn btn-success px-5 py-3 fs-5 d-none mb-3 shadow" id="quiz-btn">কুইজ শুরু করুন <i class="fa fa-flag-checkered ms-2"></i></a>
+                        @auth
+                        <a href="{{ route('quiz.start', ['slug' => $category->slug, 'level' => $level->id]) }}" class="btn btn-success px-5 py-3 fs-5 d-none mb-3 shadow" id="quiz-btn">কুইজ শুরু করুন <i class="fa fa-flag-checkered ms-2"></i></a>
+                        @else
+                        <a href="{{ route('login') }}" class="btn btn-success px-5 py-3 fs-5 d-none mb-3 shadow" id="quiz-btn">কুইজ শুরু করুন <i class="fa fa-flag-checkered ms-2"></i></a>
+                        @endauth
                         <a href="{{ route('category.levels', $category->slug) }}" class="btn btn-outline-primary px-4 py-2"><i class="fa fa-arrow-left me-2"></i> লেভেল তালিকায় ফিরে যান</a>
                     </div>
                 </div>
