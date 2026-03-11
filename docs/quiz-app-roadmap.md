@@ -47,7 +47,7 @@ quiz_attempts → user_id, level_id, score, passed
 **কাজ:**
 - [x] Migrations তৈরি (categories, questions)
 - [x] Models তৈরি + relationships
-- [ ] লেভেল (Levels) ও ইউজার প্রগ্রেস (User Progress) এর মাইগ্রেশন ও মডেল তৈরি
+- [x] লেভেল (Levels) ও ইউজার প্রগ্রেস (User Progress) এর মাইগ্রেশন ও মডেল তৈরি
 - [x] Seeder — স্যাম্পল প্রশ্ন দিয়ে
 
 ---
@@ -60,7 +60,7 @@ quiz_attempts → user_id, level_id, score, passed
 - [x] Chapter listing পেজ
 - [x] Admin authentication & ড্যাশবোর্ড
 - [x] Category / Question CRUD
-- [ ] Admin to Admin রোল ম্যানেজমেন্ট (User Management)
+- [x] Admin to Admin রোল ম্যানেজমেন্ট (User Management)
 - [x] Excel/CSV Import ফিচার (৯৮০ প্রশ্ন দ্রুত ইনপুট)
 
 ---
@@ -92,11 +92,11 @@ quiz_attempts → user_id, level_id, score, passed
 > **লক্ষ্য:** কুইজ পাস করে লেভেল আনলক করা এবং লাইভ এক্সাম অংশ নেওয়া
 
 **কাজ:**
-- [ ] **লেভেল কুইজ:** পঠিত প্রশ্নগুলোর উপর কুইজ নেওয়া
+- [x] **লেভেল কুইজ:** পঠিত প্রশ্নগুলোর উপর কুইজ নেওয়া
 - [ ] Quiz Feedback Sound (সঠিক উত্তরে 'Ting', ভুল হলে 'Buzzer')
-- [ ] কুইজ পাশ করলে পরবর্তী লেভেল আনলক করা (Pass/Fail মেকানিজম)
-- [ ] **লাইভ এক্সাম (Live Exam):** একটি নির্দিষ্ট সময়ে বা উইকেন্ডে সবার জন্য লাইভ প্রতিযোগিতা
-- [ ] প্রগ্রেস ট্র্যাকিং ও হিস্ট্রি সংরক্ষণ
+- [x] কুইজ পাশ করলে পরবর্তী লেভেল আনলক করা (Pass/Fail মেকানিজম)
+- [x] **লাইভ এক্সাম (Live Exam):** একটি নির্দিষ্ট সময়ে বা উইকেন্ডে সবার জন্য লাইভ প্রতিযোগিতা
+- [x] প্রগ্রেস ট্র্যাকিং ও হিস্ট্রি সংরক্ষণ
 
 ---
 

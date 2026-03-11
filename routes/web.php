@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\ChapterController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\Frontend\QuizController;
+use App\Http\Controllers\Frontend\LiveExamController;
 
 // Frontend Routes
 Route::get('/', [FrontendController::class, 'index'])->name('home');
@@ -23,6 +25,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Quiz Routes
+    Route::middleware(['check.level.access'])->group(function () {
+        Route::get('/category/{category:slug}/level/{level}/quiz', [QuizController::class, 'start'])->name('quiz.start');
+        Route::post('/category/{category:slug}/level/{level}/quiz', [QuizController::class, 'submit'])->name('quiz.submit');
+    });
+    Route::get('/quiz/attempt/{attempt}/result', [QuizController::class, 'result'])->name('quiz.result');
+
+    // Live Exam Routes
+    Route::get('/live-exams', [LiveExamController::class, 'index'])->name('live-exams.index');
+    Route::get('/live-exams/{exam}', [LiveExamController::class, 'show'])->name('live-exams.show');
+    Route::get('/live-exams/{exam}/join', [LiveExamController::class, 'join'])->name('live-exams.join');
+    Route::post('/live-exams/{exam}/submit', [LiveExamController::class, 'submit'])->name('live-exams.submit');
 });
 
 // Admin Routes
