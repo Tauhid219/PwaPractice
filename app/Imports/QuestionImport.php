@@ -28,7 +28,11 @@ class QuestionImport implements ToModel, WithHeadingRow
 
         return new Question([
             'category_id'   => $this->categoryId,
+            'level_id'      => $row['level_id'] ?? 1, // Default to level 1 if not provided
             'question_text' => $row['question_text'],
+            'option_1'      => $row['option_1'] ?? '',
+            'option_2'      => $row['option_2'] ?? '',
+            'option_3'      => $row['option_3'] ?? '',
             'answer_text'   => $row['answer_text'],
         ]);
     }

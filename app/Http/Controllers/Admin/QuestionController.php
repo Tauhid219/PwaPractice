@@ -24,14 +24,19 @@ class QuestionController extends Controller
     public function create()
     {
         $categories = Category::orderBy('order')->get();
-        return view('admin.questions.create', compact('categories'));
+        $levels = \App\Models\Level::all();
+        return view('admin.questions.create', compact('categories', 'levels'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
+            'level_id' => 'required|exists:levels,id',
             'question_text' => 'required|string',
+            'option_1' => 'required|string',
+            'option_2' => 'required|string',
+            'option_3' => 'required|string',
             'answer_text' => 'required|string',
         ]);
 
@@ -48,14 +53,19 @@ class QuestionController extends Controller
     public function edit(Question $question)
     {
         $categories = Category::orderBy('order')->get();
-        return view('admin.questions.edit', compact('question', 'categories'));
+        $levels = \App\Models\Level::all();
+        return view('admin.questions.edit', compact('question', 'categories', 'levels'));
     }
 
     public function update(Request $request, Question $question)
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
+            'level_id' => 'required|exists:levels,id',
             'question_text' => 'required|string',
+            'option_1' => 'required|string',
+            'option_2' => 'required|string',
+            'option_3' => 'required|string',
             'answer_text' => 'required|string',
         ]);
 

@@ -29,8 +29,25 @@
                             <div class="mb-4 question-container" id="q_{{ $index }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
                                 <h4><span class="text-primary">প্রশ্ন {{ $index + 1 }}:</span> {{ $question->question_text }}</h4>
                                 
-                                <div class="mt-3">
-                                    <input type="text" name="answers[{{ $question->id }}]" class="form-control form-control-lg answer-input" placeholder="আপনার উত্তর এখানে লিখুন..." required>
+                                <div class="mt-4 quiz-options">
+                                    <div class="option-item mb-3">
+                                        <input type="radio" name="answers[{{ $question->id }}]" id="opt1_{{ $question->id }}" value="{{ $question->option_1 }}" class="btn-check" required>
+                                        <label class="btn btn-outline-primary w-100 text-start p-3 fs-5" for="opt1_{{ $question->id }}">
+                                            <span class="fw-bold me-2">ক)</span> {{ $question->option_1 }}
+                                        </label>
+                                    </div>
+                                    <div class="option-item mb-3">
+                                        <input type="radio" name="answers[{{ $question->id }}]" id="opt2_{{ $question->id }}" value="{{ $question->option_2 }}" class="btn-check">
+                                        <label class="btn btn-outline-primary w-100 text-start p-3 fs-5" for="opt2_{{ $question->id }}">
+                                            <span class="fw-bold me-2">খ)</span> {{ $question->option_2 }}
+                                        </label>
+                                    </div>
+                                    <div class="option-item mb-3">
+                                        <input type="radio" name="answers[{{ $question->id }}]" id="opt3_{{ $question->id }}" value="{{ $question->option_3 }}" class="btn-check">
+                                        <label class="btn btn-outline-primary w-100 text-start p-3 fs-5" for="opt3_{{ $question->id }}">
+                                            <span class="fw-bold me-2">গ)</span> {{ $question->option_3 }}
+                                        </label>
+                                    </div>
                                 </div>
 
                                 <div class="mt-4 text-end">
@@ -72,10 +89,11 @@
         nextBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 const currentIndex = parseInt(this.getAttribute('data-index'));
-                const input = document.querySelector(`#q_${currentIndex} .answer-input`);
+                const container = document.getElementById('q_' + currentIndex);
+                const checkedOption = container.querySelector('input[type="radio"]:checked');
                 
-                if(input.value.trim() === '') {
-                    alert('দয়া করে উত্তর দিন!');
+                if(!checkedOption) {
+                    alert('দয়া করে একটি সঠিক উত্তর নির্বাচন করুন!');
                     return;
                 }
 

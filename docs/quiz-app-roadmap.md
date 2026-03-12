@@ -1,6 +1,6 @@
 # 🧒 জিনিয়াস কিডস কুইজ গাইডবুক অ্যাপ — রোডম্যাপ
 
-> **সর্বশেষ আপডেট:** 11 মার্চ 2026
+> **সর্বশেষ আপডেট:** ১২ মার্চ ২০২৬
 
 ## প্রজেক্ট তথ্য
 
@@ -30,7 +30,7 @@
 
 ---
 
-## 🗺️ রোডম্যাপ — ৭ টি ধাপ
+## 🗺️ রোডম্যাপ — ৮ টি ধাপ
 
 ### ধাপ ১: Database + Models (Updated)
 > **লক্ষ্য:** বেসিক এবং অ্যাডভান্সড ফাংশনালিটির জন্য ডেটাবেস প্রস্তুত করা
@@ -38,7 +38,7 @@
 **Database Structure:**
 ```text
 categories    → id, name, slug, icon, description, order
-questions     → id, category_id, question_text, answer_text, level_id
+questions     → id, category_id, question_text, option_1, option_2, option_3, answer_text, level_id
 levels        → id, name, required_score_to_unlock
 user_progress → user_id, category_id/level_id, status (locked, active, completed)
 quiz_attempts → user_id, level_id, score, passed
@@ -82,21 +82,23 @@ quiz_attempts → user_id, level_id, score, passed
 - [x] ইউজার রেজিস্ট্রেশন/লগিন বাধ্যতামূলক করা (পড়ার জন্য)
 - [x] ক্যাটাগরির ভেতরে লেভেল সিলেকশন পেজ দেখানো (প্রথম লেভেল ফ্রি/অ্যাক্সেসযোগ্য, বাকিগুলো লক)
 - [x] ফ্ল্যাশকার্ড মোড বাদ দিয়ে অ্যাকর্ডিয়ন ভিউতে লেভেলভিত্তিক প্রশ্ন দেখানো (অধ্যায় লেয়ার রিমুভড)
-- [x] ফ্রন্টএন্ডে স্টুডেন্ট প্রোফাইল ડ্যাশবোর্ড ও রোল-ভিত্তিক রিডাইরেক্ট (Role-based auth)
+- [x] ফ্রন্টএন্ডে স্টুডেন্ট প্রোফাইল ড্যাশবোর্ড ও রোল-ভিত্তিক রিডাইরেক্ট (Role-based auth)
 - [x] "পড়েছি" (Mark as Read) অপশন যুক্ত করা (উইথ LocalStorage state)
+- [ ] পড়ার প্রগ্রেস ডাটাবেসে সিংক্রোনাইজ করা (Backend Sync)
 - [x] নির্দিষ্ট লেভেলের সব প্রশ্ন পড়া হলে কুইজ বাটন আনলক হবে
 
 ---
 
 ### ধাপ ৫: Quiz Logic & Live Exam 
-> **লক্ষ্য:** কুইজ পাস করে লেভেল আনলক করা এবং লাইভ এক্সাম অংশ নেওয়া
+> **লক্ষ্য:** কুইজ পাস করে লেভেল আনলক করা এবং লাইভ এক্সাম অংশ নেওয়া (MCQ ৩-অপশন ভিত্তিক)
 
 **কাজ:**
-- [x] **লেভেল কুইজ:** পঠিত প্রশ্নগুলোর উপর কুইজ নেওয়া
+- [x] **লেভেল কুইজ:** পঠিত প্রশ্নগুলোর উপর কুইজ নেওয়া (৩টি অপশনসহ)
 - [x] Quiz Feedback Sound (সঠিক উত্তরে 'Ting', ভুল হলে 'Buzzer')
 - [x] কুইজ পাশ করলে পরবর্তী লেভেল আনলক করা (Pass/Fail মেকানিজম)
 - [x] **লাইভ এক্সাম (Live Exam):** একটি নির্দিষ্ট সময়ে বা উইকেন্ডে সবার জন্য লাইভ প্রতিযোগিতা
 - [x] প্রগ্রেস ট্র্যাকিং ও হিস্ট্রি সংরক্ষণ
+- [ ] এডমিন প্যানেলে ইউজারভিত্তিক প্রগ্রেস মনিটরিং ড্যাশবোর্ড তৈরি করা
 
 ---
 
@@ -121,6 +123,17 @@ quiz_attempts → user_id, level_id, score, passed
 
 ---
 
+### ধাপ ৮: Scaling & Optimization (New)
+> **লক্ষ্য:** ৯৮০+ প্রশ্ন এবং উচ্চ ইউজার প্রেশার হ্যান্ডেল করার জন্য সিস্টেম অপ্টিমাইজ করা
+
+**কাজ:**
+- [ ] **Database Indexing:** `questions`, `user_progress` এবং `quiz_attempts` টেবিলে ইনডেক্সিং যোগ করা
+- [ ] **Caching:** গুরুত্বপূর্ণ কোয়েরিগুলো (Categories, Questions) লারাভেল ক্যাশে রাখা
+- [ ] **PWA Update:** API রেসপন্স ক্যাশ করার জন্য "Stale-While-Revalidate" স্ট্র্যাটেজি যোগ করা
+- [ ] **Queues:** লাইভ এক্সাম স্কোর প্রসেসিং ব্যাকগ্রাউন্ড জবে (Jobs) নিয়ে যাওয়া
+
+---
+
 ## কাজের ক্রম
 
 ```mermaid
@@ -131,6 +144,7 @@ graph TD
     D --> E["ধাপ ৫<br>Quiz & Live Exam"]
     E --> F["ধাপ ৬<br>Monetization (Payment)"]
     F --> G["ধাপ ৭<br>Final PWA Setup"]
+    G --> H["ধাপ ৮<br>Scaling & Optimization"]
 ```
 
 > [!IMPORTANT]  

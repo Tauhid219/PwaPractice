@@ -157,4 +157,17 @@
 #### 📝 Documentation Sync
 - **Roadmap & Walkthrough:** সবগুলো প্রজেক্ট ডকুমেন্ট (`quiz-app-roadmap.md`, `walkthrough.md`, `changelog.md`) লেটেস্ট ডেভেলপমেন্টের সাথে সিঙ্ক করা হয়েছে।
 
+#### 🧠 MCQ Transition (3 Options) & Planning (Phase 7)
+- **MCQ System:** কুইজ সিস্টেমকে শর্ট-অ্যানসার থেকে ৩-অপশন বিশিষ্ট MCQ ফরম্যাটে রূপান্তর করা হয়েছে।
+- **Database:** `questions` টেবিলে `option_1`, `option_2`, `option_3` কলাম যোগ করা হয়েছে।
+- **Admin Panel:** এডমিন প্যানেলে প্রশ্ন তৈরি এবং এডিটের সময় ৩টি অপশন ইনপুট দেওয়ার ব্যবস্থা করা হয়েছে।
+- **Bulk Import:** এক্সেল ইম্পোর্ট সিস্টেম আপডেট করা হয়েছে যাতে অপশনগুলো অটোমেটিক ডাটাবেসে সেভ হয়।
+- **Frontend UI:** কুইজের পেজে টাইপ করার বদলে ৩টি কার্ড-স্টাইল বাটন (ক, খ, গ) যুক্ত করা হয়েছে।
+
+#### 📋 Scaling & Monitoring Plans (Phase 8)
+- **Scaling Plan:** ৯৮০+ প্রশ্নের চাপ সামলাতে ডাটাবেস ইনডেক্সিং এবং ক্যাশিং স্ট্র্যাটেজি নিয়ে `docs/optimization-and-scaling-plan.md` তৈরি করা হয়েছে।
+- **User Monitoring:** ইউজাররা কতগুলো প্রশ্ন পড়েছে এবং কুইজে কেমন করছে তা ট্র্যাক করার জন্য `docs/user-monitoring-plan.md` তৈরি করা হয়েছে।
+
+---
+
 <!-- পরবর্তী এন্ট্রি এখানে যোগ হবে -->

@@ -10,7 +10,7 @@ class Question extends Model
     /** @use HasFactory<\Database\Factories\QuestionFactory> */
     use HasFactory;
 
-    protected $fillable = ['category_id', 'level_id', 'question_text', 'answer_text'];
+    protected $fillable = ['category_id', 'level_id', 'question_text', 'option_1', 'option_2', 'option_3', 'answer_text'];
 
     public function category()
     {
