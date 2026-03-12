@@ -147,5 +147,14 @@
 - **Pass/Fail Logic:** কুইজে ৮০% নম্বর পেলে পরবর্তী লেভেল আনলক হওয়ার লজিক এবং ইউজার প্রগ্রেস ডাটাবেসে সেভ করার সিস্টেম তৈরি করা হয়েছে।
 - **Access Control:** `CheckLevelAccess` মিডলওয়্যার তৈরি করে আনলক না হওয়া লেভেলে প্রবেশাধিকার বন্ধ করা হয়েছে।
 - **Audio Feedback:** কুইজের পেজে বাটনে ক্লিক করলে `pop.mp3`, পাস করলে `ting.mp3`, এবং ফেইল করলে `buzzer.mp3` সাউন্ড প্লে হওয়ার ব্যবস্থা করা হয়েছে। 
+- **Category Isolation Refinement:** `UserProgress` টেবিলে `category_id` যুক্ত করার মাধ্যমে প্রতিটি ক্যাটাগরির লেভেল আনলক লজিক স্বতন্ত্র করা হয়েছে।
+- **Bug Fixes:** 'Route [quiz.start] not defined' এবং 'Class Not Found: Controller' সংক্রান্ত সমস্যাগুলো সমাধান করা হয়েছে।
+
+---
+
+### ১২ মার্চ ২০২৬
+
+#### 📝 Documentation Sync
+- **Roadmap & Walkthrough:** সবগুলো প্রজেক্ট ডকুমেন্ট (`quiz-app-roadmap.md`, `walkthrough.md`, `changelog.md`) লেটেস্ট ডেভেলপমেন্টের সাথে সিঙ্ক করা হয়েছে।
 
 <!-- পরবর্তী এন্ট্রি এখানে যোগ হবে -->
