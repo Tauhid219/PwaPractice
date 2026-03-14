@@ -1,4 +1,4 @@
-# 🧒 জিনিয়াস কিডস কুইজ গাইডবুক অ্যাপ — রোডম্যাপ
+﻿# 🧒 জিনিয়াস কিডস কুইজ গাইডবুক অ্যাপ — রোডম্যাপ
 
 > **সর্বশেষ আপডেট:** ১২ মার্চ ২০২৬
 
@@ -102,16 +102,16 @@ quiz_attempts → user_id, level_id, score, passed
 
 ---
 
-### ধাপ ৬: Monetization & Download Setup
-> **লক্ষ্য:** অ্যাপ ডাউনলোড বা ফুল অ্যাক্সেসের জন্য পেমেন্ট গেটওয়ে যুক্ত করা
+### ধাপ ৬: Scaling & Optimization
+> **লক্ষ্য:** ৯৮০+ প্রশ্ন এবং উচ্চ ইউজার প্রেশার হ্যান্ডেল করার জন্য সিস্টেম অপ্টিমাইজ করা
 
 **কাজ:**
-- [ ] পেমেন্ট গেটওয়ে ইন্টিগ্রেশন (aamarPay / bKash / SSLCommerz / Stripe ইত্যাদি)
-- [ ] সামান্য পেমেন্ট করার পর অ্যাপ ডাউনলোড বা প্রিমিয়াম/ফুল অ্যাক্সেস আনলক করার লজিক
-- [ ] Free Trial (প্রথম লেভেল) vs Premium User রোল সেটআপ
+- [ ] **Database Indexing:** `questions`, `user_progress` এবং `quiz_attempts` টেবিলে ইনডেক্সিং যোগ করা
+- [ ] **Caching:** গুরুত্বপূর্ণ কোয়েরিগুলো (Categories, Questions) লারাভেল ক্যাশে রাখা
+- [ ] **PWA Update:** API রেসপন্স ক্যাশ করার জন্য "Stale-While-Revalidate" স্ট্র্যাটেজি যোগ করা
+- [ ] **Queues:** লাইভ এক্সাম স্কোর প্রসেসিং ব্যাকগ্রাউন্ড জবে (Jobs) নিয়ে যাওয়া
 
 ---
-
 ### ধাপ ৭: PWA Configuration & Final Deployment
 > **লক্ষ্য:** অ্যাপ ডাউনলোড ও অফলাইন অ্যাক্সেস
 
@@ -123,16 +123,16 @@ quiz_attempts → user_id, level_id, score, passed
 
 ---
 
-### ধাপ ৮: Scaling & Optimization (New)
-> **লক্ষ্য:** ৯৮০+ প্রশ্ন এবং উচ্চ ইউজার প্রেশার হ্যান্ডেল করার জন্য সিস্টেম অপ্টিমাইজ করা
+### ধাপ ৮: Monetization & Download Setup
+> **লক্ষ্য:** অ্যাপ ডাউনলোড বা ফুল অ্যাক্সেসের জন্য পেমেন্ট গেটওয়ে যুক্ত করা
 
 **কাজ:**
-- [ ] **Database Indexing:** `questions`, `user_progress` এবং `quiz_attempts` টেবিলে ইনডেক্সিং যোগ করা
-- [ ] **Caching:** গুরুত্বপূর্ণ কোয়েরিগুলো (Categories, Questions) লারাভেল ক্যাশে রাখা
-- [ ] **PWA Update:** API রেসপন্স ক্যাশ করার জন্য "Stale-While-Revalidate" স্ট্র্যাটেজি যোগ করা
-- [ ] **Queues:** লাইভ এক্সাম স্কোর প্রসেসিং ব্যাকগ্রাউন্ড জবে (Jobs) নিয়ে যাওয়া
+- [ ] পেমেন্ট গেটওয়ে ইন্টিগ্রেশন (aamarPay / bKash / SSLCommerz / Stripe ইত্যাদি)
+- [ ] সামান্য পেমেন্ট করার পর অ্যাপ ডাউনলোড বা প্রিমিয়াম/ফুল অ্যাক্সেস আনলক করার লজিক
+- [ ] Free Trial (প্রথম লেভেল) vs Premium User রোল সেটআপ
 
 ---
+
 
 ## কাজের ক্রম
 
@@ -142,9 +142,9 @@ graph TD
     B --> C["ধাপ ৩<br>Professional UI/UX"]
     C --> D["ধাপ ৪<br>Level-Based Learning"]
     D --> E["ধাপ ৫<br>Quiz & Live Exam"]
-    E --> F["ধাপ ৬<br>Monetization (Payment)"]
+    E --> F["ধাপ ৬<br>Scaling & Optimization"]
     F --> G["ধাপ ৭<br>Final PWA Setup"]
-    G --> H["ধাপ ৮<br>Scaling & Optimization"]
+    G --> H["ধাপ ৮<br>Monetization (Payment)"]
 ```
 
 > [!IMPORTANT]  
