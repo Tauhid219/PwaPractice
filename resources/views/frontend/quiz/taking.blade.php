@@ -26,7 +26,7 @@
                     <form action="{{ route('quiz.submit', ['slug' => $category->slug, 'level' => $level->id]) }}" method="POST" id="quizForm">
                         @csrf
                         @foreach($questions as $index => $question)
-                            <div class="mb-4 question-container" id="q_{{ $index }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
+                            <div class="mb-4 question-container" id="q_{{ $index }}" data-correct="{{ trim($question->answer_text) }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
                                 <h4><span class="text-primary">প্রশ্ন {{ $index + 1 }}:</span> {{ $question->question_text }}</h4>
                                 
                                 <div class="mt-4 quiz-options">
@@ -74,17 +74,12 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Sounds
         const popAudio = new Audio('{{ asset("frontend/sounds/pop.mp3") }}');
+        const tingAudio = new Audio('{{ asset("frontend/sounds/ting.mp3") }}');
+        const buzzerAudio = new Audio('{{ asset("frontend/sounds/buzzer.mp3") }}');
         
         const nextBtns = document.querySelectorAll('.next-btn');
         const prevBtns = document.querySelectorAll('.prev-btn');
-        const inputs = document.querySelectorAll('.answer-input');
-
-        inputs.forEach(input => {
-            input.addEventListener('focus', () => {
-                popAudio.volume = 0.5;
-                popAudio.play().catch(e => {});
-            });
-        });
+        const quizForm = document.getElementById('quizForm');
 
         nextBtns.forEach(btn => {
             btn.addEventListener('click', function() {
@@ -97,11 +92,23 @@
                     return;
                 }
 
-                document.getElementById('q_' + currentIndex).style.display = 'none';
-                document.getElementById('q_' + (currentIndex + 1)).style.display = 'block';
-                
-                popAudio.volume = 0.5;
-                popAudio.play().catch(e => {});
+                // Check answer
+                const correctAnswer = container.getAttribute('data-correct').toLowerCase().trim();
+                const selectedAnswer = checkedOption.value.toLowerCase().trim();
+
+                if (selectedAnswer === correctAnswer) {
+                    tingAudio.currentTime = 0;
+                    tingAudio.play().catch(e => {});
+                } else {
+                    buzzerAudio.currentTime = 0;
+                    buzzerAudio.play().catch(e => {});
+                }
+
+                // Small delay to let the sound start before switching question
+                setTimeout(() => {
+                    document.getElementById('q_' + currentIndex).style.display = 'none';
+                    document.getElementById('q_' + (currentIndex + 1)).style.display = 'block';
+                }, 300);
             });
         });
 
@@ -114,6 +121,35 @@
                 popAudio.volume = 0.5;
                 popAudio.play().catch(e => {});
             });
+        });
+
+        // Handle Submit sound for the last question
+        quizForm.addEventListener('submit', function(e) {
+            const containers = document.querySelectorAll('.question-container');
+            const lastContainer = containers[containers.length - 1];
+            const checkedOption = lastContainer.querySelector('input[type="radio"]:checked');
+
+            if (checkedOption) {
+                const correctAnswer = lastContainer.getAttribute('data-correct').toLowerCase().trim();
+                const selectedAnswer = checkedOption.value.toLowerCase().trim();
+
+                if (selectedAnswer === correctAnswer) {
+                    tingAudio.currentTime = 0;
+                    tingAudio.play().catch(e => {});
+                } else {
+                    buzzerAudio.currentTime = 0;
+                    buzzerAudio.play().catch(e => {});
+                }
+                
+                // We don't preventDefault because we want it to submit, 
+                // but if we want the sound to be heard, we might need a small delay.
+                // However, HTML5 Audio play() starts immediately. 
+                // A better UX might be to preventDefault, play sound, then submit.
+                e.preventDefault();
+                setTimeout(() => {
+                    quizForm.submit();
+                }, 500);
+            }
         });
     });
 </script>
