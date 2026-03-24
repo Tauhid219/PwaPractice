@@ -69,6 +69,29 @@
                 </div>
             </div>
 
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4 p-4">
+                <form method="GET" action="{{ route('admin.questions.index') }}" class="flex items-end space-x-4">
+                    <div class="flex-1 max-w-sm">
+                        <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">Filter by Category</label>
+                        <select name="category_id" id="category_id" class="shadow-sm border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm rounded-md" onchange="this.form.submit()">
+                            <option value="">All Categories</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @if(request('category_id'))
+                        <div>
+                            <a href="{{ route('admin.questions.index') }}" class="inline-flex items-center px-4 py-2 bg-red-100 border border-transparent rounded-md font-semibold text-xs text-red-700 uppercase tracking-widest hover:bg-red-200 focus:outline-none focus:border-red-300 focus:ring ring-red-300 active:bg-red-200 transition ease-in-out duration-150">
+                                Clear Filter
+                            </a>
+                        </div>
+                    @endif
+                </form>
+            </div>
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -105,8 +128,8 @@
                         </tbody>
                     </table>
                     
-                    <div class="mt-4">
-                        {{ $questions->links() }}
+                    <div class="mt-4 p-4">
+                        {{ $questions->appends(request()->query())->links('pagination::tailwind') }}
                     </div>
                 </div>
             </div>

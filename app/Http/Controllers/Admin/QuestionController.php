@@ -14,11 +14,18 @@ class QuestionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Use pagination since there will be many questions (around 980)
-        $questions = Question::with('category')->orderBy('id', 'desc')->paginate(50);
-        return view('admin.questions.index', compact('questions'));
+        $categories = Category::orderBy('order')->get();
+        
+        $query = Question::with('category')->orderBy('category_id')->orderBy('id', 'desc');
+        
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $questions = $query->paginate(50);
+        return view('admin.questions.index', compact('questions', 'categories'));
     }
 
     public function create()

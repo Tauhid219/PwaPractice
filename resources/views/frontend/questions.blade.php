@@ -2,6 +2,68 @@
 @section('title', $level->name . ' - প্রশ্ন ও উত্তর')
 
 @section('content')
+    <style>
+        /* Custom Pagination Styles */
+        .pagination-wrapper nav {
+            width: 100%;
+        }
+        /* Hides the "Showing 1 to x of x results" text */
+        .pagination-wrapper nav > div.d-flex.align-items-center.justify-content-between {
+            justify-content: center !important;
+        }
+        .pagination-wrapper nav > div > div:first-child {
+            display: none !important; 
+        }
+        /* Mobile fixes */
+        .pagination-wrapper nav > div.d-flex.justify-content-between.flex-fill.d-sm-none {
+            display: none !important; /* Hide default mobile prev/next split */
+        }
+        .pagination-wrapper nav > div.d-none {
+            display: flex !important; /* Force show full pagination on all devices */
+            justify-content: center !important;
+            width: 100%;
+        }
+        /* Style the paginator buttons */
+        .pagination-wrapper .pagination {
+            margin-bottom: 0;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .pagination-wrapper .pagination .page-item.active .page-link {
+            z-index: 3;
+            color: #fff;
+            background-color: #198754; /* Success color */
+            border-color: #198754;
+            box-shadow: 0 4px 8px rgba(25, 135, 84, 0.2);
+        }
+        .pagination-wrapper .pagination .page-item .page-link {
+            border-radius: 8px !important;
+            color: #198754; 
+            font-weight: 600;
+            padding: 8px 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        .pagination-wrapper .pagination .page-item .page-link:hover:not(.active):not([disabled]) {
+            background-color: #d1e7dd;
+            color: #198754;
+            border-color: #badbcc;
+            transform: translateY(-2px);
+        }
+        .pagination-wrapper .pagination .page-item.disabled .page-link {
+            color: #adb5bd;
+            background-color: #f8f9fa;
+            border-color: #e9ecef;
+        }
+        @media (max-width: 576px) {
+            .pagination-wrapper .pagination .page-item .page-link {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
     <!-- Page Header Start -->
     <div class="container-xxl py-5 page-header position-relative mb-5">
         <div class="container py-5">
@@ -35,24 +97,24 @@
                         <div class="progress" style="height: 10px;">
                             <div class="progress-bar bg-success" id="progress-bar" role="progressbar" style="width: 0%;"></div>
                         </div>
-                        <p class="mt-2 text-muted" id="progress-text">০ / {{ count($questions) }} পড়া হয়েছে</p>
+                        <p class="mt-2 text-muted" id="progress-text">০ / {{ $questions->total() }} পড়া হয়েছে</p>
                     </div>
 
                     <div class="accordion" id="questionsAccordion">
                         @forelse($questions as $index => $question)
-                        <div class="accordion-item shadow-sm mb-3 border-0 rounded question-block" data-index="{{ $index }}">
-                            <h2 class="accordion-header" id="heading-{{ $index }}">
-                                <button class="accordion-button {{ $index == 0 ? '' : 'collapsed' }} rounded fw-bold fs-5 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $index }}" aria-expanded="{{ $index == 0 ? 'true' : 'false' }}" aria-controls="collapse-{{ $index }}">
-                                    <span class="text-primary me-2">প্রশ্ন {{ $index + 1 }}:</span> {{ $question->question_text }}
-                                    <i class="fa fa-check-circle text-success ms-auto d-none read-check" id="check-{{ $index }}"></i>
+                        <div class="accordion-item shadow-sm mb-3 border-0 rounded question-block" data-id="{{ $question->id }}">
+                            <h2 class="accordion-header" id="heading-{{ $question->id }}">
+                                <button class="accordion-button {{ $index == 0 ? '' : 'collapsed' }} rounded fw-bold fs-5 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $question->id }}" aria-expanded="{{ $index == 0 ? 'true' : 'false' }}" aria-controls="collapse-{{ $question->id }}">
+                                    <span class="text-primary me-2">প্রশ্ন {{ $questions->firstItem() + $index }}:</span> {{ $question->question_text }}
+                                    <i class="fa fa-check-circle text-success ms-auto d-none read-check" id="check-{{ $question->id }}"></i>
                                 </button>
                             </h2>
-                            <div id="collapse-{{ $index }}" class="accordion-collapse collapse {{ $index == 0 ? 'show' : '' }}" aria-labelledby="heading-{{ $index }}" data-bs-parent="#questionsAccordion">
+                            <div id="collapse-{{ $question->id }}" class="accordion-collapse collapse {{ $index == 0 ? 'show' : '' }}" aria-labelledby="heading-{{ $question->id }}" data-bs-parent="#questionsAccordion">
                                 <div class="accordion-body bg-light rounded-bottom text-dark fs-5">
                                     <span class="fw-bold text-success me-2">উত্তর:</span> {{ $question->answer_text }}
                                     
                                     <div class="text-end mt-3">
-                                        <button class="btn btn-sm btn-outline-success mark-read-btn" data-index="{{ $index }}">
+                                        <button class="btn btn-sm btn-outline-success mark-read-btn" data-id="{{ $question->id }}" data-next-id="{{ $index < count($questions)-1 ? $questions[$index+1]->id : '' }}">
                                             <i class="fa fa-check me-1"></i> পড়েছি
                                         </button>
                                     </div>
@@ -64,6 +126,10 @@
                             <h3>দুঃখিত, এই লেভেলে এখনো কোনো প্রশ্ন যুক্ত করা হয়নি।</h3>
                         </div>
                         @endforelse
+                    </div>
+
+                    <div class="pagination-wrapper mt-5 mb-4 d-flex justify-content-center">
+                        {{ $questions->links() }}
                     </div>
 
                     <div class="mt-5 text-center d-flex flex-column align-items-center">
@@ -85,12 +151,17 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const totalQuestions = {{ count($questions) }};
+            const totalQuestions = {{ $questions->total() }};
             const levelId = {{ $level->id }};
             const categoryId = {{ $category->id }};
             const storageKey = `readProgress_cat${categoryId}_l${levelId}`;
             
-            let readQuestions = JSON.parse(localStorage.getItem(storageKey)) || [];
+            let localRead = JSON.parse(localStorage.getItem(storageKey)) || [];
+            let serverRead = @json($readQuestionIds ?? []);
+            
+            // Merge and update local storage so it's always in sync
+            let readQuestions = [...new Set([...localRead, ...serverRead])];
+            localStorage.setItem(storageKey, JSON.stringify(readQuestions));
 
             const progressBar = document.getElementById('progress-bar');
             const progressText = document.getElementById('progress-text');
@@ -115,11 +186,11 @@
                 progressText.innerText = readQuestions.length + ' / ' + totalQuestions + ' পড়া হয়েছে';
 
                 // Checkmarks
-                readQuestions.forEach(index => {
-                    const checkIcon = document.getElementById('check-' + index);
+                readQuestions.forEach(qId => {
+                    const checkIcon = document.getElementById('check-' + qId);
                     if (checkIcon) checkIcon.classList.remove('d-none');
                     
-                    const btn = document.querySelector(`.mark-read-btn[data-index="${index}"]`);
+                    const btn = document.querySelector(`.mark-read-btn[data-id="${qId}"]`);
                     if (btn) {
                         btn.classList.remove('btn-outline-success');
                         btn.classList.add('btn-success');
@@ -140,16 +211,30 @@
             // Mark as read clicks
             readButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const index = parseInt(this.getAttribute('data-index'));
+                    const qId = parseInt(this.getAttribute('data-id'));
+                    const nextId = this.getAttribute('data-next-id');
                     
-                    if (!readQuestions.includes(index)) {
-                        readQuestions.push(index);
+                    if (!readQuestions.includes(qId)) {
+                        readQuestions.push(qId);
                         localStorage.setItem(storageKey, JSON.stringify(readQuestions));
                         updateUI();
                         
+                        // Backend Sync
+                        if ({{ auth()->check() ? 'true' : 'false' }}) {
+                            fetch('{{ route('mark.read') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({ question_id: qId })
+                            }).catch(err => console.error('Sync failed:', err));
+                        }
+                        
                         // Collapse current, open next
-                        const currentCollapse = document.getElementById('collapse-' + index);
-                        const nextCollapse = document.getElementById('collapse-' + (index + 1));
+                        const currentCollapse = document.getElementById('collapse-' + qId);
+                        const nextCollapse = nextId ? document.getElementById('collapse-' + nextId) : null;
                         
                         if (currentCollapse && window.bootstrap) {
                             new bootstrap.Collapse(currentCollapse, { toggle: true });

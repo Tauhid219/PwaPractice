@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\ReadQuestion;
+use App\Models\UserProgress;
+use App\Models\QuizAttempt;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -15,6 +18,32 @@ class UserController extends Controller
     {
         $users = User::orderBy('id', 'desc')->paginate(50);
         return view('admin.users.index', compact('users'));
+    }
+
+    /**
+     * Display the specified user's progress.
+     */
+    public function show(User $user)
+    {
+        $totalRead = ReadQuestion::where('user_id', $user->id)->count();
+        
+        $progressStats = [
+            'total_completed_levels' => UserProgress::where('user_id', $user->id)->where('status', 'completed')->count(),
+            'total_active_levels' => UserProgress::where('user_id', $user->id)->where('status', 'active')->count()
+        ];
+        
+        $quizAttempts = QuizAttempt::where('user_id', $user->id)
+            ->with(['level', 'level.questions'])
+            ->orderBy('id', 'desc')
+            ->paginate(15);
+            
+        $userProgress = UserProgress::where('user_id', $user->id)
+            ->with(['category', 'level'])
+            ->orderBy('category_id')
+            ->orderBy('level_id')
+            ->get();
+            
+        return view('admin.users.show', compact('user', 'totalRead', 'progressStats', 'quizAttempts', 'userProgress'));
     }
 
     /**

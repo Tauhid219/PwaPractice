@@ -190,4 +190,20 @@
 
 ---
 
+### ২৪ মার্চ ২০২৬
+
+#### 🖥️ Frontend & Admin UI Updates 
+- **Global Pagination:** ফ্রন্টএন্ডে প্রশ্নের সংখ্যা হার্ডকোডেড থেকে পরিবর্তন করে লারাভেলের `paginate(10)` ব্যবহার করে পেজিনেশন যুক্ত করা হয়েছে।
+- **Bootstrap 5 UI:** `AppServiceProvider`-এ `Paginator::useBootstrapFive()` সেট করে ডিফল্ট টেইলউইন্ড পেজিনেশন পরিবর্তন করা হয়েছে এবং `questions.blade.php`-এ কাস্টম CSS দিয়ে অপ্রয়োজনীয় টেক্সট লুকিয়ে প্রফেশনাল ডিজাইন করা হয়েছে।
+- **Admin Category Filter:** এডমিন প্যানেলের `Questions` লিস্ট টেবিলে একটি "Filter by Category" ড্রপডাউন যুক্ত করা হয়েছে যেন একসাথে সব প্রশ্ন না দেখিয়ে কাস্টম ফিল্টার করা যায়।
+- **Tailwind Pagination Fix:** গ্লোবাল Bootstrap 5 ডিক্লেয়ার করার পর এডমিন প্যানেলের (Breeze) পেজিনেশন ভেঙে যাওয়ায়, সেখানে ভিউয়ের ভেতরেই `links('pagination::tailwind')` ওভাররাইড করে ডিজাইন ফিক্স করা হয়েছে।
+
+#### 💾 Database Sync & Progress Tracking (Phase 4 & 5 Completion)
+- **Backend Sync:** ব্যবহারকারীরা কোন কোন প্রশ্ন পড়েছে তার প্রগ্রেস শুধু `LocalStorage` এ সেভ হওয়ার বদলে ডাটাবেসে সেভ করার জন্য `read_questions` টেবিল, মডেল এবং `FrontendController`-এ `markQuestionAsRead` মেথড যুক্ত করা হয়েছে। 
+- **Cross-device Consistency:** `fetch()` API ব্যবহার করে রিয়েল-টাইমে ডাটাবেসের সাথে লোকাল ডেটা মার্জ (Merge) করা হয়েছে, যার ফলে যেকোনো ডিভাইস থেকে লগইন করলেই লেভেল প্রগ্রেস আনলক থাকবে।
+- **Admin Progress Dashboard:** এডমিন প্যানেলের `users` লিস্টে "View Progress" বাটন যুক্ত করা হয়েছে।
+- **User Stats View:** `UserController@show` রাউট এবং `admin.users.show` ভিউ তৈরি করে নির্দিষ্ট স্টুডেন্টের পড়া মোট প্রশ্ন, কমপ্লিট হওয়া লেভেল সংখ্যা, আনলক হওয়া ক্যাটাগরি লেভেল ম্যাপ এবং কুইজ হিস্ট্রি (পাস/ফেল) দেখানোর ড্যাশবোর্ড তৈরি করা হয়েছে।
+
+---
+
 <!-- পরবর্তী এন্ট্রি এখানে যোগ হবে -->

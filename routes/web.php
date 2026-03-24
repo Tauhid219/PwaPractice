@@ -16,6 +16,7 @@ Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/category/{slug}', [FrontendController::class, 'categoryLevels'])->name('category.levels');
 Route::get('/category/{slug}/level/{level}', [FrontendController::class, 'levelQuestions'])->name('level.questions');
 Route::view('/offline', 'offline')->name('offline');
+Route::post('/mark-read', [FrontendController::class, 'markQuestionAsRead'])->name('mark.read');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -46,7 +47,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('categories', CategoryController::class);
     Route::post('questions/import', [QuestionController::class, 'import'])->name('questions.import');
     Route::resource('questions', QuestionController::class);
-    Route::resource('users', UserController::class)->only(['index', 'update']);
+    Route::resource('users', UserController::class)->only(['index', 'show', 'update']);
 });
 
 require __DIR__.'/auth.php';

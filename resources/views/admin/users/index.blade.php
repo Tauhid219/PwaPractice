@@ -51,6 +51,7 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="{{ route('admin.users.show', $user->id) }}" class="text-blue-600 hover:text-blue-900 mr-3">View Progress</a>
                                         @if(auth()->id() !== $user->id)
                                             <form action="{{ route('admin.users.update', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to change this user\'s role?');">
                                                 @csrf
