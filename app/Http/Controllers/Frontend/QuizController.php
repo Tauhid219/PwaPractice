@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SubmitQuizRequest;
 use App\Models\Category;
 use App\Models\Level;
-use App\Models\Question;
 use App\Models\QuizAttempt;
 use App\Models\UserProgress;
-use Illuminate\Http\Request;
+use App\Services\QuizScoringService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class QuizController extends Controller
 {
@@ -18,8 +19,10 @@ class QuizController extends Controller
      */
     public function start($slug, Level $level)
     {
-        $category = Category::where('slug', $slug)->firstOrFail();
-        
+        $category = Cache::rememberForever('category_' . $slug, function () use ($slug) {
+            return Category::where('slug', $slug)->firstOrFail();
+        });
+
         // Access is handled by CheckLevelAccess middleware
         // Fetch questions for this level and category
         $questions = $level->questions()
@@ -37,42 +40,29 @@ class QuizController extends Controller
     /**
      * Submit quiz answers and calculate score.
      */
-    public function submit(Request $request, $slug, Level $level)
+    public function submit(SubmitQuizRequest $request, $slug, Level $level)
     {
-        $category = Category::where('slug', $slug)->firstOrFail();
-        
-        $request->validate([
-            'answers' => 'required|array',
-            'answers.*' => 'required|string'
-        ]);
+        $category = Cache::rememberForever('category_' . $slug, function () use ($slug) {
+            return Category::where('slug', $slug)->firstOrFail();
+        });
 
         $questions = $level->questions()->where('category_id', $category->id)->get();
-        $score = 0;
         $totalQuestions = $questions->count();
 
-        foreach ($questions as $question) {
-            if (isset($request->answers[$question->id]) && 
-                trim(strtolower($request->answers[$question->id])) == trim(strtolower($question->answer_text))) {
-                $score++;
-            }
-        }
-
-        // Pass threshold (e.g., 80% or 100%)
-        // For simplicity, let's say 80% is required
-        $percentage = ($score / $totalQuestions) * 100;
-        $passed = $percentage >= 80;
+        $score = QuizScoringService::calculateScore($questions, $request->answers);
+        $passed = QuizScoringService::isPassed($score, $totalQuestions);
 
         // Record Attempt
         $attempt = QuizAttempt::create([
             'user_id' => Auth::id(),
             'level_id' => $level->id,
             'score' => $score,
-            'passed' => $passed
+            'passed' => $passed,
         ]);
 
         // If passed, unlock or complete
         if ($passed) {
-             UserProgress::updateOrCreate(
+            UserProgress::updateOrCreate(
                 ['user_id' => Auth::id(), 'category_id' => $category->id, 'level_id' => $level->id],
                 ['status' => 'completed']
             );
@@ -80,7 +70,7 @@ class QuizController extends Controller
             // Unlock next level logic for this specific category
             $nextLevel = Level::where('id', '>', $level->id)->orderBy('id', 'asc')->first();
             if ($nextLevel) {
-                 UserProgress::firstOrCreate(
+                UserProgress::firstOrCreate(
                     ['user_id' => Auth::id(), 'category_id' => $category->id, 'level_id' => $nextLevel->id],
                     ['status' => 'active']
                 );

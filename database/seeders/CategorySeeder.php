@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Category;
 use App\Models\Question;
+use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
 {
@@ -27,25 +27,25 @@ class CategorySeeder extends Seeder
             unset($catData['file']);
 
             $catData['order'] = $index + 1;
-            $catData['description'] = $catData['name'] . ' বিষয়ক প্রশ্ন ও উত্তর।';
+            $catData['description'] = $catData['name'].' বিষয়ক প্রশ্ন ও উত্তর।';
 
             $category = Category::create($catData);
 
             // Load questions from separate file
-            $questions = require __DIR__ . '/questions/' . $questionFile;
+            $questions = require __DIR__.'/questions/'.$questionFile;
 
             foreach ($questions as $qData) {
                 $options = [$qData[2], $qData[3], $qData[4]];
                 shuffle($options);
 
                 Question::create([
-                    'category_id'  => $category->id,
-                    'level_id'     => $qData[0],
-                    'question_text'=> $qData[1],
-                    'option_1'     => $options[0],
-                    'option_2'     => $options[1],
-                    'option_3'     => $options[2],
-                    'answer_text'  => $qData[5],
+                    'category_id' => $category->id,
+                    'level_id' => $qData[0],
+                    'question_text' => $qData[1],
+                    'option_1' => $options[0],
+                    'option_2' => $options[1],
+                    'option_3' => $options[2],
+                    'answer_text' => $qData[5],
                 ]);
             }
         }

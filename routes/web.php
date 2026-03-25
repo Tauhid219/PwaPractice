@@ -1,15 +1,14 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ChapterController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\FrontendController;
-use App\Http\Controllers\Frontend\QuizController;
 use App\Http\Controllers\Frontend\LiveExamController;
+use App\Http\Controllers\Frontend\QuizController;
+use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
 
 // Frontend Routes
 Route::get('/', [FrontendController::class, 'index'])->name('home');

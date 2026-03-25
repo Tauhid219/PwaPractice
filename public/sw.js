@@ -1,4 +1,4 @@
-const CACHE_NAME = "genius-kids-pwa-v8";
+const CACHE_NAME = "genius-kids-pwa-v9";
 const urlsToCache = [
     "/offline",
     "/manifest.json",
@@ -93,10 +93,20 @@ self.addEventListener("fetch", (event) => {
             })
         );
     } else {
-        // Network-only for everything else (API calls, etc.)
+        // Stale-While-Revalidate strategy for API calls and other resources
         event.respondWith(
-            fetch(event.request).catch(() => {
-                return new Response('', { status: 408 });
+            caches.open(CACHE_NAME).then((cache) => {
+                return cache.match(event.request).then((cachedResponse) => {
+                    const fetchPromise = fetch(event.request).then((networkResponse) => {
+                        // Only cache successful and valid responses
+                        if (networkResponse && networkResponse.status === 200) {
+                            cache.put(event.request, networkResponse.clone());
+                        }
+                        return networkResponse;
+                    }).catch(() => null);
+
+                    return cachedResponse || fetchPromise.then(res => res || new Response('', { status: 408 }));
+                });
             })
         );
     }

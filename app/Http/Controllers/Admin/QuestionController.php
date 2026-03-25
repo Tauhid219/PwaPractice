@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Question;
+use App\Http\Requests\ImportQuestionRequest;
+use App\Http\Requests\StoreQuestionRequest;
+use App\Http\Requests\UpdateQuestionRequest;
+use App\Imports\QuestionImport;
 use App\Models\Category;
+use App\Models\Question;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\QuestionImport;
 
 class QuestionController extends Controller
 {
@@ -17,14 +20,15 @@ class QuestionController extends Controller
     public function index(Request $request)
     {
         $categories = Category::orderBy('order')->get();
-        
+
         $query = Question::with('category')->orderBy('category_id')->orderBy('id', 'desc');
-        
+
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
 
-        $questions = $query->paginate(50);
+        $questions = $query->paginate(config('quiz.pagination.admin_questions', 50));
+
         return view('admin.questions.index', compact('questions', 'categories'));
     }
 
@@ -32,22 +36,13 @@ class QuestionController extends Controller
     {
         $categories = Category::orderBy('order')->get();
         $levels = \App\Models\Level::all();
+
         return view('admin.questions.create', compact('categories', 'levels'));
     }
 
-    public function store(Request $request)
+    public function store(StoreQuestionRequest $request)
     {
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'level_id' => 'required|exists:levels,id',
-            'question_text' => 'required|string',
-            'option_1' => 'required|string',
-            'option_2' => 'required|string',
-            'option_3' => 'required|string',
-            'answer_text' => 'required|string',
-        ]);
-
-        Question::create($request->all());
+        Question::create($request->validated());
 
         return redirect()->route('admin.questions.index')->with('success', 'Question created successfully.');
     }
@@ -61,22 +56,13 @@ class QuestionController extends Controller
     {
         $categories = Category::orderBy('order')->get();
         $levels = \App\Models\Level::all();
+
         return view('admin.questions.edit', compact('question', 'categories', 'levels'));
     }
 
-    public function update(Request $request, Question $question)
+    public function update(UpdateQuestionRequest $request, Question $question)
     {
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'level_id' => 'required|exists:levels,id',
-            'question_text' => 'required|string',
-            'option_1' => 'required|string',
-            'option_2' => 'required|string',
-            'option_3' => 'required|string',
-            'answer_text' => 'required|string',
-        ]);
-
-        $question->update($request->all());
+        $question->update($request->validated());
 
         return redirect()->route('admin.questions.index')->with('success', 'Question updated successfully.');
     }
@@ -84,21 +70,19 @@ class QuestionController extends Controller
     public function destroy(Question $question)
     {
         $question->delete();
+
         return redirect()->route('admin.questions.index')->with('success', 'Question deleted successfully.');
     }
 
-    public function import(Request $request)
+    public function import(ImportQuestionRequest $request)
     {
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'file' => 'required|mimes:xlsx,csv,xls|max:2048',
-        ]);
 
         try {
-            Excel::import(new QuestionImport($request->category_id), $request->file('file'));
-            return redirect()->route('admin.questions.index')->with('success', 'Questions imported successfully.');
+            Excel::queueImport(new QuestionImport($request->category_id), $request->file('file'));
+
+            return redirect()->route('admin.questions.index')->with('success', 'Questions import started in the background.');
         } catch (\Exception $e) {
-            return redirect()->route('admin.questions.index')->with('error', 'Error importing file: ' . $e->getMessage());
+            return redirect()->route('admin.questions.index')->with('error', 'Error importing file: '.$e->getMessage());
         }
     }
 }

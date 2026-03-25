@@ -106,15 +106,15 @@ quiz_attempts → user_id, level_id, score, passed
 > **লক্ষ্য:** ৯৮০+ প্রশ্ন এবং উচ্চ ইউজার প্রেশার হ্যান্ডেল করার জন্য সিস্টেম অপ্টিমাইজ করা এবং কোডবেস রিফ্যাক্টর করা
 
 **কাজ:**
-- [ ] **Architecture Refactoring:** Form Request Classes ইমপ্লিমেন্ট করা (Validation আলাদা করা)
-- [ ] **Logic Centralization:** উত্তর ক্লিন বা নরমালাইজ করার লজিক এক জায়গায় নিয়ে আসা (DRY Principle)
-- [ ] **Security:** কন্ট্রোলারে `$request->all()` এর বদলে `$request->validated()` ব্যবহার করা
-- [ ] **Configuration:** হার্ডকোডেড ভ্যালুগুলো সরিয়ে `config/quiz.php` ফাইলে নিয়ে যাওয়া
-- [ ] **PSR-12 Standard:** কোড ক্লিনআপ, Alphabetical Imports এবং প্রপার ইন্ডেন্টেশন নিশ্চিত করা
-- [ ] **Database Indexing:** `questions`, `user_progress` এবং `quiz_attempts` টেবিলে ইনডেক্সিং যোগ করা
-- [ ] **Caching:** গুরুত্বপূর্ণ কোয়েরিগুলো (Categories, Questions) লারাভেল ক্যাশে রাখা
-- [ ] **PWA Update:** API রেসপন্স ক্যাশ করার জন্য "Stale-While-Revalidate" স্ট্র্যাটেজি যোগ করা
-- [ ] **Queues:** লাইভ এক্সাম স্কোর প্রসেসিং এবং বড় এক্সেল ইমপোর্ট ব্যাকগ্রাউন্ড জবে (Jobs) নিয়ে যাওয়া
+- [x] **Architecture Refactoring:** Form Request Classes ইমপ্লিমেন্ট করা (Validation আলাদা করা)
+- [x] **Logic Centralization:** উত্তর ক্লিন বা নরমালাইজ করার লজিক এক জায়গায় নিয়ে আসা (DRY Principle)
+- [x] **Security:** কন্ট্রোলারে `$request->all()` এর বদলে `$request->validated()` ব্যবহার করা
+- [x] **Configuration:** হার্ডকোডেড ভ্যালুগুলো সরিয়ে `config/quiz.php` ফাইলে নিয়ে যাওয়া
+- [x] **PSR-12 Standard:** কোড ক্লিনআপ, Alphabetical Imports এবং প্রপার ইন্ডেন্টেশন নিশ্চিত করা
+- [x] **Database Indexing:** `questions`, `user_progress` এবং `quiz_attempts` টেবিলে ইনডেক্সিং যোগ করা
+- [x] **Caching:** গুরুত্বপূর্ণ কোয়েরিগুলো (Categories, Questions) লারাভেল ক্যাশে রাখা
+- [x] **PWA Update:** API রেসপন্স ক্যাশ করার জন্য "Stale-While-Revalidate" স্ট্র্যাটেজি যোগ করা
+- [x] **Queues:** লাইভ এক্সাম স্কোর প্রসেসিং এবং বড় এক্সেল ইমপোর্ট ব্যাকগ্রাউন্ড জবে (Jobs) নিয়ে যাওয়া
 
 ---
 ### ধাপ ৭: PWA Configuration & Final Deployment

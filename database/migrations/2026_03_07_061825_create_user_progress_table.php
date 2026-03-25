@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('level_id')->constrained()->cascadeOnDelete();
             $table->enum('status', ['locked', 'active', 'completed'])->default('locked');
             $table->timestamps();
-            
+
             $table->unique(['user_id', 'level_id']);
         });
     }

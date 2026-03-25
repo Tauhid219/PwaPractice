@@ -1,4 +1,5 @@
 <?php
+
 // Category: বিজ্ঞান, প্রযুক্তি ও ভূগোল
 // Level 1: 30 | Level 2: 30 | Level 3: 40
 return [

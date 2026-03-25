@@ -12,7 +12,7 @@ class CheckLevelAccess
     {
         $level = $request->route('level');
 
-        if (!$level) {
+        if (! $level) {
             return $next($request);
         }
 
@@ -21,7 +21,7 @@ class CheckLevelAccess
         }
 
         // Make sure user is logged in
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('login');
         }
 
@@ -33,16 +33,16 @@ class CheckLevelAccess
         // Check user progress for paid or higher levels
         $category = $request->route('category');
         $categoryId = $category instanceof \App\Models\Category ? $category->id : null;
-        
-        if (!$categoryId) {
+
+        if (! $categoryId) {
             // Try to find category from slug or level questions
             $slug = $request->route('slug') ?? $request->route('category');
             if ($slug && is_string($slug)) {
                 $categoryObj = \App\Models\Category::where('slug', $slug)->first();
                 $categoryId = $categoryObj ? $categoryObj->id : null;
             }
-            
-            if (!$categoryId && $level->questions()->first()) {
+
+            if (! $categoryId && $level->questions()->first()) {
                 $categoryId = $level->questions()->first()->category_id;
             }
         }
@@ -53,10 +53,11 @@ class CheckLevelAccess
             ->first();
 
         // If no progress exists, or status is expressly locked, redirect
-        if (!$progress || $progress->status === 'locked') {
+        if (! $progress || $progress->status === 'locked') {
             $categorySlug = $request->route('category') ?? ($level->questions()->first() ? $level->questions()->first()->category->slug : 'all');
+
             return redirect()->route('category.levels', $categorySlug)
-                             ->with('error', 'এই লেভেলটি এখনও আনলক হয়নি। দয়া করে আগের লেভেলটি পাশ করুন।');
+                ->with('error', 'এই লেভেলটি এখনও আনলক হয়নি। দয়া করে আগের লেভেলটি পাশ করুন।');
         }
 
         return $next($request);

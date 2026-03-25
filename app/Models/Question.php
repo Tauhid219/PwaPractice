@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Question extends Model
 {
@@ -11,6 +12,12 @@ class Question extends Model
     use HasFactory;
 
     protected $fillable = ['category_id', 'level_id', 'question_text', 'option_1', 'option_2', 'option_3', 'answer_text'];
+
+    protected static function booted()
+    {
+        static::saved(fn () => Cache::flush());
+        static::deleted(fn () => Cache::flush());
+    }
 
     public function category()
     {

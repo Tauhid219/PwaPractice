@@ -16,12 +16,13 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
-        $name = 'Category ' . \Illuminate\Support\Str::random(5);
+        $name = 'Category '.\Illuminate\Support\Str::random(5);
+
         return [
             'name' => $name,
             'slug' => \Illuminate\Support\Str::slug($name),
             'icon' => 'fa-book',
-            'description' => 'Description for ' . $name,
+            'description' => 'Description for '.$name,
             'order' => rand(1, 10),
         ];
     }
