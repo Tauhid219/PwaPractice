@@ -25,6 +25,19 @@
                     
                     <form action="{{ route('quiz.submit', ['slug' => $category->slug, 'level' => $level->id]) }}" method="POST" id="quizForm">
                         @csrf
+                        
+                        <!-- Progress Bar Start -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-primary fw-bold" id="progressText">প্রশ্ন ১ / {{ count($questions) }}</span>
+                                <span class="text-muted" id="percentageText">০% সম্পন্ন</span>
+                            </div>
+                            <div class="progress" style="height: 10px; border-radius: 5px;">
+                                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <!-- Progress Bar End -->
+
                         @foreach($questions as $index => $question)
                             <div class="mb-4 question-container" id="q_{{ $index }}" data-correct="{{ trim($question->answer_text) }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
                                 <h4><span class="text-primary">প্রশ্ন {{ $index + 1 }}:</span> {{ $question->question_text }}</h4>
@@ -51,12 +64,8 @@
                                 </div>
 
                                 <div class="mt-4 text-end">
-                                    @if($index > 0)
-                                        <button type="button" class="btn btn-secondary px-4 py-2 me-2 prev-btn" data-index="{{ $index }}">আগের প্রশ্ন</button>
-                                    @endif
-                                    
                                     @if($index < count($questions) - 1)
-                                        <button type="button" class="btn btn-primary px-4 py-2 next-btn" data-index="{{ $index }}">পরের প্রশ্ন</button>
+                                        <button type="button" class="btn btn-primary px-4 py-2 next-btn" data-index="{{ $index }}">পরের প্রশ্ন <i class="fa fa-arrow-right ms-2"></i></button>
                                     @else
                                         <button type="submit" class="btn btn-success px-5 py-2">সাবমিট কুইজ <i class="fa fa-paper-plane ms-2"></i></button>
                                     @endif
@@ -106,22 +115,29 @@
 
                 // Small delay to let the sound start before switching question
                 setTimeout(() => {
+                    const nextIndex = currentIndex + 1;
                     document.getElementById('q_' + currentIndex).style.display = 'none';
-                    document.getElementById('q_' + (currentIndex + 1)).style.display = 'block';
+                    document.getElementById('q_' + nextIndex).style.display = 'block';
+                    
+                    // Update Progress Bar
+                    updateProgressBar(nextIndex);
                 }, 300);
             });
         });
 
-        prevBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const currentIndex = parseInt(this.getAttribute('data-index'));
-                document.getElementById('q_' + currentIndex).style.display = 'none';
-                document.getElementById('q_' + (currentIndex - 1)).style.display = 'block';
-                
-                popAudio.volume = 0.5;
-                popAudio.play().catch(e => {});
-            });
-        });
+        function updateProgressBar(index) {
+            const total = {{ count($questions) }};
+            const current = index + 1;
+            const percentage = Math.round((index / total) * 100);
+            
+            document.getElementById('progressText').innerText = `প্রশ্ন ${current} / ${total}`;
+            document.getElementById('percentageText').innerText = `${percentage}% সম্পন্ন`;
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressBar').setAttribute('aria-valuenow', percentage);
+        }
+
+        // Initialize progress bar
+        updateProgressBar(0);
 
         // Handle Submit sound for the last question
         quizForm.addEventListener('submit', function(e) {

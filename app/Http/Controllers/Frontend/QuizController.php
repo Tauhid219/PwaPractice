@@ -55,8 +55,10 @@ class QuizController extends Controller
         // Record Attempt
         $attempt = QuizAttempt::create([
             'user_id' => Auth::id(),
+            'category_id' => $category->id,
             'level_id' => $level->id,
             'score' => $score,
+            'total_questions' => $totalQuestions,
             'passed' => $passed,
         ]);
 
@@ -91,8 +93,8 @@ class QuizController extends Controller
         }
 
         $level = $attempt->level;
-        $category = $level->questions()->first()->category ?? null; // Assuming all level questions belong to same category
-        $totalQuestions = $level->questions()->count();
+        $category = $attempt->category;
+        $totalQuestions = $level->questions()->where('category_id', $category->id)->count();
 
         return view('frontend.quiz.result', compact('attempt', 'level', 'totalQuestions', 'category'));
     }

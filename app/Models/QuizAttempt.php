@@ -6,11 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class QuizAttempt extends Model
 {
-    protected $fillable = ['user_id', 'level_id', 'score', 'passed'];
+    protected $fillable = ['user_id', 'category_id', 'level_id', 'score', 'total_questions', 'passed'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
     public function level()

@@ -50,6 +50,7 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Level</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -61,11 +62,17 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {{ $attempt->created_at->format('M d, Y h:i A') }}
                                         </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $attempt->category->name ?? 'N/A' }}
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             {{ $attempt->level->name ?? 'Unknown Level' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ $attempt->score }}%
+                                            {{ $attempt->score }} / {{ $attempt->total_questions }}
+                                            @if($attempt->total_questions > 0)
+                                                ({{ number_format(($attempt->score / $attempt->total_questions) * 100, 1) }}%)
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             @if($attempt->passed)
@@ -77,7 +84,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+                                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
                                             No quiz attempts found for this user.
                                         </td>
                                     </tr>

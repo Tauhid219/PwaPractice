@@ -1,6 +1,6 @@
 # 🧒 জিনিয়াস কিডস কুইজ গাইডবুক অ্যাপ — রোডম্যাপ
 
-> **সর্বশেষ আপডেট:** ১২ মার্চ ২০২৬
+> **সর্বশেষ আপডেট:** ২৮ মার্চ ২০২৬
 
 ## প্রজেক্ট তথ্য
 
@@ -30,7 +30,7 @@
 
 ---
 
-## 🗺️ রোডম্যাপ — ৮ টি ধাপ
+## 🗺️ রোডম্যাপ — ৯ টি ধাপ
 
 ### ধাপ ১: Database + Models (Updated)
 > **লক্ষ্য:** বেসিক এবং অ্যাডভান্সড ফাংশনালিটির জন্য ডেটাবেস প্রস্তুত করা
@@ -117,7 +117,20 @@ quiz_attempts → user_id, level_id, score, passed
 - [x] **Queues:** লাইভ এক্সাম স্কোর প্রসেসিং এবং বড় এক্সেল ইমপোর্ট ব্যাকগ্রাউন্ড জবে (Jobs) নিয়ে যাওয়া
 
 ---
-### ধাপ ৭: PWA Configuration & Final Deployment
+
+### ধাপ ৭: Comprehensive Testing (Manual & Automated)
+> **লক্ষ্য:** প্রজেক্টের প্রতিটি ফিচার এবং লজিক নিখুঁতভাবে পরীক্ষা করা
+
+**কাজ:**
+- [x] **Manual Testing:** ইউজার স্টোরি ধরে রেজিস্ট্রেশন থেকে কুইজ পাস পর্যন্ত পরীক্ষা করা
+- [x] **Automated Feature Tests:** অথেন্টিকেশন এবং লেভেল অ্যাক্সেস কন্ট্রোল টেস্ট করা
+- [x] **Automated Unit Tests:** কুইজ স্কোরিং এবং ক্যালকুলেশন লজিক টেস্ট করা
+- [ ] **Performance Testing:** ক্যাশিং এবং ডেটাবেস ইনডেক্সিং এর কার্যকারিতা যাচাই করা
+- [ ] **PWA Testing:** অফলাইন মুড এবং সার্ভিস ওয়ার্কার অডিট (Lighthouse) করা
+
+---
+
+### ধাপ ৮: PWA Configuration & Final Deployment
 > **লক্ষ্য:** অ্যাপ ডাউনলোড ও অফলাইন অ্যাক্সেস
 
 **কাজ:**
@@ -128,7 +141,7 @@ quiz_attempts → user_id, level_id, score, passed
 
 ---
 
-### ধাপ ৮: Monetization & Download Setup
+### ধাপ ৯: Monetization & Download Setup
 > **লক্ষ্য:** অ্যাপ ডাউনলোড বা ফুল অ্যাক্সেসের জন্য পেমেন্ট গেটওয়ে যুক্ত করা
 
 **কাজ:**
@@ -148,8 +161,9 @@ graph TD
     C --> D["ধাপ ৪<br>Level-Based Learning"]
     D --> E["ধাপ ৫<br>Quiz & Live Exam"]
     E --> F["ধাপ ৬<br>Scaling & Optimization"]
-    F --> G["ধাপ ৭<br>Final PWA Setup"]
-    G --> H["ধাপ ৮<br>Monetization (Payment)"]
+    F --> G["ধাপ ৭<br>Testing Phase"]
+    G --> H["ধাপ ৮<br>Final PWA Setup"]
+    H --> I["ধাপ ৯<br>Monetization (Payment)"]
 ```
 
 > [!IMPORTANT]  

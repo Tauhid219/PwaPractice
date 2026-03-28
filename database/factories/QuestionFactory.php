@@ -18,9 +18,13 @@ class QuestionFactory extends Factory
     public function definition(): array
     {
         return [
-            'chapter_id' => Chapter::factory(),
+            'category_id' => \App\Models\Category::factory(),
+            'level_id' => \App\Models\Level::factory(),
             'question_text' => 'নমুনা প্রশ্ন '.rand(100, 999).'?',
-            'answer_text' => 'Sample Answer '.\Illuminate\Support\Str::random(5),
+            'option_1' => 'ক',
+            'option_2' => 'খ',
+            'option_3' => 'গ',
+            'answer_text' => 'ক',
         ];
     }
 }
