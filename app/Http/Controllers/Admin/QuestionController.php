@@ -27,9 +27,10 @@ class QuestionController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
+        $totalQuestions = $query->count();
         $questions = $query->paginate(config('quiz.pagination.admin_questions', 50));
 
-        return view('admin.questions.index', compact('questions', 'categories'));
+        return view('admin.questions.index', compact('questions', 'categories', 'totalQuestions'));
     }
 
     public function create()
@@ -44,7 +45,7 @@ class QuestionController extends Controller
     {
         Question::create($request->validated());
 
-        return redirect()->route('admin.questions.index')->with('success', 'Question created successfully.');
+        return redirect()->route('admin.questions.index', ['category_id' => $request->category_id])->with('success', 'Question created successfully.');
     }
 
     public function show(string $id)
@@ -64,24 +65,26 @@ class QuestionController extends Controller
     {
         $question->update($request->validated());
 
-        return redirect()->route('admin.questions.index')->with('success', 'Question updated successfully.');
+        return redirect()->route('admin.questions.index', ['category_id' => $question->category_id])->with('success', 'Question updated successfully.');
     }
 
     public function destroy(Question $question)
     {
         $question->delete();
 
-        return redirect()->route('admin.questions.index')->with('success', 'Question deleted successfully.');
+        return redirect()->route('admin.questions.index', ['category_id' => $question->category_id])->with('success', 'Question deleted successfully.');
     }
 
     public function import(ImportQuestionRequest $request)
     {
 
         try {
-            Excel::queueImport(new QuestionImport($request->category_id), $request->file('file'));
+            Excel::import(new QuestionImport($request->category_id), $request->file('file'));
 
-            return redirect()->route('admin.questions.index')->with('success', 'Questions import started in the background.');
+            return redirect()->route('admin.questions.index', ['category_id' => $request->category_id])->with('success', 'Questions imported successfully.');
         } catch (\Exception $e) {
+            \Log::error('Import error: ' . $e->getMessage());
+            \Log::error($e->getTraceAsString());
             return redirect()->route('admin.questions.index')->with('error', 'Error importing file: '.$e->getMessage());
         }
     }

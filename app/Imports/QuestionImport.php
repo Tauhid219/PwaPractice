@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class QuestionImport implements ToModel, WithHeadingRow, WithChunkReading, ShouldQueue
+class QuestionImport implements ToModel, WithHeadingRow
 {
     private $categoryId;
 
@@ -22,18 +22,26 @@ class QuestionImport implements ToModel, WithHeadingRow, WithChunkReading, Shoul
      */
     public function model(array $row)
     {
-        if (! isset($row['question_text']) || ! isset($row['answer_text'])) {
+        // Debugging: If questions are missing, we might want to see what's in $row
+        // \Log::info($row); 
+
+        // CSV files sometimes have weird encoding in headers, 
+        // using array_values if row keys are not matching the headers
+        $questionText = $row['question_text'] ?? null;
+        $answerText = $row['answer_text'] ?? null;
+
+        if (!$questionText || !$answerText) {
             return null; // Skip invalid rows
         }
 
         return new Question([
             'category_id' => $this->categoryId,
-            'level_id' => $row['level_id'] ?? 1, // Default to level 1 if not provided
-            'question_text' => $row['question_text'],
+            'level_id' => $row['level_id'] ?? 1, 
+            'question_text' => $questionText,
             'option_1' => $row['option_1'] ?? '',
             'option_2' => $row['option_2'] ?? '',
             'option_3' => $row['option_3'] ?? '',
-            'answer_text' => $row['answer_text'],
+            'answer_text' => $answerText,
         ]);
     }
 

@@ -6,7 +6,7 @@
             </h2>
             <div class="flex space-x-2">
                 <button onclick="document.getElementById('importModal').classList.remove('hidden')" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Bulk Import (Excel/CSV)
+                    Bulk Import (Excel)
                 </button>
                 <a href="{{ route('admin.questions.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Add Single Question
@@ -49,7 +49,7 @@
                                     </select>
                                 </div>
                                 <div class="mb-4 text-left">
-                                    <label class="block text-gray-700 text-sm font-bold mb-2">Excel/CSV File</label>
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Excel File</label>
                                     <input type="file" name="file" accept=".xlsx, .xls, .csv" required class="w-full">
                                     <p class="text-xs text-gray-500 mt-1">Columns required: question_text, answer_text</p>
                                 </div>
@@ -71,7 +71,7 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4 p-4">
                 <form method="GET" action="{{ route('admin.questions.index') }}" class="flex items-end space-x-4">
-                    <div class="flex-1 max-w-sm">
+                    <div class="max-w-sm">
                         <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">Filter by Category</label>
                         <select name="category_id" id="category_id" class="shadow-sm border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm rounded-md" onchange="this.form.submit()">
                             <option value="">All Categories</option>
@@ -89,6 +89,11 @@
                             </a>
                         </div>
                     @endif
+                    <div class="pb-1">
+                        <span class="bg-indigo-100 text-indigo-800 text-sm font-medium px-4 py-2 rounded-full border border-indigo-400">
+                            Total: {{ $totalQuestions }} Questions
+                        </span>
+                    </div>
                 </form>
             </div>
 
@@ -97,6 +102,7 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SL</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Question</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Answer</th>
@@ -106,6 +112,9 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($questions as $question)
                                 <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                                        {{ $loop->iteration + ($questions->currentPage() - 1) * $questions->perPage() }}
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {{ $question->category->name ?? 'N/A' }}
                                     </td>
