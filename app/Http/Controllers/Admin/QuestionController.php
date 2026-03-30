@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Level;
 
 class QuestionController extends Controller
 {
@@ -36,7 +37,7 @@ class QuestionController extends Controller
     public function create()
     {
         $categories = Category::orderBy('order')->get();
-        $levels = \App\Models\Level::all();
+        $levels = Level::all();
 
         return view('admin.questions.create', compact('categories', 'levels'));
     }
@@ -56,7 +57,7 @@ class QuestionController extends Controller
     public function edit(Question $question)
     {
         $categories = Category::orderBy('order')->get();
-        $levels = \App\Models\Level::all();
+        $levels = Level::all();
 
         return view('admin.questions.edit', compact('question', 'categories', 'levels'));
     }

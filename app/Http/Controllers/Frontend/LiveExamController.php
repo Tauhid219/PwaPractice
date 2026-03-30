@@ -8,6 +8,7 @@ use App\Models\LiveExam;
 use App\Models\LiveExamAttempt;
 use App\Services\QuizScoringService;
 use Illuminate\Support\Facades\Auth;
+use App\Jobs\ProcessLiveExamScore;
 
 class LiveExamController extends Controller
 {
@@ -52,7 +53,7 @@ class LiveExamController extends Controller
 
     public function submit(SubmitLiveExamRequest $request, LiveExam $exam)
     {
-        \App\Jobs\ProcessLiveExamScore::dispatch($exam, Auth::id(), $request->answers);
+        ProcessLiveExamScore::dispatch($exam, Auth::id(), $request->answers);
 
         return redirect()->route('live-exams.index')->with('success', 'আপনার খাতা জমা নেওয়া হয়েছে! কিছুক্ষণের মধ্যে ফলাফল প্রকাশ করা হবে।');
     }

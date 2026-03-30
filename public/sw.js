@@ -1,4 +1,4 @@
-const CACHE_NAME = "genius-kids-pwa-v9";
+const CACHE_NAME = "genius-kids-pwa-v10";
 const urlsToCache = [
     "/offline",
     "/manifest.json",

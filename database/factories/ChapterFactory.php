@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Chapter>
@@ -17,12 +18,12 @@ class ChapterFactory extends Factory
      */
     public function definition(): array
     {
-        $name = 'Chapter '.\Illuminate\Support\Str::random(5);
+        $name = 'Chapter '.Str::random(5);
 
         return [
             'category_id' => Category::factory(),
             'name' => 'অধ্যায় '.rand(1, 10),
-            'slug' => \Illuminate\Support\Str::slug($name),
+            'slug' => Str::slug($name),
             'order' => rand(1, 20),
         ];
     }

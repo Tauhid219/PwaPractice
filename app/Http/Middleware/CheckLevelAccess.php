@@ -5,6 +5,9 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\Level;
+use App\Models\Category;
+use App\Models\UserProgress;
 
 class CheckLevelAccess
 {
@@ -17,7 +20,7 @@ class CheckLevelAccess
         }
 
         if (is_string($level)) {
-            $level = \App\Models\Level::find($level);
+            $level = Level::find($level);
         }
 
         // Make sure user is logged in
@@ -32,13 +35,13 @@ class CheckLevelAccess
 
         // Check user progress for paid or higher levels
         $category = $request->route('category');
-        $categoryId = $category instanceof \App\Models\Category ? $category->id : null;
+        $categoryId = $category instanceof Category ? $category->id : null;
 
         if (! $categoryId) {
             // Try to find category from slug or level questions
             $slug = $request->route('slug') ?? $request->route('category');
             if ($slug && is_string($slug)) {
-                $categoryObj = \App\Models\Category::where('slug', $slug)->first();
+                $categoryObj = Category::where('slug', $slug)->first();
                 $categoryId = $categoryObj ? $categoryObj->id : null;
             }
 
@@ -47,7 +50,7 @@ class CheckLevelAccess
             }
         }
 
-        $progress = \App\Models\UserProgress::where('user_id', auth()->id())
+        $progress = UserProgress::where('user_id', auth()->id())
             ->where('category_id', $categoryId)
             ->where('level_id', $level->id)
             ->first();

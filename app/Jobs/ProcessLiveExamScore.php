@@ -4,10 +4,16 @@ namespace App\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use App\Models\LiveExamAttempt;
+use App\Services\QuizScoringService;
+use App\Models\LiveExam;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class ProcessLiveExamScore implements ShouldQueue
 {
-    use \Illuminate\Foundation\Bus\Dispatchable, \Illuminate\Queue\InteractsWithQueue, \Illuminate\Foundation\Queue\Queueable, \Illuminate\Queue\SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $exam;
     protected $userId;
@@ -16,7 +22,7 @@ class ProcessLiveExamScore implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(\App\Models\LiveExam $exam, int $userId, array $answers)
+    public function __construct(LiveExam $exam, int $userId, array $answers)
     {
         $this->exam = $exam;
         $this->userId = $userId;
@@ -29,10 +35,10 @@ class ProcessLiveExamScore implements ShouldQueue
     public function handle(): void
     {
         $totalQuestions = $this->exam->questions->count();
-        $score = \App\Services\QuizScoringService::calculateScore($this->exam->questions, $this->answers);
-        $passed = \App\Services\QuizScoringService::isPassed($score, $totalQuestions);
+        $score = QuizScoringService::calculateScore($this->exam->questions, $this->answers);
+        $passed = QuizScoringService::isPassed($score, $totalQuestions);
 
-        \App\Models\LiveExamAttempt::create([
+        LiveExamAttempt::create([
             'user_id' => $this->userId,
             'live_exam_id' => $this->exam->id,
             'score' => $score,

@@ -4,6 +4,8 @@ namespace Database\Factories;
 
 use App\Models\Chapter;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Category;
+use App\Models\Level;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Question>
@@ -18,8 +20,8 @@ class QuestionFactory extends Factory
     public function definition(): array
     {
         return [
-            'category_id' => \App\Models\Category::factory(),
-            'level_id' => \App\Models\Level::factory(),
+            'category_id' => Category::factory(),
+            'level_id' => Level::factory(),
             'question_text' => 'নমুনা প্রশ্ন '.rand(100, 999).'?',
             'option_1' => 'ক',
             'option_2' => 'খ',

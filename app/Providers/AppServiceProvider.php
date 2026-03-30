@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use App\Models\Category;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,8 +21,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
-        \Illuminate\Support\Facades\View::composer('frontend.*', function ($view) {
-            $view->with('globalCategories', \App\Models\Category::orderBy('order')->get());
+        View::composer('frontend.*', function ($view) {
+            $view->with('globalCategories', Category::orderBy('order')->get());
         });
     }
 }
