@@ -55,15 +55,47 @@
                     @endphp
 
                     @if($hasAttempted)
-                        <div class="alert alert-warning text-dark border-0">
-                            <strong>আপনি ইতিমধ্যে পরীক্ষায় অংশ নিয়েছেন।</strong>
+                        <div class="alert alert-warning text-dark border-0 shadow-sm rounded-3">
+                            <strong><i class="fa fa-exclamation-triangle me-2"></i> আপনি ইতিমধ্যে এই পরীক্ষায় অংশ নিয়েছেন।</strong>
                         </div>
                     @elseif($now->isBefore($exam->start_time))
-                         <button class="btn btn-light text-primary w-100 py-3 fw-bold disabled">পরীক্ষা শুরু হয়নি</button>
+                         <div class="bg-white text-primary p-3 rounded-3 shadow-sm border border-primary">
+                             <div class="small fw-bold mb-1">পরীক্ষা শুরু হতে বাকি:</div>
+                             <div id="exam-countdown" class="fs-3 fw-bold lh-1">--:--:--</div>
+                         </div>
+                         <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const startTime = new Date('{{ $exam->start_time->format("Y-m-d\TH:i:s") }}').getTime();
+                                const countdownDisplay = document.getElementById('exam-countdown');
+                                
+                                const x = setInterval(function() {
+                                    const now = new Date().getTime();
+                                    const distance = startTime - now;
+                                    
+                                    if (distance < 0) {
+                                        clearInterval(x);
+                                        countdownDisplay.textContent = "00:00:00";
+                                        setTimeout(() => window.location.reload(), 2000);
+                                        return;
+                                    }
+                                    
+                                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                    
+                                    let displayText = "";
+                                    if(days > 0) displayText += days + "d ";
+                                    displayText += (hours < 10 ? "0"+hours : hours) + ":" + (minutes < 10 ? "0"+minutes : minutes) + ":" + (seconds < 10 ? "0"+seconds : seconds);
+                                    
+                                    countdownDisplay.textContent = displayText;
+                                }, 1000);
+                            });
+                         </script>
                     @elseif($now->isAfter($exam->end_time))
-                         <button class="btn btn-danger w-100 py-3 fw-bold disabled">সময় শেষ</button>
+                         <button class="btn btn-danger w-100 py-3 fw-bold disabled shadow-sm rounded-3"><i class="fa fa-times-circle me-2"></i> সময় শেষ</button>
                     @else
-                        <a href="{{ route('live-exams.join', $exam->id) }}" class="btn btn-warning text-dark w-100 py-3 fw-bold shadow">
+                        <a href="{{ route('live-exams.join', $exam->id) }}" class="btn btn-warning text-dark w-100 py-3 fw-bold shadow-lg pulse-animation rounded-3 fs-5">
                             পরীক্ষা শুরু করুন <i class="fa fa-play ms-2"></i>
                         </a>
                     @endif

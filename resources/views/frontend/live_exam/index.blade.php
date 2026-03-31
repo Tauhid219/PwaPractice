@@ -36,7 +36,7 @@
                     <div class="bg-light rounded p-4 h-100 d-flex flex-column text-center shadow-sm">
                         <i class="fa fa-laptop-code text-primary display-4 mb-3"></i>
                         <h4 class="mb-3">{{ $exam->title }}</h4>
-                        <p class="text-muted">{{ Str::limit($exam->description, 80) }}</p>
+                        <p class="text-muted">{{ Str::limit($exam->description ?? '', 80) }}</p>
                         
                         <div class="mt-auto">
                             <ul class="list-unstyled text-start mb-4">
@@ -45,10 +45,15 @@
                                 <li><i class="fa fa-hourglass-half text-primary me-2"></i> সময়: {{ $exam->duration_minutes }} মিনিট</li>
                             </ul>
                             
-                            @if(now()->isBefore($exam->start_time))
-                                <button class="btn btn-secondary w-100" disabled>শুরু হয়নি</button>
-                            @elseif(now()->isAfter($exam->end_time))
-                                <button class="btn btn-danger w-100" disabled>সময় শেষ</button>
+                            @php
+                                $hasAttempted = \App\Models\LiveExamAttempt::where('user_id', auth()->id())->where('live_exam_id', $exam->id)->exists();
+                                $now = now();
+                            @endphp
+
+                            @if($hasAttempted || $now->isAfter($exam->end_time))
+                                <a href="{{ route('live-exams.results', $exam->id) }}" class="btn btn-success w-100">ফলাফল দেখুন <i class="fa fa-trophy ms-2"></i></a>
+                            @elseif($now->isBefore($exam->start_time))
+                                <a href="{{ route('live-exams.show', $exam->id) }}" class="btn btn-secondary w-100">শুরু হয়নি (বিস্তারিত)</a>
                             @else
                                 <a href="{{ route('live-exams.show', $exam->id) }}" class="btn btn-primary w-100 pulse-animation">বিস্তারিত দেখুন</a>
                             @endif

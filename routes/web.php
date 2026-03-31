@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\LiveExamController as AdminLiveExamController;
 use App\Http\Controllers\Frontend\LiveExamController;
 use App\Http\Controllers\Frontend\QuizController;
 use App\Http\Controllers\FrontendController;
@@ -38,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/live-exams/{exam}', [LiveExamController::class, 'show'])->name('live-exams.show');
     Route::get('/live-exams/{exam}/join', [LiveExamController::class, 'join'])->name('live-exams.join');
     Route::post('/live-exams/{exam}/submit', [LiveExamController::class, 'submit'])->name('live-exams.submit');
+    Route::get('/live-exams/{exam}/results', [LiveExamController::class, 'results'])->name('live-exams.results');
 });
 
 // Admin Routes
@@ -47,6 +49,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('questions/import', [QuestionController::class, 'import'])->name('questions.import');
     Route::resource('questions', QuestionController::class);
     Route::resource('users', UserController::class)->only(['index', 'show', 'update']);
+
+    Route::resource('live-exams', AdminLiveExamController::class);
+    Route::get('live-exams/{live_exam}/questions', [AdminLiveExamController::class, 'manageQuestions'])->name('live-exams.questions.manage');
+    Route::post('live-exams/{live_exam}/questions', [AdminLiveExamController::class, 'updateQuestions'])->name('live-exams.questions.update');
+    Route::get('live-exams/{live_exam}/results', [AdminLiveExamController::class, 'results'])->name('live-exams.results');
 });
 
 require __DIR__.'/auth.php';

@@ -4,6 +4,11 @@
         <span class="d-block" style="font-size: 12px;">হোম</span>
     </a>
     
+    <a href="{{ route('live-exams.index') }}" class="text-center text-decoration-none {{ Request::routeIs('live-exams.*') ? 'text-primary' : 'text-muted' }}">
+        <i class="fa fa-clock fs-4"></i>
+        <span class="d-block" style="font-size: 12px;">লাইভ এক্সাম</span>
+    </a>
+    
     <a href="#" class="text-center text-decoration-none text-muted" data-bs-toggle="offcanvas" data-bs-target="#mobileCategoriesMenu">
         <i class="fa fa-th-large fs-4"></i>
         <span class="d-block" style="font-size: 12px;">বিষয়</span>

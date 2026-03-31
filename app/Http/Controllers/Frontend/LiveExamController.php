@@ -40,21 +40,39 @@ class LiveExamController extends Controller
             return redirect()->route('live-exams.index')->with('error', 'পরীক্ষা এখনও শুরু হয়নি।');
         }
 
-        // Check if already attempted
-        $attempt = LiveExamAttempt::where('user_id', Auth::id())->where('live_exam_id', $exam->id)->first();
-        if ($attempt) {
-            return redirect()->route('live-exams.show', $exam)->with('error', 'আপনি ইতিমধ্যে এই পরীক্ষায় অংশ নিয়েছেন।');
+        // Prevent multiple attempts: Check if already attempted
+        if (LiveExamAttempt::where('user_id', Auth::id())->where('live_exam_id', $exam->id)->exists()) {
+             return redirect()->route('live-exams.results', $exam)->with('error', 'আপনি ইতিমধ্যে এই পরীক্ষায় অংশ নিয়েছেন।');
         }
 
-        $questions = $exam->questions; // Requires relationship in LiveExam model
+        $questions = $exam->questions; 
 
         return view('frontend.live_exam.taking', compact('exam', 'questions'));
     }
 
     public function submit(SubmitLiveExamRequest $request, LiveExam $exam)
     {
-        ProcessLiveExamScore::dispatch($exam, Auth::id(), $request->answers);
+        // Double check to prevent multiple submissions
+        if (LiveExamAttempt::where('user_id', Auth::id())->where('live_exam_id', $exam->id)->exists()) {
+            return redirect()->route('live-exams.results', $exam)->with('error', 'আপনার উত্তর ইতিমধ্যে জমা দেওয়া হয়েছে।');
+        }
 
-        return redirect()->route('live-exams.index')->with('success', 'আপনার খাতা জমা নেওয়া হয়েছে! কিছুক্ষণের মধ্যে ফলাফল প্রকাশ করা হবে।');
+        ProcessLiveExamScore::dispatch($exam, Auth::id(), $request->answers ?? []);
+
+        return redirect()->route('live-exams.results', $exam)->with('success', 'আপনার খাতা জমা নেওয়া হয়েছে! কিছুক্ষণের মধ্যে ফলাফল প্রকাশ করা হবে।');
+    }
+
+    public function results(LiveExam $exam)
+    {
+        // Make sure exam is ended or user has attempted
+        $hasAttempted = LiveExamAttempt::where('user_id', Auth::id())->where('live_exam_id', $exam->id)->exists();
+        
+        if (!$hasAttempted && now()->isBefore($exam->end_time)) {
+             return redirect()->route('live-exams.show', $exam)->with('error', 'ফলাফল দেখতে আপনাকে পরীক্ষায় অংশগ্রহণ করতে হবে অথবা পরীক্ষা শেষ হওয়া পর্যন্ত অপেক্ষা করতে হবে।');
+        }
+
+        $attempts = $exam->attempts()->with('user')->orderByDesc('score')->orderBy('created_at')->paginate(50);
+
+        return view('frontend.live_exam.results', compact('exam', 'attempts', 'hasAttempted'));
     }
 }

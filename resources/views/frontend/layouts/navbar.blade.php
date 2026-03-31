@@ -8,6 +8,7 @@
     <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav mx-auto">
             <a href="{{ url('/') }}" class="nav-item nav-link {{ Request::is('/') ? 'active' : '' }}">Home</a>
+            <a href="{{ route('live-exams.index') }}" class="nav-item nav-link {{ Request::routeIs('live-exams.*') ? 'active' : '' }}">Live Exam</a>
             {{-- <a href="{{ url('/about') }}" class="nav-item nav-link {{ Request::is('about') ? 'active' : '' }}">About Us</a>
             <a href="{{ url('/classes') }}" class="nav-item nav-link {{ Request::is('classes') ? 'active' : '' }}">Classes</a>
             <div class="nav-item dropdown">

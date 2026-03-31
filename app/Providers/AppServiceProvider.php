@@ -22,7 +22,13 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
 
         View::composer('frontend.*', function ($view) {
-            $view->with('globalCategories', Category::orderBy('order')->get());
+            static $categories;
+            if (!$categories) {
+                $categories = \Illuminate\Support\Facades\Cache::remember('global_categories_all', 3600, function () {
+                    return Category::orderBy('order')->get();
+                });
+            }
+            $view->with('globalCategories', $categories);
         });
     }
 }

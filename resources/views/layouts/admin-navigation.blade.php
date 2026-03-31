@@ -15,6 +15,11 @@
                class="px-4 py-2 rounded-md text-sm font-bold {{ request()->routeIs('admin.users.*') ? 'bg-indigo-600 text-white' : 'text-gray-800 hover:bg-gray-300 transition-all duration-200' }}">
                <i class="fa fa-users mr-2"></i>Users
             </a>
+
+            <a href="{{ route('admin.live-exams.index') }}" 
+               class="px-4 py-2 rounded-md text-sm font-bold {{ request()->routeIs('admin.live-exams.*') ? 'bg-indigo-600 text-white' : 'text-gray-800 hover:bg-gray-300 transition-all duration-200' }}">
+               <i class="fa fa-clock mr-2"></i>Live Exams
+            </a>
         </div>
     </div>
 </div>
