@@ -20,6 +20,15 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
+                <!-- Study Progress Card -->
+                <div class="bg-primary rounded p-4 mb-5 text-white d-flex flex-column flex-md-row justify-content-between align-items-center shadow-sm">
+                    <div class="mb-3 mb-md-0 text-center text-md-start">
+                        <h4 class="mb-1 text-white"><i class="fa fa-chart-line me-2"></i> পড়াশোনার অগ্রগতি</h4>
+                        <p class="mb-0 small text-white-50">আপনার পড়া প্রশ্নের সংখ্যা এবং লেভেল শেষের রিপোর্ট এখানে দেখুন</p>
+                    </div>
+                    <a href="{{ route('profile.progress') }}" class="btn btn-light rounded-pill px-4 fw-bold">প্রোগ্রেস দেখুন <i class="fa fa-arrow-right ms-2"></i></a>
+                </div>
+
                 <div class="bg-light rounded p-5 mb-4 shadow-sm">
                     <h3 class="mb-4"><i class="fa fa-user text-primary me-2"></i> প্রোফাইল আপডেট করুন</h3>
                     @include('profile.partials.update-profile-information-form')

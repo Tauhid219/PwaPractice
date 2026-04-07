@@ -11,7 +11,7 @@ use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// Frontend Routes
+// Frontend & Study Progress Routes
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/category/{slug}', [FrontendController::class, 'categoryLevels'])->name('category.levels');
 Route::get('/category/{slug}/level/{level}', [FrontendController::class, 'levelQuestions'])->name('level.questions');
@@ -24,6 +24,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/progress', [ProfileController::class, 'progress'])->name('profile.progress');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 

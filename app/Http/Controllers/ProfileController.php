@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
+use App\Models\QuizAttempt;
+use App\Models\ReadQuestion;
+use App\Models\UserProgress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -62,5 +65,33 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    /**
+     * Display the user's study progress.
+     */
+    public function progress(Request $request): View
+    {
+        $user = $request->user();
+        
+        $totalRead = ReadQuestion::where('user_id', $user->id)->count();
+
+        $progressStats = [
+            'total_completed_levels' => UserProgress::where('user_id', $user->id)->where('status', 'completed')->count(),
+            'total_active_levels' => UserProgress::where('user_id', $user->id)->where('status', 'active')->count(),
+        ];
+
+        $quizAttempts = QuizAttempt::where('user_id', $user->id)
+            ->with(['category', 'level'])
+            ->orderBy('id', 'desc')
+            ->paginate(15);
+
+        $userProgress = UserProgress::where('user_id', $user->id)
+            ->with(['category', 'level'])
+            ->orderBy('category_id')
+            ->orderBy('level_id')
+            ->get();
+
+        return view('profile.progress', compact('user', 'totalRead', 'progressStats', 'quizAttempts', 'userProgress'));
     }
 }
