@@ -1,135 +1,153 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('User Progress: ') }} {{ $user->name }}
-            </h2>
-            <a href="{{ route('admin.users.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                Back to Users
-            </a>
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">User Progress: {{ $user->name }}</h1>
+            </div>
+            <div class="col-sm-6 d-flex justify-content-end align-items-center">
+                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-1"></i> Back to Users
+                </a>
+            </div>
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            
-            <!-- Summary Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-center">
-                        <div class="text-sm font-medium text-gray-500 uppercase">Questions Read</div>
-                        <div class="mt-2 text-3xl font-bold text-gray-900">{{ $totalRead }}</div>
-                    </div>
-                </div>
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-center">
-                        <div class="text-sm font-medium text-gray-500 uppercase">Completed Levels</div>
-                        <div class="mt-2 text-3xl font-bold text-green-600">{{ $progressStats['total_completed_levels'] }}</div>
-                    </div>
-                </div>
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-center">
-                        <div class="text-sm font-medium text-gray-500 uppercase">Active Levels</div>
-                        <div class="mt-2 text-3xl font-bold text-blue-600">{{ $progressStats['total_active_levels'] }}</div>
-                    </div>
-                </div>
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-center">
-                        <div class="text-sm font-medium text-gray-500 uppercase">Quiz Attempts</div>
-                        <div class="mt-2 text-3xl font-bold text-purple-600">{{ $quizAttempts->total() }}</div>
-                    </div>
+    <!-- Summary Stats -->
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box shadow-sm">
+                <span class="info-box-icon bg-info elevation-1"><i class="fas fa-book-open"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text text-uppercase font-weight-bold tiny">Questions Read</span>
+                    <span class="info-box-number h4 mb-0">{{ $totalRead }}</span>
                 </div>
             </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box shadow-sm">
+                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-check-double"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text text-uppercase font-weight-bold tiny">Completed Levels</span>
+                    <span class="info-box-number h4 mb-0">{{ $progressStats['total_completed_levels'] }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box shadow-sm">
+                <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-star"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text text-uppercase font-weight-bold tiny">Active Levels</span>
+                    <span class="info-box-number h4 mb-0 text-dark">{{ $progressStats['total_active_levels'] }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box shadow-sm">
+                <span class="info-box-icon bg-purple elevation-1" style="background-color: #6f42c1 !important; color: white;"><i class="fas fa-history"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text text-uppercase font-weight-bold tiny">Quiz Attempts</span>
+                    <span class="info-box-number h4 mb-0">{{ $quizAttempts->total() }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <!-- Quiz Attempts History -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Quiz History</h3>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+    <div class="row">
+        <!-- Quiz History -->
+        <div class="col-lg-7">
+            <div class="card card-outline card-primary shadow-sm">
+                <div class="card-header border-transparent">
+                    <h3 class="card-title font-weight-bold"><i class="fas fa-history mr-1"></i> Quiz Attempt History</h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover m-0">
+                            <thead class="bg-light">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Level</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th>Date</th>
+                                    <th>Category</th>
+                                    <th>Level</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody>
                                 @forelse($quizAttempts as $attempt)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $attempt->created_at->format('M d, Y h:i A') }}
+                                        <td class="text-nowrap small text-muted">
+                                            {{ $attempt->created_at->format('M d, Y') }}<br>
+                                            <span class="tiny">{{ $attempt->created_at->format('h:i A') }}</span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $attempt->category->name ?? 'N/A' }}
+                                        <td>
+                                            <span class="badge badge-secondary">{{ $attempt->category->name ?? 'N/A' }}</span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            {{ $attempt->level->name ?? 'Unknown Level' }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ $attempt->score }} / {{ $attempt->total_questions }}
+                                        <td class="font-weight-bold">{{ $attempt->level->name ?? 'Level' }}</td>
+                                        <td>
+                                            <strong>{{ $attempt->score }} / {{ $attempt->total_questions }}</strong>
                                             @if($attempt->total_questions > 0)
-                                                ({{ number_format(($attempt->score / $attempt->total_questions) * 100, 1) }}%)
+                                                <div class="progress progress-xxs mt-1">
+                                                    <div class="progress-bar {{ $attempt->passed ? 'bg-success' : 'bg-danger' }}" 
+                                                         style="width: {{ ($attempt->score / $attempt->total_questions) * 100 }}%"></div>
+                                                </div>
                                             @endif
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <td>
                                             @if($attempt->passed)
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Passed</span>
+                                                <span class="badge badge-success px-2 py-1">PASSED</span>
                                             @else
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Failed</span>
+                                                <span class="badge badge-danger px-2 py-1">FAILED</span>
                                             @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
-                                            No quiz attempts found for this user.
-                                        </td>
+                                        <td colspan="5" class="text-center p-4">No quiz attempts found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
-                    <div class="mt-4">
-                        {{ $quizAttempts->links('pagination::tailwind') }}
+                </div>
+                <div class="card-footer clearfix">
+                    <div class="float-right small">
+                        {{ $quizAttempts->links() }}
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Level Unlocks (Full Map) -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Unlocked Categories & Levels</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        @forelse($userProgress->groupBy('category_id') as $categoryId => $progresses)
-                            <div class="border rounded-lg p-4 bg-gray-50">
-                                <h4 class="font-bold text-gray-800 mb-2 border-b pb-1">{{ $progresses->first()->category->name ?? 'Category' }}</h4>
-                                <ul class="space-y-2 text-sm">
-                                    @foreach($progresses as $progress)
-                                        <li class="flex justify-between items-center bg-white p-2 rounded border">
-                                            <span>{{ $progress->level->name ?? 'Level' }}</span>
-                                            @if($progress->status == 'completed')
-                                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
-                                            @elseif($progress->status == 'active')
-                                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Active</span>
-                                            @else
-                                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">Locked</span>
-                                            @endif
-                                        </li>
-                                    @endforeach
-                                </ul>
+        <!-- Level Unlocks -->
+        <div class="col-lg-5">
+            <div class="card card-outline card-info shadow-sm">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-bold"><i class="fas fa-map-marked-alt mr-1"></i> Category & Level Progress</h3>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    @forelse($userProgress->groupBy('category_id') as $categoryId => $progresses)
+                        <div class="mb-4">
+                            <h5 class="text-info border-bottom pb-1 font-weight-bold mb-2">
+                                {{ $progresses->first()->category->name ?? 'Category' }}
+                            </h5>
+                            <div class="list-group list-group-flush">
+                                @foreach($progresses as $progress)
+                                    <div class="list-group-item d-flex justify-content-between align-items-center py-2 px-0 bg-transparent">
+                                        <span>{{ $progress->level->name ?? 'Level' }}</span>
+                                        @if($progress->status == 'completed')
+                                            <span class="badge badge-success rounded-pill"><i class="fas fa-check mr-1"></i> Completed</span>
+                                        @elseif($progress->status == 'active')
+                                            <span class="badge badge-warning rounded-pill text-dark"><i class="fas fa-spinner mr-1"></i> Active</span>
+                                        @else
+                                            <span class="badge badge-light rounded-pill"><i class="fas fa-lock mr-1"></i> Locked</span>
+                                        @endif
+                                    </div>
+                                @endforeach
                             </div>
-                        @empty
-                            <div class="col-span-full text-center text-gray-500 py-4">
-                                No level progress found.
-                            </div>
-                        @endforelse
-                    </div>
+                        </div>
+                    @empty
+                        <p class="text-center text-muted">No level progress found.</p>
+                    @endforelse
                 </div>
             </div>
-
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

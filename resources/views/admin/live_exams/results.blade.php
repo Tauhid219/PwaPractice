@@ -1,85 +1,118 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Exam Results: <span class="text-indigo-600">{{ $liveExam->title }}</span>
-            </h2>
-            <a href="{{ route('admin.live-exams.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
-                <i class="fa fa-arrow-left mr-2"></i>Back to Exams
-            </a>
+        <div class="row mb-2">
+            <div class="col-sm-8">
+                <h1 class="m-0 text-dark">Exam Results: <span class="text-primary">{{ $liveExam->title }}</span></h1>
+            </div>
+            <div class="col-sm-4 text-right">
+                <a href="{{ route('admin.live-exams.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-1"></i> Back to Exams
+                </a>
+            </div>
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6 p-4 flex justify-between items-center border border-gray-100">
-                <div>
-                    <span class="text-gray-600 uppercase text-xs font-bold tracking-wider">Total Participants:</span> 
-                    <span class="text-2xl font-bold text-indigo-600">{{ $attempts->total() }}</span>
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="small-box bg-info shadow-sm">
+                <div class="inner">
+                    <h3>{{ $attempts->total() }}</h3>
+                    <p>Total Participants</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-users"></i>
                 </div>
             </div>
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-indigo-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Rank</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Student Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Email</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Score</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Submitted At</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse($attempts as $index => $attempt)
-                                <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($index == 0 && $attempts->currentPage() == 1)
-                                            <span class="text-yellow-500 font-bold"><i class="fa fa-trophy mr-1"></i> 1st</span>
-                                        @elseif($index == 1 && $attempts->currentPage() == 1)
-                                            <span class="text-gray-400 font-bold"><i class="fa fa-medal mr-1"></i> 2nd</span>
-                                        @elseif($index == 2 && $attempts->currentPage() == 1)
-                                            <span class="text-orange-400 font-bold"><i class="fa fa-medal mr-1"></i> 3rd</span>
-                                        @else
-                                            <span class="text-gray-900 font-medium">{{ $loop->iteration + ($attempts->currentPage() - 1) * $attempts->perPage() }}</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                                        {{ $attempt->user->name ?? 'Unknown' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $attempt->user->email ?? 'N/A' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-3 py-1 inline-flex text-sm leading-5 font-bold rounded-full bg-green-100 text-green-800 shadow-sm border border-green-200">
-                                            {{ round($attempt->score) }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $attempt->created_at->format('d M Y, h:i A') }}
-                                        <div class="text-xs text-gray-400">{{ $attempt->created_at->diffForHumans() }}</div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500">
-                                        <div class="flex flex-col items-center justify-center">
-                                            <i class="fa fa-inbox text-gray-300 text-4xl mb-3"></i>
-                                            <p>No results found for this exam.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+        </div>
+        <div class="col-md-4">
+            <div class="small-box bg-success shadow-sm">
+                <div class="inner">
+                    <h3>{{ round($attempts->max('score') ?? 0) }}</h3>
+                    <p>Highest Score</p>
                 </div>
-                
-                <div class="bg-gray-50 px-4 py-3 border-t border-gray-200 sm:px-6">
-                    {{ $attempts->links('pagination::tailwind') }}
+                <div class="icon">
+                    <i class="fas fa-crown"></i>
                 </div>
             </div>
-
+        </div>
+        <div class="col-md-4">
+            <div class="small-box bg-warning shadow-sm">
+                <div class="inner">
+                    <h3>{{ round($attempts->avg('score') ?? 0, 1) }}</h3>
+                    <p>Average Score</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
         </div>
     </div>
-</x-app-layout>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-outline card-primary shadow-sm">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-bold"><i class="fas fa-list-ol mr-1"></i> Student Ranking</h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th style="width: 80px">Rank</th>
+                                    <th>Student Name</th>
+                                    <th>Email</th>
+                                    <th class="text-center">Score</th>
+                                    <th>Submitted At</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($attempts as $index => $attempt)
+                                    <tr>
+                                        <td>
+                                            @php
+                                                $rank = $loop->iteration + ($attempts->currentPage() - 1) * $attempts->perPage();
+                                            @endphp
+                                            @if($rank == 1)
+                                                <span class="badge badge-warning p-2 px-3"><i class="fas fa-trophy mr-1"></i> 1st</span>
+                                            @elseif($rank == 2)
+                                                <span class="badge badge-silver p-2 px-3 text-white" style="background-color: #C0C0C0;"><i class="fas fa-medal mr-1"></i> 2nd</span>
+                                            @elseif($rank == 3)
+                                                <span class="badge badge-bronze p-2 px-3 text-white" style="background-color: #CD7F32;"><i class="fas fa-medal mr-1"></i> 3rd</span>
+                                            @else
+                                                <span class="ml-3 font-weight-bold text-muted">{{ $rank }}</span>
+                                            @endif
+                                        </td>
+                                        <td><strong>{{ $attempt->user->name ?? 'Unknown' }}</strong></td>
+                                        <td class="small">{{ $attempt->user->email ?? 'N/A' }}</td>
+                                        <td class="text-center">
+                                            <span class="badge badge-success p-2 px-3 h6 mb-0 shadow-sm border border-success">
+                                                {{ round($attempt->score) }}
+                                            </span>
+                                        </td>
+                                        <td class="small text-muted">
+                                            {{ $attempt->created_at->format('d M Y, h:i A') }} <br>
+                                            <span class="tiny italic">{{ $attempt->created_at->diffForHumans() }}</span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center p-5">
+                                            <i class="fas fa-inbox text-gray-300 display-4 mb-3 d-block"></i>
+                                            <p class="text-muted">No results found for this exam.</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer clearfix">
+                    <div class="float-right">
+                        {{ $attempts->links() }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-admin-layout>

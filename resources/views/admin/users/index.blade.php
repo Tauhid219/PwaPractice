@@ -1,81 +1,101 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Manage Users') }}
-            </h2>
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Manage Users</h1>
+            </div>
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="row">
+        <div class="col-12">
             @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="icon fas fa-check"></i> {{ session('success') }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
             @endif
             @if(session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="icon fas fa-ban"></i> {{ session('error') }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($users as $user)
+            <div class="card card-outline card-primary shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="bg-light">
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {{ $user->name }}
-                                        @if(auth()->id() === $user->id)
-                                            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">You</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $user->email }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        @if($user->is_admin)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Admin</span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Student</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ route('admin.users.show', $user->id) }}" class="text-blue-600 hover:text-blue-900 mr-3">View Progress</a>
-                                        @if(auth()->id() !== $user->id)
-                                            <form action="{{ route('admin.users.update', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to change this user\'s role?');">
-                                                @csrf
-                                                @method('PUT')
-                                                @if($user->is_admin)
-                                                    <button type="submit" class="text-red-600 hover:text-red-900">Remove Admin</button>
-                                                @else
-                                                    <button type="submit" class="text-indigo-600 hover:text-indigo-900">Make Admin</button>
-                                                @endif
-                                            </form>
-                                        @else
-                                            <span class="text-gray-400 italic">No action</span>
-                                        @endif
-                                    </td>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th class="text-right">Actions</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    
-                    <div class="mt-4">
+                            </thead>
+                            <tbody>
+                                @foreach($users as $user)
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="mr-2">
+                                                    <img src="{{ asset('vendor/adminlte/dist/img/avatar5.png') }}" class="img-circle elevation-1" alt="User Image" style="width: 30px;">
+                                                </div>
+                                                <div>
+                                                    <strong>{{ $user->name }}</strong>
+                                                    @if(auth()->id() === $user->id)
+                                                        <span class="badge badge-info ml-1">You</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>
+                                            @if($user->is_admin)
+                                                <span class="badge bg-success">Admin</span>
+                                            @else
+                                                <span class="badge bg-secondary">Student</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-right">
+                                            <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-info mr-2">
+                                                <i class="fas fa-eye mr-1"></i> View Progress
+                                            </a>
+                                            @if(auth()->id() !== $user->id)
+                                                <form action="{{ route('admin.users.update', $user->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to change this user\'s role?');">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    @if($user->is_admin)
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                            <i class="fas fa-user-minus mr-1"></i> Remove Admin
+                                                        </button>
+                                                    @else
+                                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                                            <i class="fas fa-user-plus mr-1"></i> Make Admin
+                                                        </button>
+                                                    @endif
+                                                </form>
+                                            @else
+                                                <span class="text-muted small italic">No actions</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer clearfix">
+                    <div class="float-right">
                         {{ $users->links() }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

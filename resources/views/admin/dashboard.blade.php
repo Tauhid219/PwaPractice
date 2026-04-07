@@ -1,48 +1,85 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Admin Dashboard') }}
-        </h2>
+        <h1 class="m-0">Dashboard</h1>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Category Stats -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <h3 class="text-lg font-bold mb-2">Total Categories</h3>
-                        <p class="text-3xl text-indigo-600">{{ $categoryCount }}</p>
-                        <div class="mt-4">
-                            <a href="{{ route('admin.categories.index') }}" class="text-sm text-blue-500 hover:underline">Manage Categories &rarr;</a>
-                        </div>
-                    </div>
+    <div class="row">
+        <!-- Category Stats -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ $categoryCount }}</h3>
+                    <p>Total Categories</p>
                 </div>
-
-                <!-- Chapter Stats removed -->
-
-                <!-- Question Stats -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <h3 class="text-lg font-bold mb-2">Total Questions</h3>
-                        <p class="text-3xl text-indigo-600">{{ $questionCount }}</p>
-                        <div class="mt-4">
-                            <a href="{{ route('admin.questions.index') }}" class="text-sm text-blue-500 hover:underline">Manage Questions &rarr;</a>
-                        </div>
-                    </div>
+                <div class="icon">
+                    <i class="fas fa-list"></i>
                 </div>
+                <a href="{{ route('admin.categories.index') }}" class="small-box-footer">
+                    More info <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
 
-                <!-- User Stats -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <h3 class="text-lg font-bold mb-2">Total Users</h3>
-                        <p class="text-3xl text-indigo-600">{{ $userCount }}</p>
-                        <div class="mt-4">
-                            <a href="{{ route('admin.users.index') }}" class="text-sm text-blue-500 hover:underline">Manage Users &rarr;</a>
-                        </div>
-                    </div>
+        <!-- Question Stats -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ $questionCount }}</h3>
+                    <p>Total Questions</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <a href="{{ route('admin.questions.index') }}" class="small-box-footer">
+                    More info <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- User Stats -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>{{ $userCount }}</h3>
+                    <p>Total Users</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <a href="{{ route('admin.users.index') }}" class="small-box-footer">
+                    More info <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Live Exam Stats (Optional, if you have a count) -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3>{{ \App\Models\LiveExam::count() }}</h3>
+                    <p>Live Exams</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <a href="{{ route('admin.live-exams.index') }}" class="small-box-footer">
+                    More info <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main row -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Welcome to Genius Kids Admin!</h3>
+                </div>
+                <div class="card-body">
+                    <p>Use the sidebar to manage your categories, questions, and students. You can also view student progress from the User Management section.</p>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

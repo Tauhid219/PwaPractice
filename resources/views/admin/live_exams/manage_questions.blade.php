@@ -1,151 +1,167 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Manage Questions: <span class="text-indigo-600">{{ $liveExam->title }}</span>
-            </h2>
-            <a href="{{ route('admin.live-exams.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
-                <i class="fa fa-arrow-left mr-2"></i>Back to Exams
-            </a>
+        <div class="row mb-2">
+            <div class="col-sm-8">
+                <h1 class="m-0 text-dark">Manage Questions: <span class="text-primary">{{ $liveExam->title }}</span></h1>
+            </div>
+            <div class="col-sm-4 text-right">
+                <a href="{{ route('admin.live-exams.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-1"></i> Back to Exams
+                </a>
+            </div>
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 shadow-sm" role="alert">
-                    <span class="block sm:inline whitespace-pre-line">{{ session('success') }}</span>
-                </div>
-            @endif
-
-            <!-- Info Bar -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6 p-4 flex flex-col md:flex-row justify-between items-center border-l-4 border-indigo-500">
-                <div>
-                    <span class="text-gray-600 uppercase text-xs font-bold tracking-wider">Total Assigned Questions:</span> 
-                    <span class="text-2xl font-bold text-indigo-600">{{ count($assignedQuestionIds) }}</span>
+    <!-- Info Box -->
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="info-box shadow-sm border-left border-primary">
+                <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-check-circle"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text text-uppercase font-weight-bold tiny">Assigned Questions</span>
+                    <span class="info-box-number h4 mb-0">{{ count($assignedQuestionIds) }}</span>
                 </div>
             </div>
-
+        </div>
+        <div class="col-md-9">
             <!-- Filter Selection -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6 p-4 border border-gray-100">
-                <form method="GET" action="{{ route('admin.live-exams.questions.manage', $liveExam->id) }}" class="flex flex-wrap items-end space-x-4">
-                    <div class="w-full sm:w-1/3 mb-4 sm:mb-0">
-                        <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">Filter by Category</label>
-                        <select name="category_id" id="category_id" class="shadow-sm border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm rounded-md transition duration-150" onchange="this.form.submit()">
-                            <option value="">All Categories</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                    {{ $category->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    
-                    <div class="w-full sm:w-1/3 mb-4 sm:mb-0">
-                        <label for="level_id" class="block text-sm font-medium text-gray-700 mb-1">Filter by Level</label>
-                        <select name="level_id" id="level_id" class="shadow-sm border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm rounded-md transition duration-150" onchange="this.form.submit()">
-                            <option value="">All Levels</option>
-                            @foreach($levels as $level)
-                                <option value="{{ $level->id }}" {{ request('level_id') == $level->id ? 'selected' : '' }}>
-                                    {{ $level->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    @if(request('category_id') || request('level_id'))
-                        <div class="mb-4 sm:mb-0">
-                            <a href="{{ route('admin.live-exams.questions.manage', $liveExam->id) }}" class="inline-flex items-center px-4 py-2 bg-red-100 border border-transparent rounded-md font-semibold text-xs text-red-700 uppercase tracking-widest hover:bg-red-200 focus:outline-none focus:border-red-300 focus:ring ring-red-300 active:bg-red-200 transition ease-in-out duration-150">
-                                <i class="fa fa-times mr-1"></i> Clear Filters
-                            </a>
+            <div class="card card-outline card-info shadow-sm">
+                <div class="card-body py-2">
+                    <form method="GET" action="{{ route('admin.live-exams.questions.manage', $liveExam->id) }}" class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="category_id" class="mr-2 d-inline-block small font-weight-bold">Category:</label>
+                                <select name="category_id" id="category_id" class="form-control form-control-sm d-inline-block w-auto" onchange="this.form.submit()">
+                                    <option value="">All Categories</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-                    @endif
-                </form>
-            </div>
-
-            <!-- Question Bank Table -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <form action="{{ route('admin.live-exams.questions.update', $liveExam->id) }}" method="POST">
-                    @csrf
-                    
-                    <div class="p-4 bg-gray-50 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
-                        <div>
-                            <span class="text-sm font-medium text-gray-700">Select questions by checking the boxes, then add or remove them.</span>
+                        <div class="col-md-4">
+                            <div class="form-group mb-0">
+                                <label for="level_id" class="mr-2 d-inline-block small font-weight-bold">Level:</label>
+                                <select name="level_id" id="level_id" class="form-control form-control-sm d-inline-block w-auto" onchange="this.form.submit()">
+                                    <option value="">All Levels</option>
+                                    @foreach($levels as $level)
+                                        <option value="{{ $level->id }}" {{ request('level_id') == $level->id ? 'selected' : '' }}>
+                                            {{ $level->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-                        <div class="flex space-x-2">
-                            <button type="submit" name="action" value="add" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded text-sm transition-colors shadow-sm focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                <i class="fa fa-plus mr-1"></i> Add Selected
-                            </button>
-                            <button type="submit" name="action" value="remove" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded text-sm transition-colors shadow-sm focus:ring-2 focus:ring-red-400 focus:ring-opacity-50" onclick="return confirm('Remove selected questions from exam?')">
-                                <i class="fa fa-minus mr-1"></i> Remove Selected
-                            </button>
+                        <div class="col-md-4 text-right">
+                            @if(request('category_id') || request('level_id'))
+                                <a href="{{ route('admin.live-exams.questions.manage', $liveExam->id) }}" class="btn btn-xs btn-outline-danger mr-2">
+                                    <i class="fas fa-times mr-1"></i> Clear Filters
+                                </a>
+                            @endif
+                            <span class="badge badge-info p-2 px-3 small">
+                                Showing: {{ $questions->total() }} Qs
+                            </span>
                         </div>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-indigo-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left w-12">
-                                        <input type="checkbox" id="checkAll" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 cursor-pointer">
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Category / Level</th>
-                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Question Text</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse($questions as $question)
-                                    @php
-                                        $isAssigned = in_array($question->id, $assignedQuestionIds);
-                                    @endphp
-                                    <tr class="{{ $isAssigned ? 'bg-indigo-50/50' : '' }} hover:bg-gray-50 transition-colors duration-150">
-                                        <td class="px-6 py-4">
-                                            <input type="checkbox" name="question_ids[]" value="{{ $question->id }}" class="question-checkbox rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 cursor-pointer">
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            @if($isAssigned)
-                                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-green-100 text-green-800 shadow-sm">
-                                                    Assigned
-                                                </span>
-                                            @else
-                                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-gray-100 text-gray-600 shadow-sm border border-gray-200">
-                                                    Unassigned
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div class="font-bold text-gray-900">{{ $question->category->name ?? 'N/A' }}</div>
-                                            <div class="text-xs text-gray-500 mt-1">{{ $question->level->name ?? 'N/A' }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-gray-900 leading-relaxed">
-                                            {{ Str::limit($question->question_text, 120) }}
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="px-6 py-8 text-center text-sm text-gray-500">
-                                            <div class="flex flex-col items-center justify-center">
-                                                <i class="fa fa-folder-open text-gray-300 text-4xl mb-3"></i>
-                                                <p>No questions found matching your criteria.</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </form>
-                
-                <div class="bg-gray-50 px-4 py-3 border-t border-gray-200 sm:px-6">
-                    {{ $questions->appends(request()->query())->links('pagination::tailwind') }}
+                    </form>
                 </div>
             </div>
-
         </div>
     </div>
 
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="icon fas fa-check"></i> {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    <!-- Question Bank Table -->
+    <div class="row">
+        <div class="col-12">
+            <form action="{{ route('admin.live-exams.questions.update', $liveExam->id) }}" method="POST">
+                @csrf
+                <div class="card card-outline card-primary shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3 class="card-title font-weight-bold"><i class="fas fa-database mr-1"></i> Question Bank</h3>
+                        <div class="card-tools">
+                            <button type="submit" name="action" value="add" class="btn btn-sm btn-success mr-2">
+                                <i class="fas fa-plus mr-1"></i> Add Selected
+                            </button>
+                            <button type="submit" name="action" value="remove" class="btn btn-sm btn-danger mr-2" onclick="return confirm('Remove selected questions from exam?')">
+                                <i class="fas fa-minus mr-1"></i> Remove Selected
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th style="width: 40px">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" id="checkAll">
+                                                <label for="checkAll" class="custom-control-label"></label>
+                                            </div>
+                                        </th>
+                                        <th style="width: 120px">Status</th>
+                                        <th style="width: 200px">Category / Level</th>
+                                        <th>Question Text</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($questions as $question)
+                                        @php
+                                            $isAssigned = in_array($question->id, $assignedQuestionIds);
+                                        @endphp
+                                        <tr class="{{ $isAssigned ? 'table-primary-light' : '' }}" style="{{ $isAssigned ? 'background-color: rgba(0,123,255,0.05);' : '' }}">
+                                            <td>
+                                                <div class="custom-control custom-checkbox ml-1">
+                                                    <input class="custom-control-input question-checkbox" type="checkbox" name="question_ids[]" value="{{ $question->id }}" id="q-{{ $question->id }}">
+                                                    <label for="q-{{ $question->id }}" class="custom-control-label"></label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if($isAssigned)
+                                                    <span class="badge badge-success px-3"><i class="fas fa-check mr-1"></i> Assigned</span>
+                                                @else
+                                                    <span class="badge badge-light border px-2 text-muted">Unassigned</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-secondary">{{ $question->category->name ?? 'N/A' }}</span> <br>
+                                                <small class="text-muted font-italic">{{ $question->level->name ?? 'N/A' }}</small>
+                                            </td>
+                                            <td class="small pt-2" title="{{ $question->question_text }}">
+                                                {{ Str::limit($question->question_text, 150) }}
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center p-5">
+                                                <i class="fas fa-folder-open text-gray-300 display-4 mb-3 d-block"></i>
+                                                <p class="text-muted">No questions found matching your criteria.</p>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer clearfix">
+                        <div class="float-right">
+                            {{ $questions->appends(request()->query())->links() }}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const checkAll = document.getElementById('checkAll');
@@ -160,4 +176,5 @@
             }
         });
     </script>
-</x-app-layout>
+    @endpush
+</x-admin-layout>
