@@ -62,7 +62,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage categories', 'create categories', 'edit categories',
             'manage questions', 'create questions', 'edit questions',
             'manage exams', 'create exams', 'edit exams', 'view results',
-            'manage users', 'view users',
+            'manage users',
             'access dashboard'
         ]);
 
