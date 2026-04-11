@@ -27,7 +27,7 @@
         
         <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
             @auth
-                @if(auth()->user()->is_admin)
+                @if(auth()->user()->hasRole(['super-admin', 'admin', 'moderator', 'editor']))
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary rounded-pill px-3">Admin Panel</a>
                 @else
                     <div class="nav-item dropdown d-inline-block">

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>@yield('title', 'Kider - Preschool Website Template')</title>
+    <title>@yield('title', 'জিনিয়াস কিডস - কুইজ গাইডবুক')</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -13,7 +13,7 @@
     <meta name="theme-color" content="#FE5D37">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Kider">
+    <meta name="apple-mobile-web-app-title" content="জিনিয়াস কিডস">
     <link rel="apple-touch-icon" href="{{ asset('icons/app-icon.svg') }}">
 
     <!-- Favicon -->

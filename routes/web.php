@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\LiveExamController as AdminLiveExamController;
 use App\Http\Controllers\Frontend\LiveExamController;
 use App\Http\Controllers\Frontend\QuizController;
@@ -19,7 +21,10 @@ Route::view('/offline', 'offline')->name('offline');
 Route::post('/mark-read', [FrontendController::class, 'markQuestionAsRead'])->name('mark.read');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    if (auth()->user()->hasRole(['super-admin', 'admin', 'moderator', 'editor'])) {
+        return redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('home');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -45,12 +50,21 @@ Route::middleware('auth')->group(function () {
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-    Route::resource('categories', CategoryController::class);
-    Route::post('questions/import', [QuestionController::class, 'import'])->name('questions.import');
-    Route::resource('questions', QuestionController::class);
-    Route::resource('users', UserController::class)->only(['index', 'show', 'update']);
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard')->middleware('permission:access dashboard');
 
+    // User Management
+    Route::resource('users', UserController::class);
+    Route::resource('roles', RoleController::class);
+    Route::resource('permissions', PermissionController::class);
+
+    // Categories
+    Route::resource('categories', CategoryController::class);
+
+    // Questions
+    Route::resource('questions', QuestionController::class);
+    Route::post('questions/import', [QuestionController::class, 'import'])->name('questions.import');
+
+    // Live Exams
     Route::resource('live-exams', AdminLiveExamController::class);
     Route::get('live-exams/{live_exam}/questions', [AdminLiveExamController::class, 'manageQuestions'])->name('live-exams.questions.manage');
     Route::post('live-exams/{live_exam}/questions', [AdminLiveExamController::class, 'updateQuestions'])->name('live-exams.questions.update');

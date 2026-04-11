@@ -14,19 +14,18 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
     public function edit(Request $request): View
     {
-        if ($request->user()->is_admin) {
+        $user = $request->user();
+
+        if ($user->hasRole(['super-admin', 'admin', 'moderator', 'editor'])) {
             return view('admin.profile.edit', [
-                'user' => $request->user(),
+                'user' => $user,
             ]);
         }
-        
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
         ]);
     }
 

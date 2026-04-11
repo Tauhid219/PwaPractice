@@ -17,8 +17,14 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
+        if (Auth::check()) {
+            if (Auth::user()->hasRole(['super-admin', 'admin', 'moderator', 'editor'])) {
+                return redirect()->intended(route('admin.dashboard', absolute: false));
+            }
+            return redirect()->intended(route('home', absolute: false));
+        }
         return view('auth.register');
     }
 
@@ -29,6 +35,12 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        if (Auth::check()) {
+            if (Auth::user()->hasRole(['super-admin', 'admin', 'moderator', 'editor'])) {
+                return redirect()->intended(route('admin.dashboard', absolute: false));
+            }
+            return redirect()->intended(route('home', absolute: false));
+        }
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -41,10 +53,13 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // New users default to the 'guest' role so they stay on the frontend
+        $user->assignRole('guest');
+
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('profile.edit', absolute: false));
+        return redirect(route('home', absolute: false));
     }
 }

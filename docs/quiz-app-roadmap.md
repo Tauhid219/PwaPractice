@@ -26,6 +26,7 @@
 | Admin Panel | ✅ AdminLTE 3.1.0 মাইগ্রেশন সম্পন্ন |
 | Authentication | ✅ AdminLTE লেআউটে লগিন/রেজিস্ট্রেশন |
 | Level System & Quiz Logic | ✅ কাজ করছে |
+| Advanced RBAC (Roles & Permissions) | ✅ গ্র্যানুলার পারমিশন ইমপ্লিমেন্ট করা হয়েছে |
 | Payment Integration | ❌ নেই |
 
 ---
@@ -61,6 +62,7 @@ quiz_attempts → user_id, level_id, score, passed
 - [x] Admin authentication & ড্যাশবোর্ড (AdminLTE 3.1.0)
 - [x] Category / Question CRUD
 - [x] Admin to Admin রোল ম্যানেজমেন্ট (User Management)
+- [x] **Advanced RBAC:** মডিউল ভিত্তিক গ্র্যানুলার পারমিশন (manage, create, edit, delete) ইন্টারফেস।
 - [x] Excel/CSV Import ফিচার (৯৮০ প্রশ্ন দ্রুত ইনপুট)
 - [x] **UI Migration:** পুরো অ্যাডমিন প্যানেল এবং অথেনটিকেশন UI আধুনিকীকরণ করা।
 

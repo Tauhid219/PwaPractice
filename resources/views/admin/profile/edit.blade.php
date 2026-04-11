@@ -40,13 +40,15 @@
                 <div class="card-body box-profile">
                     <div class="text-center">
                         <img class="profile-user-img img-fluid img-circle"
-                             src="{{ asset('vendor/adminlte/dist/img/avatar5.png') }}"
+                             src="{{ $user->avatar }}"
                              alt="User profile picture">
                     </div>
 
                     <h3 class="profile-username text-center font-weight-bold mt-2">{{ $user->name }}</h3>
 
-                    <p class="text-muted text-center">{{ $user->role ?? 'Administrator' }}</p>
+                    <p class="text-info text-center text-uppercase font-weight-bold" style="font-size: 0.9rem;">
+                        {{ $user->getRoleNames()->first() ?? 'Administrator' }}
+                    </p>
 
                     <ul class="list-group list-group-unbordered mb-3">
                         <li class="list-group-item">

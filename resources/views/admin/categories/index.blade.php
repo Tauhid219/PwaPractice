@@ -6,9 +6,11 @@
                     <h1 class="m-0">Categories</h1>
                 </div>
                 <div class="col-sm-6 d-flex justify-content-end align-items-center">
+                    @can('create categories')
                     <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
                         <i class="fas fa-plus mr-1"></i> Add New Category
                     </a>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -50,9 +52,12 @@
                                             <i class="{{ $category->icon }} mr-2"></i> {{ $category->icon }}
                                         </td>
                                         <td class="text-right">
+                                            @can('edit categories')
                                             <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-info">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
+                                            @endcan
+                                            @can('delete categories')
                                             <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this category?');">
                                                 @csrf
                                                 @method('DELETE')
@@ -60,6 +65,7 @@
                                                     <i class="fas fa-trash"></i> Delete
                                                 </button>
                                             </form>
+                                            @endcan
                                         </td>
                                     </tr>
                                 @endforeach

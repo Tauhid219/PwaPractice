@@ -49,7 +49,7 @@
 
     <!-- User Dropdown Menu (Logout) -->
     <li class="nav-item dropdown">
-      <a class="nav-link" data-toggle="dropdown" href="#">
+      <a class="nav-link" data-toggle="dropdown" href="#" title="Roles: {{ Auth::user()->getRoleNames()->implode(', ') ?: 'User' }}">
         <i class="fas fa-user"></i> {{ Auth::user()->name }}
       </a>
       <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">

@@ -13,11 +13,20 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Level;
 
-class QuestionController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class QuestionController extends Controller implements HasMiddleware
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:manage questions', only: ['index', 'show']),
+            new Middleware('permission:create questions', only: ['create', 'store', 'import']),
+            new Middleware('permission:edit questions', only: ['edit', 'update']),
+            new Middleware('permission:delete questions', only: ['destroy']),
+        ];
+    }
     public function index(Request $request)
     {
         $categories = Category::orderBy('order')->get();

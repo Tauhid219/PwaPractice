@@ -14,9 +14,34 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
+        if (Auth::check()) {
+            return $this->redirectBasedOnRole();
+        }
         return view('auth.login');
+    }
+
+    /**
+     * Display the admin login view.
+     */
+    public function createAdmin(): View|RedirectResponse
+    {
+        if (Auth::check()) {
+            return $this->redirectBasedOnRole();
+        }
+        return view('auth.admin-login');
+    }
+
+    /**
+     * Helper to redirect based on role.
+     */
+    protected function redirectBasedOnRole(): RedirectResponse
+    {
+        if (Auth::user()->hasRole(['super-admin', 'admin', 'moderator', 'editor'])) {
+            return redirect()->intended(route('admin.dashboard', absolute: false));
+        }
+        return redirect()->intended(route('home', absolute: false));
     }
 
     /**
@@ -24,15 +49,15 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        if (Auth::check()) {
+            return $this->redirectBasedOnRole();
+        }
+
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        if ($request->user()->is_admin) {
-            return redirect()->intended(route('admin.dashboard', absolute: false));
-        }
-
-        return redirect()->intended(route('profile.edit', absolute: false));
+        return $this->redirectBasedOnRole();
     }
 
     /**

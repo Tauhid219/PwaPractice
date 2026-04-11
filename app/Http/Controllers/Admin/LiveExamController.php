@@ -6,8 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Models\LiveExam;
 use Illuminate\Http\Request;
 
-class LiveExamController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class LiveExamController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:manage exams', only: ['index', 'show', 'results']),
+            new Middleware('permission:create exams', only: ['create', 'store']),
+            new Middleware('permission:edit exams', only: ['edit', 'update', 'manageQuestions', 'updateQuestions']),
+            new Middleware('permission:delete exams', only: ['destroy']),
+        ];
+    }
+
     public function index()
     {
         $exams = LiveExam::latest()->paginate(10);

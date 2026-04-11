@@ -8,11 +8,20 @@ use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Support\Str;
 
-class CategoryController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class CategoryController extends Controller implements HasMiddleware
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:manage categories', only: ['index', 'show']),
+            new Middleware('permission:create categories', only: ['create', 'store']),
+            new Middleware('permission:edit categories', only: ['edit', 'update']),
+            new Middleware('permission:delete categories', only: ['destroy']),
+        ];
+    }
     public function index()
     {
         $categories = Category::orderBy('order')->get();

@@ -5,12 +5,14 @@
                 <h1 class="m-0">Questions</h1>
             </div>
             <div class="col-sm-6 d-flex justify-content-end align-items-center">
+                @can('create questions')
                 <button type="button" class="btn btn-success mr-2" data-toggle="modal" data-target="#importModal">
                     <i class="fas fa-file-import mr-1"></i> Bulk Import (Excel)
                 </button>
                 <a href="{{ route('admin.questions.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus mr-1"></i> Add Single Question
                 </a>
+                @endcan
             </div>
         </div>
     </x-slot>
@@ -138,9 +140,12 @@
                                             {{ Str::limit($question->answer_text, 30) }}
                                         </td>
                                         <td class="text-right">
+                                            @can('edit questions')
                                             <a href="{{ route('admin.questions.edit', $question->id) }}" class="btn btn-sm btn-info" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            @endcan
+                                            @can('delete questions')
                                             <form action="{{ route('admin.questions.destroy', $question->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this question?');">
                                                 @csrf
                                                 @method('DELETE')
@@ -148,6 +153,7 @@
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
+                                            @endcan
                                         </td>
                                     </tr>
                                 @empty

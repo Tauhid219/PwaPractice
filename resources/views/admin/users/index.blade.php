@@ -4,6 +4,13 @@
             <div class="col-sm-6">
                 <h1 class="m-0">Manage Users</h1>
             </div>
+            @can('create users')
+            <div class="col-sm-6 d-flex justify-content-end align-items-center">
+                <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus mr-1"></i> Add New User
+                </a>
+            </div>
+            @endcan
         </div>
     </x-slot>
 
@@ -44,7 +51,7 @@
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="mr-2">
-                                                    <img src="{{ asset('vendor/adminlte/dist/img/avatar5.png') }}" class="img-circle elevation-1" alt="User Image" style="width: 30px;">
+                                                    <img src="{{ $user->avatar }}" class="img-circle elevation-1" alt="User Image" style="width: 30px;">
                                                 </div>
                                                 <div>
                                                     <strong>{{ $user->name }}</strong>
@@ -56,33 +63,34 @@
                                         </td>
                                         <td>{{ $user->email }}</td>
                                         <td>
-                                            @if($user->is_admin)
-                                                <span class="badge bg-success">Admin</span>
-                                            @else
-                                                <span class="badge bg-secondary">Student</span>
-                                            @endif
+                                            @forelse($user->roles as $role)
+                                                <span class="badge badge-primary">{{ $role->name }}</span>
+                                            @empty
+                                                <span class="badge badge-secondary">No Role</span>
+                                            @endforelse
                                         </td>
                                         <td class="text-right">
-                                            <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-info mr-2">
-                                                <i class="fas fa-eye mr-1"></i> View Progress
-                                            </a>
-                                            @if(auth()->id() !== $user->id)
-                                                <form action="{{ route('admin.users.update', $user->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to change this user\'s role?');">
+                                            <div class="btn-group">
+                                                @can('manage users')
+                                                <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-info" title="View Progress">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                @endcan
+                                                @can('edit users')
+                                                <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-warning" title="Edit Roles">
+                                                    <i class="fas fa-user-tag"></i>
+                                                </a>
+                                                @endcan
+                                                @can('delete users')
+                                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
                                                     @csrf
-                                                    @method('PUT')
-                                                    @if($user->is_admin)
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                            <i class="fas fa-user-minus mr-1"></i> Remove Admin
-                                                        </button>
-                                                    @else
-                                                        <button type="submit" class="btn btn-sm btn-outline-success">
-                                                            <i class="fas fa-user-plus mr-1"></i> Make Admin
-                                                        </button>
-                                                    @endif
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete User">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
                                                 </form>
-                                            @else
-                                                <span class="text-muted small italic">No actions</span>
-                                            @endif
+                                                @endcan
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
