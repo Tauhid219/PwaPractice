@@ -81,7 +81,7 @@
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
                                     @endcan
-                                    @if($role->name !== 'super-admin')
+                                    @if(!in_array($role->name, ['super-admin', 'student']))
                                     @can('delete roles')
                                     <form action="{{ route('admin.roles.destroy', $role->id) }}" method="POST" class="d-inline">
                                         @csrf

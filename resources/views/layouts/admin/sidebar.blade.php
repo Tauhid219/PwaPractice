@@ -96,14 +96,14 @@
           </a>
         </li>
 
-        @role('guest')
+        @if(auth()->user()->hasPermissionTo('access dashboard') || auth()->user()->hasRole('super-admin'))
         <li class="nav-item">
           <a href="{{ route('profile.progress') }}" class="nav-link {{ request()->routeIs('profile.progress') ? 'active' : '' }}">
             <i class="nav-icon fas fa-chart-line"></i>
             <p>My Progress</p>
           </a>
         </li>
-        @endrole
+        @endif
 
         <li>
           <form method="POST" action="{{ route('logout') }}">

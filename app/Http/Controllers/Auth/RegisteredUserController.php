@@ -20,7 +20,7 @@ class RegisteredUserController extends Controller
     public function create(): View|RedirectResponse
     {
         if (Auth::check()) {
-            if (Auth::user()->hasRole(['super-admin', 'admin', 'moderator', 'editor'])) {
+            if (Auth::user()->hasPermissionTo('access dashboard') || Auth::user()->hasRole('super-admin')) {
                 return redirect()->intended(route('admin.dashboard', absolute: false));
             }
             return redirect()->intended(route('home', absolute: false));
@@ -36,7 +36,7 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         if (Auth::check()) {
-            if (Auth::user()->hasRole(['super-admin', 'admin', 'moderator', 'editor'])) {
+            if (Auth::user()->hasPermissionTo('access dashboard') || Auth::user()->hasRole('super-admin')) {
                 return redirect()->intended(route('admin.dashboard', absolute: false));
             }
             return redirect()->intended(route('home', absolute: false));
@@ -53,8 +53,8 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // New users default to the 'guest' role so they stay on the frontend
-        $user->assignRole('guest');
+        // New users default to the 'student' role so they stay on the frontend
+        $user->assignRole('student');
 
         event(new Registered($user));
 

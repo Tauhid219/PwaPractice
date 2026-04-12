@@ -17,7 +17,7 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="name">Role Name</label>
-                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" id="name" placeholder="Enter role name" value="{{ old('name', $role->name) }}" required {{ $role->name === 'super-admin' ? 'readonly' : '' }}>
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" id="name" placeholder="Enter role name" value="{{ old('name', $role->name) }}" required {{ in_array($role->name, ['super-admin', 'student']) ? 'readonly' : '' }}>
                             @error('name')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
@@ -26,7 +26,9 @@
                         <div class="form-group">
                             <label class="d-block mb-3">Update Permissions</label>
                             @if($role->name === 'super-admin')
-                                <p class="text-success"><i class="fas fa-check-circle"></i> Super Admin has all permissions by default.</p>
+                                <p class="text-success small"><i class="fas fa-check-circle"></i> Super Admin has all permissions by default.</p>
+                            @elseif($role->name === 'student')
+                                <p class="text-info small"><i class="fas fa-info-circle"></i> Student role has no administrative permissions by default.</p>
                             @endif
 
                             @php
@@ -36,7 +38,7 @@
                                 });
                             @endphp
 
-                            <div class="row {{ $role->name === 'super-admin' ? 'text-muted' : '' }}">
+                            <div class="row {{ in_array($role->name, ['super-admin', 'student']) ? 'text-muted' : '' }}">
                                 @foreach($groupedPermissions as $group => $perms)
                                 <div class="col-md-4 mb-4">
                                     <div class="card card-outline card-warning h-100 shadow-sm">
@@ -50,7 +52,7 @@
                                             <div class="custom-control custom-checkbox mb-1">
                                                 <input class="custom-control-input" type="checkbox" name="permissions[]" id="perm_{{ $permission->id }}" value="{{ $permission->name }}"
                                                     {{ in_array($permission->id, $rolePermissions) ? 'checked' : '' }}
-                                                    {{ $role->name === 'super-admin' ? 'disabled' : '' }}>
+                                                    {{ in_array($role->name, ['super-admin', 'student']) ? 'disabled' : '' }}>
                                                 <label for="perm_{{ $permission->id }}" class="custom-control-label font-weight-normal text-sm">
                                                     {{ $permission->name }}
                                                 </label>
@@ -65,7 +67,7 @@
                     </div>
 
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-warning" {{ $role->name === 'super-admin' ? 'disabled' : '' }}>Update Role</button>
+                        <button type="submit" class="btn btn-warning" {{ in_array($role->name, ['super-admin', 'student']) ? 'disabled' : '' }}>Update Role</button>
                         <a href="{{ route('admin.roles.index') }}" class="btn btn-default">Cancel</a>
                     </div>
                 </form>

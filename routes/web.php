@@ -21,7 +21,7 @@ Route::view('/offline', 'offline')->name('offline');
 Route::post('/mark-read', [FrontendController::class, 'markQuestionAsRead'])->name('mark.read');
 
 Route::get('/dashboard', function () {
-    if (auth()->user()->hasRole(['super-admin', 'admin', 'moderator', 'editor'])) {
+    if (auth()->user()->hasPermissionTo('access dashboard') || auth()->user()->hasRole('super-admin')) {
         return redirect()->route('admin.dashboard');
     }
     return redirect()->route('home');

@@ -79,9 +79,9 @@ class RoleController extends Controller implements HasMiddleware
             'permissions' => 'nullable|array'
         ]);
 
-        // Guard: Super Admin permissions should not be modified via form
-        if ($role->name === 'super-admin') {
-            return redirect()->route('admin.roles.index')->with('error', 'Super Admin permissions are fixed.');
+        // Guard: Super Admin and Student permissions should not be modified via form
+        if (in_array($role->name, ['super-admin', 'student'])) {
+            return redirect()->route('admin.roles.index')->with('error', 'Permissions for this role are fixed and cannot be modified.');
         }
 
         $role->update(['name' => $request->name]);
@@ -95,8 +95,8 @@ class RoleController extends Controller implements HasMiddleware
      */
     public function destroy(Role $role)
     {
-        if ($role->name === 'super-admin') {
-            return redirect()->route('admin.roles.index')->with('error', 'Super Admin role cannot be deleted.');
+        if (in_array($role->name, ['super-admin', 'student'])) {
+            return redirect()->route('admin.roles.index')->with('error', 'The Super Admin and Student roles cannot be deleted.');
         }
 
         $role->delete();

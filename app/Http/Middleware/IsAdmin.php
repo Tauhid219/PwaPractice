@@ -15,7 +15,7 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->hasRole(['super-admin', 'admin', 'moderator', 'editor'])) {
+        if (auth()->check() && (auth()->user()->hasPermissionTo('access dashboard') || auth()->user()->hasRole('super-admin'))) {
             return $next($request);
         }
 

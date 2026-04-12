@@ -18,7 +18,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        if ($user->hasRole(['super-admin', 'admin', 'moderator', 'editor'])) {
+        if ($user->hasPermissionTo('access dashboard') || $user->hasRole('super-admin')) {
             return view('admin.profile.edit', [
                 'user' => $user,
             ]);
@@ -90,6 +90,10 @@ class ProfileController extends Controller
             ->orderBy('category_id')
             ->orderBy('level_id')
             ->get();
+
+        if ($user->hasPermissionTo('access dashboard') || $user->hasRole('super-admin')) {
+            return view('admin.users.show', compact('user', 'totalRead', 'progressStats', 'quizAttempts', 'userProgress'));
+        }
 
         return view('profile.progress', compact('user', 'totalRead', 'progressStats', 'quizAttempts', 'userProgress'));
     }

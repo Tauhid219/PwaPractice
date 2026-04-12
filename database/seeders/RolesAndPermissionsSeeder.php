@@ -74,21 +74,26 @@ class RolesAndPermissionsSeeder extends Seeder
             'access dashboard'
         ]);
 
-        // Guest: only access dashboard
+        // Guest: can be given specific operational permissions
         $roleGuest = Role::findOrCreate('guest');
         $roleGuest->givePermissionTo([
             'access dashboard'
         ]);
 
+        // Student: limited access for regular users
+        $roleStudent = Role::findOrCreate('student');
+        // Students don't need admin dashboard access, or they can have whatever guest had before:
+        $roleStudent->givePermissionTo([]);
+
         // Assign roles to other admin users
         $adminUsers = User::where('is_admin', true)->where('email', '!=', 'admin@admin.com')->get();
         foreach ($adminUsers as $user) {
-            $user->assignRole($roleAdmin);
+            $user->syncRoles($roleAdmin);
         }
 
         $regularUsers = User::where('is_admin', false)->get();
         foreach ($regularUsers as $user) {
-            $user->assignRole($roleGuest);
+            $user->syncRoles($roleStudent);
         }
     }
 }
