@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use App\Models\LiveExamAttempt;
 use App\Services\QuizScoringService;
@@ -11,7 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ProcessLiveExamScore implements ShouldQueue
+class ProcessLiveExamScore
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

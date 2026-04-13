@@ -59,7 +59,7 @@ class LiveExamController extends Controller
 
         ProcessLiveExamScore::dispatch($exam, Auth::id(), $request->answers ?? []);
 
-        return redirect()->route('live-exams.results', $exam)->with('success', 'আপনার খাতা জমা নেওয়া হয়েছে! কিছুক্ষণের মধ্যে ফলাফল প্রকাশ করা হবে।');
+        return redirect()->route('live-exams.results', $exam)->with('success', 'আপনার খাতা জমা নেওয়া হয়েছে এবং ফলাফল প্রস্তুত করা হয়েছে!');
     }
 
     public function results(LiveExam $exam)
