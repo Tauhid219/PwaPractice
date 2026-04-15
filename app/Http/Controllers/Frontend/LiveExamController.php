@@ -45,7 +45,9 @@ class LiveExamController extends Controller
              return redirect()->route('live-exams.results', $exam)->with('error', 'আপনি ইতিমধ্যে এই পরীক্ষায় অংশ নিয়েছেন।');
         }
 
-        $questions = $exam->questions; 
+        $questions = \Illuminate\Support\Facades\Cache::remember("exam_questions_{$exam->id}", 3600, function () use ($exam) {
+            return $exam->questions;
+        });
 
         return view('frontend.live_exam.taking', compact('exam', 'questions'));
     }

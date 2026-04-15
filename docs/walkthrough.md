@@ -544,4 +544,21 @@ PwaPractice/
 - "My Progress" লিংকটি স্টুডেন্ট এবং অ্যাডমিন — উভয়ের জন্যই সঠিক লেআউটে (AdminLTE) কাজ করছে কিনা তা কনফার্ম করা হয়েছে।
 
 ### পরবর্তী ধাপ
-- **ধাপ ২০:** পেমেন্ট গেটওয়ে ইন্টিগ্রেশন (SSLCommerz) এবং প্রিমিয়াম এক্সেস কন্ট্রোল।
+- **ধাপ ২০:** Live Exam Query Optimization এবং Repo-local Skill Setup।
+
+---
+
+## ধাপ ২০: Live Exam Query Optimization & Repo-local Skill Setup
+**তারিখ:** ১৫ এপ্রিল ২০২৬
+
+### কী করা হয়েছে
+- **Live Exam Join Caching:** `Frontend\\LiveExamController@join`-এ `Cache::remember()` ব্যবহার করে নির্দিষ্ট লাইভ এক্সামের প্রশ্নগুলো ১ ঘণ্টার জন্য cache করা হয়েছে। এর ফলে একই এক্সামে repeated join request এলে প্রশ্নগুলো পুনরায় query করতে হচ্ছে না।
+- **Scoring Path Optimization:** `ProcessLiveExamScore`-এ একই `exam_questions_{id}` cache key reuse করা হয়েছে, যাতে স্কোর প্রসেসিংয়ের সময়ও প্রশ্ন fetch করতে অতিরিক্ত ডাটাবেস hit না লাগে।
+- **Repo-local Skill Setup:** `.agents/skills/` ফোল্ডারে এই প্রজেক্টের জন্য senior workflow skill যোগ করা হয়েছে। এর মধ্যে project map, Laravel feature workflow, admin/RBAC/exam, frontend/PWA, testing-quality এবং payment gateway preparation skill অন্তর্ভুক্ত।
+
+### টেস্টিং
+- **Code Path Review:** `git diff` দেখে নিশ্চিত করা হয়েছে যে live exam flow-এ visible code change হিসেবে join flow এবং score processing - দুই জায়গাতেই একই cache strategy ব্যবহার করা হচ্ছে।
+- **Documentation Sync:** `docs/changelog.md` এবং `docs/walkthrough.md`-কে বর্তমান visible repository change-এর সাথে মিলিয়ে আপডেট করা হয়েছে যাতে future maintenance-এ ভুল historical note না থাকে।
+
+### পরবর্তী ধাপ
+- **ধাপ ২১:** পেমেন্ট গেটওয়ে ইন্টিগ্রেশন (SSLCommerz) এবং প্রিমিয়াম এক্সেস কন্ট্রোল।

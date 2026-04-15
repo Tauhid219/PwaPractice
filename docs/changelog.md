@@ -6,6 +6,7 @@
 
 ## [Unreleased]
 
+
 ### ২৮ ফেব্রুয়ারি ২০২৬
 
 #### 📋 Planning
@@ -349,3 +350,16 @@
 - **Permission-Based Access:** হার্ডকোডেড রোল চেকের পরিবর্তে `access dashboard` পারমিশন চেক ব্যবহার করে `IsAdmin` মিডলওয়্যার এবং ড্যাশবোর্ড রিডাইরেক্ট লজিক অপ্টিমাইজ করা হয়েছে।
 - **Sidebar & Navbar Updates:** "My Progress" লিংক এবং অ্যাডমিন প্যানেল বাটন এখন ডাইনামিক পারমিশন চেকের মাধ্যমে নিয়ন্ত্রিত হয়, যা `guest` রোলধারীদের (যদি পারমিশন থাকে) জন্য অ্যাডমিন প্যানেল এক্সেস এনাবল করে।
 
+---
+
+### ১৫ এপ্রিল ২০২৬
+
+#### ⚡ Performance Optimization: Live Exam Question Caching
+- **Join Flow Cache:** `Frontend\\LiveExamController@join`-এ `Cache::remember()` ব্যবহার করে `exam_questions_{id}` কী-তে ১ ঘণ্টার জন্য প্রশ্ন লোড ক্যাশ করা হয়েছে, যাতে একই এক্সামের প্রশ্ন বারবার ডাটাবেস থেকে আনতে না হয়।
+- **Scoring Cache Reuse:** `ProcessLiveExamScore`-এও একই cache key reuse করা হয়েছে, ফলে সাবমিশনের সময় স্কোর ক্যালকুলেশনের জন্য একই প্রশ্নসেট আবার নতুন করে query করতে হচ্ছে না।
+- **Expected Benefit:** live exam চলাকালীন বহু ব্যবহারকারী একসাথে join বা submit করলে ডাটাবেসের উপর চাপ কমবে এবং response path আরও predictable হবে।
+
+#### 🤖 Repository Workflow: Local Skills Added
+- **Repo-local Skills Directory:** `.agents/skills/` ফোল্ডার তৈরি করে এই প্রজেক্টের জন্য local skill structure যোগ করা হয়েছে।
+- **Senior Workflow Skills:** project map, Laravel feature workflow, admin/RBAC/exam workflow, frontend/PWA workflow, testing-quality workflow - এই core development skill গুলো যোগ করা হয়েছে।
+- **Payment Preparation Skills:** payment gateway integration, payment security/webhooks, payment data modeling, এবং payment operations/reporting skill যোগ করা হয়েছে যাতে পরবর্তী payment implementation senior-level workflow অনুযায়ী করা যায়।

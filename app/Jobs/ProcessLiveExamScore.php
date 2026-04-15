@@ -33,8 +33,12 @@ class ProcessLiveExamScore
      */
     public function handle(): void
     {
-        $totalQuestions = $this->exam->questions->count();
-        $score = QuizScoringService::calculateScore($this->exam->questions, $this->answers);
+        $questions = \Illuminate\Support\Facades\Cache::remember("exam_questions_{$this->exam->id}", 3600, function () {
+            return $this->exam->questions;
+        });
+
+        $totalQuestions = $questions->count();
+        $score = QuizScoringService::calculateScore($questions, $this->answers);
         $passed = QuizScoringService::isPassed($score, $totalQuestions);
 
         LiveExamAttempt::create([
