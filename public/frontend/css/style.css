@@ -501,3 +501,29 @@ h6,
     padding-right: 0;
     border-right: none;
 }
+
+/*** Skeleton Shimmer Effect ***/
+.skeleton {
+    background: #f6f7f8;
+    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-repeat: no-repeat;
+    background-size: 800px 104px;
+    display: inline-block;
+    position: relative;
+    animation-duration: 1.2s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeholderShimmer;
+    animation-timing-function: linear;
+    border-radius: 4px;
+}
+
+@keyframes placeholderShimmer {
+    0% { background-position: -468px 0; }
+    100% { background-position: 468px 0; }
+}
+
+.skeleton-text { height: 1.5rem; width: 100%; margin-bottom: 0.5rem; }
+.skeleton-title { height: 2.5rem; width: 70%; margin-bottom: 2rem; }
+.skeleton-option { height: 3.5rem; width: 100%; margin-bottom: 1rem; border-radius: 8px; }
+

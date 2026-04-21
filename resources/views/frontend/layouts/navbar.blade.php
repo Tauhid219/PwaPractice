@@ -30,13 +30,21 @@
                 @if(auth()->user()->hasPermissionTo('access dashboard') || auth()->user()->hasRole('super-admin'))
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary rounded-pill px-3">Admin Panel</a>
                 @else
-                    <div class="nav-item dropdown d-inline-block">
-                        <a href="#" class="btn btn-outline-primary rounded-pill px-3 dropdown-toggle shadow-sm" data-bs-toggle="dropdown">
-                            <i class="fa fa-user-circle me-1"></i> Profile
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end border-0 rounded-bottom shadow-sm m-0">
-                            <a href="{{ route('profile.edit') }}" class="dropdown-item"><i class="fa fa-user me-2 text-primary"></i>My Profile</a>
-                            <a href="{{ route('profile.progress') }}" class="dropdown-item"><i class="fa fa-chart-line me-2 text-primary"></i>Study Progress</a>
+                    <div class="d-flex align-items-center gap-2">
+                        @if(auth()->user()->current_streak > 0)
+                            <div class="streak-badge bg-light border rounded-pill px-3 py-1 shadow-sm d-flex align-items-center">
+                                <span class="me-1">🔥</span>
+                                <span class="fw-bold text-danger">{{ auth()->user()->current_streak }}</span>
+                            </div>
+                        @endif
+                        <div class="nav-item dropdown d-inline-block">
+                            <a href="#" class="btn btn-outline-primary rounded-pill px-3 dropdown-toggle shadow-sm" data-bs-toggle="dropdown">
+                                <i class="fa fa-user-circle me-1"></i> Profile
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end border-0 rounded-bottom shadow-sm m-0">
+                                <a href="{{ route('profile.edit') }}" class="dropdown-item"><i class="fa fa-user me-2 text-primary"></i>My Profile</a>
+                                <a href="{{ route('profile.progress') }}" class="dropdown-item"><i class="fa fa-chart-line me-2 text-primary"></i>Study Progress</a>
+                            </div>
                         </div>
                     </div>
                 @endif

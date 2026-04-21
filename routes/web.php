@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\QuestionController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\LiveExamController as AdminLiveExamController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Frontend\LiveExamController;
 use App\Http\Controllers\Frontend\QuizController;
 use App\Http\Controllers\FrontendController;
@@ -24,6 +24,7 @@ Route::get('/dashboard', function () {
     if (auth()->user()->hasPermissionTo('access dashboard') || auth()->user()->hasRole('super-admin')) {
         return redirect()->route('admin.dashboard');
     }
+
     return redirect()->route('home');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -36,7 +37,7 @@ Route::middleware('auth')->group(function () {
     // Quiz Routes
     Route::middleware(['check.level.access'])->group(function () {
         Route::get('/category/{slug}/level/{level}/quiz', [QuizController::class, 'start'])->name('quiz.start');
-        Route::post('/category/{slug}/level/{level}/quiz', [QuizController::class, 'submit'])->name('quiz.submit');
+        Route::post('/category/{slug}/level/{level}/quiz', [QuizController::class, 'submit'])->name('quiz.submit')->middleware('throttle:exam-submit');
     });
     Route::get('/quiz/attempt/{attempt}/result', [QuizController::class, 'result'])->name('quiz.result');
 
@@ -44,7 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/live-exams', [LiveExamController::class, 'index'])->name('live-exams.index');
     Route::get('/live-exams/{exam}', [LiveExamController::class, 'show'])->name('live-exams.show');
     Route::get('/live-exams/{exam}/join', [LiveExamController::class, 'join'])->name('live-exams.join');
-    Route::post('/live-exams/{exam}/submit', [LiveExamController::class, 'submit'])->name('live-exams.submit');
+    Route::post('/live-exams/{exam}/submit', [LiveExamController::class, 'submit'])->name('live-exams.submit')->middleware('throttle:exam-submit');
     Route::get('/live-exams/{exam}/results', [LiveExamController::class, 'results'])->name('live-exams.results');
 });
 
@@ -62,7 +63,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Questions
     Route::resource('questions', QuestionController::class);
-    Route::post('questions/import', [QuestionController::class, 'import'])->name('questions.import');
+    Route::post('questions/import', [QuestionController::class, 'import'])->name('questions.import')->middleware('throttle:api');
 
     // Live Exams
     Route::resource('live-exams', AdminLiveExamController::class);

@@ -9,8 +9,16 @@ use App\Models\ReadQuestion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * Handles general frontend operations like home page and study lists.
+ */
 class FrontendController extends Controller
 {
+    /**
+     * Display the student landing page with subject categories.
+     * 
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $categories = Cache::rememberForever('categories_all', function () {
@@ -27,11 +35,11 @@ class FrontendController extends Controller
 
     public function categoryLevels($slug)
     {
-        $category = Cache::rememberForever('category_' . $slug, function () use ($slug) {
+        $category = Cache::rememberForever('category_'.$slug, function () use ($slug) {
             return Category::where('slug', $slug)->firstOrFail();
         });
 
-        $levels = Cache::rememberForever('levels_for_cat_' . $category->id, function () use ($category) {
+        $levels = Cache::rememberForever('levels_for_cat_'.$category->id, function () use ($category) {
             $l = Level::whereHas('questions', function ($q) use ($category) {
                 $q->where('category_id', $category->id);
             })->get();
@@ -42,9 +50,16 @@ class FrontendController extends Controller
         return view('frontend.levels', compact('category', 'levels'));
     }
 
+    /**
+     * Display questions for a specific category and level.
+     * 
+     * @param  string  $categorySlug
+     * @param  int  $levelId
+     * @return \Illuminate\View\View
+     */
     public function levelQuestions($categorySlug, $levelId)
     {
-        $category = Cache::rememberForever('category_' . $categorySlug, function () use ($categorySlug) {
+        $category = Cache::rememberForever('category_'.$categorySlug, function () use ($categorySlug) {
             return Category::where('slug', $categorySlug)->firstOrFail();
         });
         $level = Level::findOrFail($levelId);

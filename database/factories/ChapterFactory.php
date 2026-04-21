@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use App\Models\Category;
+use App\Models\Chapter;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Chapter>
+ * @extends Factory<Chapter>
  */
 class ChapterFactory extends Factory
 {

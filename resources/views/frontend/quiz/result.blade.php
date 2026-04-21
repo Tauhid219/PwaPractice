@@ -61,10 +61,25 @@
             const winAudio = new Audio('{{ asset("frontend/sounds/ting.mp3") }}');
             winAudio.volume = 0.5;
             winAudio.play().catch(e => {});
+            
+            Swal.fire({
+                title: 'অভিনন্দন!',
+                text: 'আপনি লেভেলটি সফলভাবে সম্পন্ন করেছেন।',
+                icon: 'success',
+                timer: 3000,
+                confirmButtonText: 'ঠিক আছে'
+            });
         @else
             const loseAudio = new Audio('{{ asset("frontend/sounds/buzzer.mp3") }}');
             loseAudio.volume = 0.5;
             loseAudio.play().catch(e => {});
+
+            Swal.fire({
+                title: 'ইশ!',
+                text: 'পাস করতে হলে অন্তত ৮০% নম্বর পেতে হবে। আবার চেষ্টা করুন!',
+                icon: 'error',
+                confirmButtonText: 'ঠিক আছে'
+            });
         @endif
     });
 </script>

@@ -8,15 +8,21 @@ use App\Models\ReadQuestion;
 use App\Models\User;
 use App\Models\UserProgress;
 use Illuminate\Http\Request;
-
-use Spatie\Permission\Models\Role;
-
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
+/**
+ * Handles administrative user management and student-facing progress views.
+ */
 class UserController extends Controller implements HasMiddleware
 {
+    /**
+     * Define middleware for the controller.
+     * 
+     * @return array
+     */
     public static function middleware(): array
     {
         return [
@@ -30,16 +36,21 @@ class UserController extends Controller implements HasMiddleware
     /**
      * Display a listing of the resource.
      */
+    /**
+     * Display a listing of users with roles.
+     * 
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $query = User::with('roles')->orderBy('id', 'desc');
 
         // Normal students or users without 'manage users' can only see themselves
-        if (!auth()->user()->can('manage users')) {
+        if (! auth()->user()->can('manage users')) {
             $query->where('id', auth()->id());
         } else {
             // Permission granted: but restrict super-admin visibility for non-super-admins
-            if (!auth()->user()->hasRole('super-admin')) {
+            if (! auth()->user()->hasRole('super-admin')) {
                 $query->whereDoesntHave('roles', function ($q) {
                     $q->where('name', 'super-admin');
                 });
@@ -57,7 +68,7 @@ class UserController extends Controller implements HasMiddleware
     public function create()
     {
         $rolesQuery = Role::query();
-        if (!auth()->user()->hasRole('super-admin')) {
+        if (! auth()->user()->hasRole('super-admin')) {
             $rolesQuery->where('name', '!=', 'super-admin');
         }
         $roles = $rolesQuery->get();
@@ -74,18 +85,18 @@ class UserController extends Controller implements HasMiddleware
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'roles' => 'required|array'
+            'roles' => 'required|array',
         ]);
 
         // Prevent non-super-admins from assigning super-admin role
-        if (!auth()->user()->hasRole('super-admin') && in_array('super-admin', $request->roles)) {
+        if (! auth()->user()->hasRole('super-admin') && in_array('super-admin', $request->roles)) {
             return redirect()->back()->with('error', 'You cannot assign the Super Admin role.');
         }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'password' => Hash::make($request->password),
             'is_admin' => in_array('admin', $request->roles) || in_array('super-admin', $request->roles),
         ]);
 
@@ -100,25 +111,25 @@ class UserController extends Controller implements HasMiddleware
     public function edit(User $user)
     {
         // Security: Users without 'edit users' can ONLY edit their own profile
-        if (!auth()->user()->can('edit users')) {
+        if (! auth()->user()->can('edit users')) {
             if (auth()->id() !== $user->id) {
                 return redirect()->route('admin.users.index')->with('error', 'You can only edit your own profile.');
             }
         }
 
         // Don't allow editing super-admin if user is not super-admin
-        if ($user->hasRole('super-admin') && !auth()->user()->hasRole('super-admin')) {
+        if ($user->hasRole('super-admin') && ! auth()->user()->hasRole('super-admin')) {
             return redirect()->route('admin.users.index')->with('error', 'You do not have permission to edit a Super Admin.');
         }
 
         $rolesQuery = Role::query();
-        if (!auth()->user()->hasRole('super-admin')) {
+        if (! auth()->user()->hasRole('super-admin')) {
             $rolesQuery->where('name', '!=', 'super-admin');
         }
         $roles = $rolesQuery->get();
-        
+
         $userRoles = $user->roles->pluck('name')->toArray();
-        
+
         return view('admin.users.edit', compact('user', 'roles', 'userRoles'));
     }
 
@@ -128,7 +139,7 @@ class UserController extends Controller implements HasMiddleware
     public function show(User $user)
     {
         // Security: Users without 'manage users' can ONLY view their own progress
-        if (!auth()->user()->can('manage users')) {
+        if (! auth()->user()->can('manage users')) {
             if (auth()->id() !== $user->id) {
                 return redirect()->route('admin.users.index')->with('error', 'You can only view your own progress.');
             }
@@ -142,7 +153,7 @@ class UserController extends Controller implements HasMiddleware
         ];
 
         $quizAttempts = QuizAttempt::where('user_id', $user->id)
-            ->with(['level', 'level.questions'])
+            ->with(['level', 'category'])
             ->orderBy('id', 'desc')
             ->paginate(config('quiz.pagination.admin_user_attempts', 15));
 
@@ -162,20 +173,20 @@ class UserController extends Controller implements HasMiddleware
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:8|confirmed',
-            'roles' => 'nullable|array' // Nullable for guests
+            'roles' => 'nullable|array', // Nullable for guests
         ]);
 
         // Security: Users without 'edit users' can ONLY update their own profile
-        if (!auth()->user()->can('edit users')) {
+        if (! auth()->user()->can('edit users')) {
             if (auth()->id() !== $user->id) {
                 return redirect()->route('admin.users.index')->with('error', 'You can only update your own profile.');
             }
         }
 
         // Guard against unauthorized modifications of super-admin users
-        if ($user->hasRole('super-admin') && !auth()->user()->hasRole('super-admin')) {
+        if ($user->hasRole('super-admin') && ! auth()->user()->hasRole('super-admin')) {
             return redirect()->route('admin.users.index')->with('error', 'You do not have permission to modify a Super Admin.');
         }
 
@@ -185,7 +196,7 @@ class UserController extends Controller implements HasMiddleware
         ];
 
         if ($request->filled('password')) {
-            $userData['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+            $userData['password'] = Hash::make($request->password);
         }
 
         $user->update($userData);
@@ -193,12 +204,12 @@ class UserController extends Controller implements HasMiddleware
         // Role management - Only users with 'edit users' can change roles
         if (auth()->user()->can('edit users')) {
             // Check if the auth user is trying to change their own roles
-            if (auth()->id() === $user->id && !auth()->user()->hasRole('super-admin')) {
+            if (auth()->id() === $user->id && ! auth()->user()->hasRole('super-admin')) {
                 if ($request->roles && $request->roles != $user->roles->pluck('name')->toArray()) {
                     return redirect()->route('admin.users.index')->with('error', 'You cannot change your own roles unless you are a Super Admin.');
                 }
             }
-            
+
             if ($request->roles) {
                 $user->syncRoles($request->roles);
             }
@@ -208,7 +219,7 @@ class UserController extends Controller implements HasMiddleware
         $user->is_admin = $user->hasRole(['super-admin', 'admin']);
         $user->save();
 
-        return redirect()->route('admin.users.index')->with('success', "Profile updated successfully.");
+        return redirect()->route('admin.users.index')->with('success', 'Profile updated successfully.');
     }
 
     /**
@@ -222,7 +233,7 @@ class UserController extends Controller implements HasMiddleware
         }
 
         // Prevent deleting super-admins if the auth user is not a super-admin
-        if ($user->hasRole('super-admin') && !auth()->user()->hasRole('super-admin')) {
+        if ($user->hasRole('super-admin') && ! auth()->user()->hasRole('super-admin')) {
             return redirect()->route('admin.users.index')->with('error', 'You do not have permission to delete a Super Admin.');
         }
 

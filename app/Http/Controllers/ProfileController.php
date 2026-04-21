@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use App\Models\QuizAttempt;
 use App\Models\ReadQuestion;
 use App\Models\UserProgress;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -72,7 +72,7 @@ class ProfileController extends Controller
     public function progress(Request $request): View
     {
         $user = $request->user();
-        
+
         $totalRead = ReadQuestion::where('user_id', $user->id)->count();
 
         $progressStats = [

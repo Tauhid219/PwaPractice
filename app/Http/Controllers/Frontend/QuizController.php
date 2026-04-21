@@ -19,7 +19,7 @@ class QuizController extends Controller
      */
     public function start($slug, Level $level)
     {
-        $category = Cache::rememberForever('category_' . $slug, function () use ($slug) {
+        $category = Cache::rememberForever('category_'.$slug, function () use ($slug) {
             return Category::where('slug', $slug)->firstOrFail();
         });
 
@@ -42,7 +42,7 @@ class QuizController extends Controller
      */
     public function submit(SubmitQuizRequest $request, $slug, Level $level)
     {
-        $category = Cache::rememberForever('category_' . $slug, function () use ($slug) {
+        $category = Cache::rememberForever('category_'.$slug, function () use ($slug) {
             return Category::where('slug', $slug)->firstOrFail();
         });
 
@@ -64,8 +64,13 @@ class QuizController extends Controller
 
         // If passed, unlock or complete
         if ($passed) {
+            $user = Auth::user();
+
+            // Streak logic
+            $user->updateStreak();
+
             UserProgress::updateOrCreate(
-                ['user_id' => Auth::id(), 'category_id' => $category->id, 'level_id' => $level->id],
+                ['user_id' => $user->id, 'category_id' => $category->id, 'level_id' => $level->id],
                 ['status' => 'completed']
             );
 
@@ -73,7 +78,7 @@ class QuizController extends Controller
             $nextLevel = Level::where('id', '>', $level->id)->orderBy('id', 'asc')->first();
             if ($nextLevel) {
                 UserProgress::firstOrCreate(
-                    ['user_id' => Auth::id(), 'category_id' => $category->id, 'level_id' => $nextLevel->id],
+                    ['user_id' => $user->id, 'category_id' => $category->id, 'level_id' => $nextLevel->id],
                     ['status' => 'active']
                 );
             }
@@ -92,9 +97,11 @@ class QuizController extends Controller
             abort(403);
         }
 
+        // Load relationships to avoid N+1 in view
+        $attempt->load(['level', 'category']);
         $level = $attempt->level;
         $category = $attempt->category;
-        $totalQuestions = $level->questions()->where('category_id', $category->id)->count();
+        $totalQuestions = $attempt->total_questions;
 
         return view('frontend.quiz.result', compact('attempt', 'level', 'totalQuestions', 'category'));
     }

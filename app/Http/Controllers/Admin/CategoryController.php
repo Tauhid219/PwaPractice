@@ -6,13 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
-use Illuminate\Support\Str;
-
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Str;
 
+/**
+ * Handles administrative management of quiz categories.
+ */
 class CategoryController extends Controller implements HasMiddleware
 {
+    /**
+     * Define middleware for the controller.
+     * 
+     * @return array
+     */
     public static function middleware(): array
     {
         return [
@@ -22,6 +29,12 @@ class CategoryController extends Controller implements HasMiddleware
             new Middleware('permission:delete categories', only: ['destroy']),
         ];
     }
+
+    /**
+     * Display a listing of categories.
+     * 
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $categories = Category::orderBy('order')->get();

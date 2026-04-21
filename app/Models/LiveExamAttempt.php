@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LiveExamAttempt extends Model
 {
-    protected $fillable = ['live_exam_id', 'user_id', 'score', 'passed'];
+    protected $fillable = ['live_exam_id', 'user_id', 'score', 'passed', 'tab_switches'];
 
     public function exam()
     {

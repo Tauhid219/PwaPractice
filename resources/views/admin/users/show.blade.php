@@ -14,7 +14,16 @@
 
     <!-- Summary Stats -->
     <div class="row">
-        <div class="col-md-3 col-sm-6 col-12">
+        <div class="col-md-2 col-sm-6 col-12">
+            <div class="info-box shadow-sm">
+                <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-fire"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text text-uppercase font-weight-bold tiny">Current Streak</span>
+                    <span class="info-box-number h4 mb-0">{{ $user->current_streak }} Days</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-6 col-12">
             <div class="info-box shadow-sm">
                 <span class="info-box-icon bg-info elevation-1"><i class="fas fa-book-open"></i></span>
                 <div class="info-box-content">
@@ -23,11 +32,11 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6 col-12">
+        <div class="col-md-2 col-sm-6 col-12">
             <div class="info-box shadow-sm">
                 <span class="info-box-icon bg-success elevation-1"><i class="fas fa-check-double"></i></span>
                 <div class="info-box-content">
-                    <span class="info-box-text text-uppercase font-weight-bold tiny">Completed Levels</span>
+                    <span class="info-box-text text-uppercase font-weight-bold tiny">Completed</span>
                     <span class="info-box-number h4 mb-0">{{ $progressStats['total_completed_levels'] }}</span>
                 </div>
             </div>

@@ -15,7 +15,12 @@
     </a>
 
     @auth
-        <a href="{{ auth()->user()->is_admin ? route('admin.dashboard') : route('profile.edit') }}" class="text-center text-decoration-none text-muted">
+        <a href="{{ auth()->user()->is_admin ? route('admin.dashboard') : route('profile.edit') }}" class="text-center text-decoration-none text-muted position-relative">
+            @if(auth()->user()->current_streak > 0)
+                <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger" style="font-size: 10px; margin-left: 15px; border: 2px solid white;">
+                    🔥 {{ auth()->user()->current_streak }}
+                </span>
+            @endif
             <i class="fa fa-user fs-4"></i>
             <span class="d-block" style="font-size: 12px;">প্রোফাইল</span>
         </a>

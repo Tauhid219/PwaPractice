@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use App\Models\User;
-use Spatie\Permission\PermissionRegistrar;
-
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -36,7 +35,7 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::findOrCreate('access reports');
 
         // Create Roles and Assign Permissions
-        
+
         // Super Admin: gets all permissions
         $roleSuperAdmin = Role::findOrCreate('super-admin');
         $roleSuperAdmin->givePermissionTo(Permission::all());
@@ -63,7 +62,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage questions', 'create questions', 'edit questions',
             'manage exams', 'create exams', 'edit exams', 'view results',
             'manage users',
-            'access dashboard'
+            'access dashboard',
         ]);
 
         // Editor: only manage questions and categories
@@ -71,13 +70,13 @@ class RolesAndPermissionsSeeder extends Seeder
         $roleEditor->givePermissionTo([
             'manage categories', 'edit categories', 'create categories',
             'manage questions', 'create questions', 'edit questions',
-            'access dashboard'
+            'access dashboard',
         ]);
 
         // Guest: can be given specific operational permissions
         $roleGuest = Role::findOrCreate('guest');
         $roleGuest->givePermissionTo([
-            'access dashboard'
+            'access dashboard',
         ]);
 
         // Student: limited access for regular users

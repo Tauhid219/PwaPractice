@@ -10,7 +10,7 @@ class QuizScoringServiceTest extends TestCase
     /**
      * Test checkAnswer identifies correct/incorrect answers correctly.
      */
-    public function test_checkAnswer_identifies_correct_incorrect_answers()
+    public function test_check_answer_identifies_correct_incorrect_answers()
     {
         // Identical
         $this->assertTrue(QuizScoringService::checkAnswer('Apple', 'Apple'));
@@ -29,7 +29,7 @@ class QuizScoringServiceTest extends TestCase
     /**
      * Test calculateScore returns a correct matching count.
      */
-    public function test_calculateScore_returns_correct_matching_count()
+    public function test_calculate_score_returns_correct_matching_count()
     {
         // Mock collection of questions
         $questions = collect([
@@ -52,7 +52,7 @@ class QuizScoringServiceTest extends TestCase
     /**
      * Test isPassed handles percentage logic correctly.
      */
-    public function test_isPassed_handles_percentage_logic()
+    public function test_is_passed_handles_percentage_logic()
     {
         // By default, it's 80%? But since it's a unit test using PHPUnit\Framework\TestCase,
         // it doesn't load the Laravel context (and config) by default.
@@ -62,7 +62,7 @@ class QuizScoringServiceTest extends TestCase
 
         // If I use Tests\TestCase, I get Laravel environment.
         // Let's use 80 as a fixed passing percentage for testing.
-        
+
         $this->assertTrue(QuizScoringService::isPassed(8, 10, 80)); // Exactly 80%
         $this->assertTrue(QuizScoringService::isPassed(9, 10, 80)); // 90%
         $this->assertFalse(QuizScoringService::isPassed(7, 10, 80)); // 70%

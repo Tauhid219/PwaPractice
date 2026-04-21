@@ -2,12 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Category;
+use App\Models\Level;
+use App\Models\UserProgress;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Models\Level;
-use App\Models\Category;
-use App\Models\UserProgress;
 
 class CheckLevelAccess
 {

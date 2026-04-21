@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Collection;
+
 class QuizScoringService
 {
     /**
@@ -22,7 +24,7 @@ class QuizScoringService
     /**
      * Calculate score from a collection of questions and an array of answers.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection  $questions
+     * @param  \Illuminate\Database\Eloquent\Collection|Collection  $questions
      * @param  array  $userAnswers  Array keyed by question ID
      */
     public static function calculateScore($questions, array $userAnswers): int

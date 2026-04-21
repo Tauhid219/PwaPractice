@@ -18,14 +18,7 @@
 
     <div class="row">
         <div class="col-12">
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            @endif
+
 
             <div class="card card-outline card-primary shadow-sm">
                 <div class="card-body p-0">
@@ -58,7 +51,7 @@
                                             </a>
                                             @endcan
                                             @can('delete categories')
-                                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this category?');">
+                                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="d-inline-block confirm-delete">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">

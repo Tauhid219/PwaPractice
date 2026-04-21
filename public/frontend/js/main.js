@@ -15,6 +15,32 @@
     };
     spinner();
 
+    // NProgress Configuration
+    if (typeof NProgress !== 'undefined') {
+        NProgress.configure({ showSpinner: false });
+        
+        // Start on link click
+        $('a').on('click', function(e) {
+            // Exceptions: target blank, javascript, hash links
+            if (this.hostname === window.location.hostname && 
+                !this.target && 
+                this.href.indexOf('#') === -1 && 
+                this.href.indexOf('javascript:') === -1) {
+                NProgress.start();
+            }
+        });
+
+        // Start on form submission
+        $('form').on('submit', function() {
+            NProgress.start();
+        });
+
+        // End when page is loaded
+        $(window).on('load', function() {
+            NProgress.done();
+        });
+    }
+
 
     // Sticky Navbar
     $(window).scroll(function () {

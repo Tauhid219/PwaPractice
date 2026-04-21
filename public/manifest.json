@@ -1,30 +1,57 @@
 {
     "name": "জিনিয়াস কিডস - কুইজ গাইডবুক",
     "short_name": "Genius Kids",
-    "start_url": "./",
+    "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
-    "theme_color": "#0d6efd",
-    "description": "জিনিয়াস কিডস কুইজ প্রতিযোগিতার স্মার্ট গাইডবুক",
+    "theme_color": "#FE5D37",
+    "orientation": "portrait",
+    "description": "জিনিয়াস কিডস কুইজ প্রতিযোগিতার স্মার্ট গাইডবুক। এখানে আপনি বিভিন্ন ক্যাটাগরিতে কুইজ খেলতে পারবেন এবং নিজের মেধা যাচাই করতে পারবেন।",
     "icons": [
         {
-            "src": "icons/app-icon.svg",
-            "sizes": "192x192 512x512",
-            "type": "image/svg+xml"
+            "src": "icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ],
+    "shortcuts": [
+        {
+            "name": "লাইভ এক্সাম",
+            "short_name": "এক্সাম",
+            "description": "সরাসরি লাইভ পরীক্ষায় অংশগ্রহণ করুন",
+            "url": "/live-exams",
+            "icons": [{ "src": "icons/icon-192x192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "ফলাফল",
+            "short_name": "ফলাফল",
+            "description": "আপনার দেওয়া সব কুইজের রেজাল্ট দেখুন",
+            "url": "/profile/progress",
+            "icons": [{ "src": "icons/icon-192x192.png", "sizes": "192x192" }]
+        }
+    ],
+    "categories": ["education", "games", "books"],
     "screenshots": [
         {
             "src": "frontend/img/carousel-1.jpg",
-            "sizes": "1280x720",
+            "sizes": "1000x800",
             "type": "image/jpeg",
-            "form_factor": "wide"
+            "form_factor": "wide",
+            "label": "Genius Kids Home Screen"
         },
         {
             "src": "frontend/img/classes-1.jpg",
-            "sizes": "400x400",
+            "sizes": "400x600",
             "type": "image/jpeg",
-            "form_factor": "narrow"
+            "form_factor": "narrow",
+            "label": "Category List"
         }
     ]
 }

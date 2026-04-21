@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
-
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller implements HasMiddleware
 {
@@ -20,9 +19,11 @@ class PermissionController extends Controller implements HasMiddleware
             new Middleware('permission:delete roles', only: ['destroy']),
         ];
     }
+
     public function index()
     {
         $permissions = Permission::paginate(15);
+
         return view('admin.permissions.index', compact('permissions'));
     }
 
@@ -63,7 +64,7 @@ class PermissionController extends Controller implements HasMiddleware
     public function update(Request $request, Permission $permission)
     {
         $request->validate([
-            'name' => 'required|string|unique:permissions,name,' . $permission->id . '|max:255',
+            'name' => 'required|string|unique:permissions,name,'.$permission->id.'|max:255',
         ]);
 
         $permission->update(['name' => $request->name]);

@@ -63,6 +63,7 @@
                                     <th>Student Name</th>
                                     <th>Email</th>
                                     <th class="text-center">Score</th>
+                                    <th class="text-center">Tab Switches</th>
                                     <th>Submitted At</th>
                                 </tr>
                             </thead>
@@ -85,10 +86,19 @@
                                         </td>
                                         <td><strong>{{ $attempt->user->name ?? 'Unknown' }}</strong></td>
                                         <td class="small">{{ $attempt->user->email ?? 'N/A' }}</td>
-                                        <td class="text-center">
+                                                                                    <td class="text-center">
                                             <span class="badge badge-success p-2 px-3 h6 mb-0 shadow-sm border border-success">
                                                 {{ round($attempt->score) }}
                                             </span>
+                                        </td>
+                                        <td class="text-center">
+                                            @if($attempt->tab_switches > 0)
+                                                <span class="badge badge-danger p-2 px-3 shadow-sm" title="User switched tabs during exam">
+                                                    <i class="fas fa-exclamation-triangle mr-1"></i> {{ $attempt->tab_switches }}
+                                                </span>
+                                            @else
+                                                <span class="text-muted">–</span>
+                                            @endif
                                         </td>
                                         <td class="small text-muted">
                                             {{ $attempt->created_at->format('d M Y, h:i A') }} <br>

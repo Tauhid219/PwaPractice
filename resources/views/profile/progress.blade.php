@@ -21,30 +21,44 @@
     <div class="container">
         <!-- Summary Stats Cards -->
         <div class="row g-4 mb-5">
-            <div class="col-lg-3 col-sm-6 wow fadeIn" data-wow-delay="0.1s">
-                <div class="p-4 rounded shadow-sm border-start border-primary border-5 bg-light h-100">
+            <div class="col-lg-2 col-sm-6 wow fadeIn" data-wow-delay="0.1s">
+                <div class="p-4 rounded shadow-sm border-start border-danger border-5 bg-light h-100">
                     <div class="d-flex align-items-center">
-                        <div class="bg-primary-soft rounded-circle p-3 me-3">
-                            <i class="fa fa-book-open text-primary fa-2x"></i>
+                        <div class="bg-danger-soft rounded-circle p-3 me-3">
+                            <i class="fa fa-fire text-danger fa-2x"></i>
                         </div>
                         <div>
-                            <h6 class="text-muted mb-1">পড়া হয়েছে</h6>
-                            <h3 class="mb-0">{{ $totalRead }}</h3>
-                            <small class="text-primary-emphasis">টি প্রশ্ন</small>
+                            <h6 class="text-muted mb-1">ধারা (Streak)</h6>
+                            <h3 class="mb-0">{{ $user->current_streak }}</h3>
+                            <small class="text-danger-emphasis">দিন</small>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-sm-6 wow fadeIn" data-wow-delay="0.3s">
-                <div class="p-4 rounded shadow-sm border-start border-success border-5 bg-light h-100">
+            <div class="col-lg-2 col-sm-6 wow fadeIn" data-wow-delay="0.2s">
+                <div class="p-4 rounded shadow-sm border-start border-primary border-5 bg-light h-100">
                     <div class="d-flex align-items-center">
-                        <div class="bg-success-soft rounded-circle p-3 me-3">
-                            <i class="fa fa-check-double text-success fa-2x"></i>
+                        <div class="bg-primary-soft rounded-circle p-3 me-2">
+                            <i class="fa fa-book-open text-primary fa-xl"></i>
                         </div>
                         <div>
-                            <h6 class="text-muted mb-1">সম্পন্ন লেভেল</h6>
+                            <h6 class="text-muted mb-1">পড়া হয়েছে</h6>
+                            <h3 class="mb-0">{{ $totalRead }}</h3>
+                            <small class="text-primary-emphasis text-nowrap">টি প্রশ্ন</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-sm-6 wow fadeIn" data-wow-delay="0.3s">
+                <div class="p-4 rounded shadow-sm border-start border-success border-5 bg-light h-100">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success-soft rounded-circle p-3 me-2">
+                            <i class="fa fa-check-double text-success fa-xl"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted mb-1">শেষ লেভেল</h6>
                             <h3 class="mb-0">{{ $progressStats['total_completed_levels'] }}</h3>
-                            <small class="text-success-emphasis text-nowrap">টি লেভেল</small>
+                            <small class="text-success-emphasis text-nowrap">টি</small>
                         </div>
                     </div>
                 </div>
@@ -58,7 +72,7 @@
                         <div>
                             <h6 class="text-muted mb-1">চলমান লেভেল</h6>
                             <h3 class="mb-0">{{ $progressStats['total_active_levels'] }}</h3>
-                            <small class="text-warning-emphasis text-nowrap">টি লেভেল</small>
+                            <small class="text-warning-emphasis">টি লেভেল</small>
                         </div>
                     </div>
                 </div>
@@ -73,6 +87,68 @@
                             <h6 class="text-muted mb-1">কুইজ দিয়েছেন</h6>
                             <h3 class="mb-0">{{ $quizAttempts->total() }}</h3>
                             <small class="text-info-emphasis">বার</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievement Badges Section -->
+        <div class="row g-4 mb-5 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="col-12">
+                <div class="bg-light rounded p-4 shadow-sm border-top border-primary border-5">
+                    <h3 class="mb-4"><i class="fa fa-award text-primary me-2"></i> অর্জিত ব্যাজসমূহ</h3>
+                    <div class="d-flex flex-wrap gap-4">
+                        <!-- 7 Day Streak Badge -->
+                        <div class="badge-item text-center {{ $user->current_streak >= config('quiz.milestones.streak_bronze') ? '' : 'grayscale opacity-50' }}" style="width: 100px;">
+                            <div class="badge-icon mb-2">
+                                <img src="https://cdn-icons-png.flaticon.com/512/616/616412.png" alt="7 Days" width="60">
+                            </div>
+                            <small class="fw-bold d-block">{{ config('quiz.milestones.streak_bronze') }} দিনের ধারা</small>
+                            @if($user->current_streak >= config('quiz.milestones.streak_bronze'))
+                                <span class="badge bg-success rounded-pill small">অর্জিত</span>
+                            @else
+                                <span class="badge bg-secondary rounded-pill small">বাকি</span>
+                            @endif
+                        </div>
+
+                        <!-- 30 Day Streak Badge -->
+                        <div class="badge-item text-center {{ $user->current_streak >= config('quiz.milestones.streak_silver') ? '' : 'grayscale opacity-50' }}" style="width: 100px;">
+                            <div class="badge-icon mb-2">
+                                <img src="https://cdn-icons-png.flaticon.com/512/10432/10432486.png" alt="30 Days" width="60">
+                            </div>
+                            <small class="fw-bold d-block">{{ config('quiz.milestones.streak_silver') }} দিনের ধারা</small>
+                            @if($user->current_streak >= config('quiz.milestones.streak_silver'))
+                                <span class="badge bg-success rounded-pill small">অর্জিত</span>
+                            @else
+                                <span class="badge bg-secondary rounded-pill small">বাকি</span>
+                            @endif
+                        </div>
+
+                        <!-- 100 Quiz Attempts Badge -->
+                        <div class="badge-item text-center {{ $quizAttempts->total() >= config('quiz.milestones.quiz_century') ? '' : 'grayscale opacity-50' }}" style="width: 100px;">
+                            <div class="badge-icon mb-2">
+                                <img src="https://cdn-icons-png.flaticon.com/512/4345/4345094.png" alt="100 Quizzes" width="60">
+                            </div>
+                            <small class="fw-bold d-block">শতক কুইজ</small>
+                            @if($quizAttempts->total() >= config('quiz.milestones.quiz_century'))
+                                <span class="badge bg-success rounded-pill small">অর্জিত</span>
+                            @else
+                                <span class="badge bg-secondary rounded-pill small">বাকি</span>
+                            @endif
+                        </div>
+
+                        <!-- Level Master (10+ levels completed) -->
+                        <div class="badge-item text-center {{ $progressStats['total_completed_levels'] >= config('quiz.milestones.level_master') ? '' : 'grayscale opacity-50' }}" style="width: 100px;">
+                            <div class="badge-icon mb-2">
+                                <img src="https://cdn-icons-png.flaticon.com/512/2583/2583344.png" alt="Level Master" width="60">
+                            </div>
+                            <small class="fw-bold d-block">লেভেল মাস্টার</small>
+                            @if($progressStats['total_completed_levels'] >= config('quiz.milestones.level_master'))
+                                <span class="badge bg-success rounded-pill small">অর্জিত</span>
+                            @else
+                                <span class="badge bg-secondary rounded-pill small">বাকি</span>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -177,10 +253,16 @@
     .bg-success-soft { background-color: rgba(40, 167, 69, 0.1) !important; }
     .bg-warning-soft { background-color: rgba(255, 193, 7, 0.1) !important; }
     .bg-info-soft { background-color: rgba(23, 162, 184, 0.1) !important; }
+    .bg-danger-soft { background-color: rgba(220, 53, 69, 0.1) !important; }
     .text-primary-emphasis { color: #0056b3 !important; font-weight: 500; }
     .text-success-emphasis { color: #1e7e34 !important; font-weight: 500; }
     .text-warning-emphasis { color: #856404 !important; font-weight: 500; }
     .text-info-emphasis { color: #117a8b !important; font-weight: 500; }
+    .text-danger-emphasis { color: #a72834 !important; font-weight: 500; }
+    
+    .grayscale { filter: grayscale(100%); }
+    .badge-item { transition: transform 0.3s ease; }
+    .badge-item:hover { transform: translateY(-5px); }
     
     .category-progress-block h5 {
         font-size: 1.1rem;

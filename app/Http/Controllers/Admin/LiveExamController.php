@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Level;
 use App\Models\LiveExam;
+use App\Models\Question;
 use Illuminate\Http\Request;
-
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
@@ -24,6 +28,7 @@ class LiveExamController extends Controller implements HasMiddleware
     public function index()
     {
         $exams = LiveExam::latest()->paginate(10);
+
         return view('admin.live_exams.index', compact('exams'));
     }
 
@@ -81,34 +86,35 @@ class LiveExamController extends Controller implements HasMiddleware
     public function destroy(LiveExam $liveExam)
     {
         $liveExam->delete();
+
         return redirect()->route('admin.live-exams.index')->with('success', 'Live Exam deleted successfully.');
     }
 
     public function manageQuestions(Request $request, LiveExam $liveExam)
     {
-        $categories = \App\Models\Category::orderBy('order')->get();
-        $levels = \App\Models\Level::all();
-        $query = \App\Models\Question::with(['category', 'level']);
-        
+        $categories = Category::orderBy('order')->get();
+        $levels = Level::all();
+        $query = Question::with(['category', 'level']);
+
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
-        
+
         if ($request->filled('level_id')) {
             $query->where('level_id', $request->level_id);
         }
 
         $assignedQuestionIds = $liveExam->questions()->pluck('questions.id')->toArray();
 
-        $questions = $query->get()->sortByDesc(function($question) use ($assignedQuestionIds) {
+        $questions = $query->get()->sortByDesc(function ($question) use ($assignedQuestionIds) {
             return in_array($question->id, $assignedQuestionIds);
         });
 
         // Manually paginate for better control
-        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
+        $currentPage = Paginator::resolveCurrentPage() ?: 1;
         $perPage = 20;
         $currentPageItems = $questions->slice(($currentPage - 1) * $perPage, $perPage)->all();
-        $questions = new \Illuminate\Pagination\LengthAwarePaginator($currentPageItems, count($questions), $perPage);
+        $questions = new LengthAwarePaginator($currentPageItems, count($questions), $perPage);
         $questions->setPath($request->url())->appends($request->all());
 
         return view('admin.live_exams.manage_questions', compact('liveExam', 'questions', 'categories', 'levels', 'assignedQuestionIds'));
@@ -118,7 +124,7 @@ class LiveExamController extends Controller implements HasMiddleware
     {
         $request->validate([
             'question_ids' => 'array',
-            'question_ids.*' => 'exists:questions,id'
+            'question_ids.*' => 'exists:questions,id',
         ]);
 
         $action = $request->input('action'); // 'add' or 'remove'
@@ -126,10 +132,10 @@ class LiveExamController extends Controller implements HasMiddleware
 
         if ($action === 'add') {
             $liveExam->questions()->syncWithoutDetaching($questionIds);
-            $message = count($questionIds) . ' questions added successfully.';
+            $message = count($questionIds).' questions added successfully.';
         } elseif ($action === 'remove') {
             $liveExam->questions()->detach($questionIds);
-            $message = count($questionIds) . ' questions removed successfully.';
+            $message = count($questionIds).' questions removed successfully.';
         }
 
         return back()->with('success', $message ?? 'Updated successfully.');
@@ -138,6 +144,7 @@ class LiveExamController extends Controller implements HasMiddleware
     public function results(LiveExam $liveExam)
     {
         $attempts = $liveExam->attempts()->with('user')->orderByDesc('score')->orderBy('created_at')->paginate(50);
+
         return view('admin.live_exams.results', compact('liveExam', 'attempts'));
     }
 }

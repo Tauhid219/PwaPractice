@@ -40,6 +40,10 @@
 
     <!-- Template Stylesheet -->
     <link href="{{ asset('frontend/css/style.css') }}" rel="stylesheet">
+    
+    <!-- NProgress -->
+    <link href="https://unpkg.com/nprogress@0.2.0/nprogress.css" rel="stylesheet">
+    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
 </head>
 
 <body>
@@ -51,6 +55,11 @@
             </div>
         </div>
         <!-- Spinner End -->
+
+        <!-- Online/Offline Banner -->
+        <div id="offline-banner" class="offline-status-banner">
+            <i class="fa fa-wifi me-2"></i> <span id="offline-banner-text">ইন্টারনেট সংযোগ নেই</span>
+        </div>
 
         @include('frontend.layouts.navbar')
 
@@ -179,8 +188,56 @@
                 });
             });
         });
+        
+        // Online/Offline Status Logic
+        const offlineBanner = document.getElementById('offline-banner');
+        const offlineText = document.getElementById('offline-banner-text');
+
+        window.addEventListener('online', () => {
+            offlineBanner.classList.remove('is-offline');
+            offlineBanner.classList.add('is-online');
+            offlineText.innerText = 'ইন্টারনেট সংযোগ পুনরায় স্থাপিত হয়েছে';
+            
+            setTimeout(() => {
+                offlineBanner.classList.remove('is-online');
+            }, 3000);
+        });
+
+        window.addEventListener('offline', () => {
+            offlineBanner.classList.remove('is-online');
+            offlineBanner.classList.add('is-offline');
+            offlineText.innerText = 'ইন্টারনেট সংযোগ নেই';
+        });
+
+        // Initial check
+        if (!navigator.onLine) {
+            offlineBanner.classList.add('is-offline');
+        }
     </script>
     <style>
+        /* Online/Offline Banner */
+        .offline-status-banner {
+            position: fixed;
+            top: -60px;
+            left: 0;
+            width: 100%;
+            z-index: 11000;
+            text-align: center;
+            padding: 12px;
+            font-weight: bold;
+            color: white;
+            transition: top 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .offline-status-banner.is-offline {
+            top: 0;
+            background-color: #dc3545;
+        }
+        .offline-status-banner.is-online {
+            top: 0;
+            background-color: #28a745;
+        }
+
         /* Mobile adjustment for bottom nav */
         @media (max-width: 991.98px) {
             body {
@@ -188,6 +245,7 @@
             }
         }
     </style>
+    @include('partials._flash_messages')
 </body>
 
 </html>

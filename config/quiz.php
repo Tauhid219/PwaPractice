@@ -19,4 +19,11 @@ return [
         'admin_users' => env('PAGINATION_ADMIN_USERS', 50),
         'admin_user_attempts' => env('PAGINATION_ADMIN_USER_ATTEMPTS', 15),
     ],
+
+    'milestones' => [
+        'streak_bronze' => 7,
+        'streak_silver' => 30,
+        'quiz_century' => 100,
+        'level_master' => 10,
+    ],
 ];

@@ -8,16 +8,23 @@ use App\Http\Requests\StoreQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
 use App\Imports\QuestionImport;
 use App\Models\Category;
+use App\Models\Level;
 use App\Models\Question;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Models\Level;
-
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Maatwebsite\Excel\Facades\Excel;
 
+/**
+ * Handles administrative management of quiz questions.
+ */
 class QuestionController extends Controller implements HasMiddleware
 {
+    /**
+     * Define middleware for the controller.
+     * 
+     * @return array
+     */
     public static function middleware(): array
     {
         return [
@@ -27,11 +34,18 @@ class QuestionController extends Controller implements HasMiddleware
             new Middleware('permission:delete questions', only: ['destroy']),
         ];
     }
+
+    /**
+     * Display a listing of questions with filtering and pagination.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
     public function index(Request $request)
     {
         $categories = Category::orderBy('order')->get();
 
-        $query = Question::with('category')->orderBy('category_id')->orderBy('id', 'desc');
+        $query = Question::with(['category', 'level'])->orderBy('category_id')->orderBy('id', 'desc');
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
@@ -51,6 +65,12 @@ class QuestionController extends Controller implements HasMiddleware
         return view('admin.questions.create', compact('categories', 'levels'));
     }
 
+    /**
+     * Store a newly created question in storage.
+     * 
+     * @param  \App\Http\Requests\StoreQuestionRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(StoreQuestionRequest $request)
     {
         Question::create($request->validated());
@@ -93,8 +113,9 @@ class QuestionController extends Controller implements HasMiddleware
 
             return redirect()->route('admin.questions.index', ['category_id' => $request->category_id])->with('success', 'Questions imported successfully.');
         } catch (\Exception $e) {
-            \Log::error('Import error: ' . $e->getMessage());
+            \Log::error('Import error: '.$e->getMessage());
             \Log::error($e->getTraceAsString());
+
             return redirect()->route('admin.questions.index')->with('error', 'Error importing file: '.$e->getMessage());
         }
     }

@@ -10,6 +10,12 @@ class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setupPermissions();
+    }
+
     public function test_login_screen_can_be_rendered(): void
     {
         $response = $this->get('/login');
@@ -29,7 +35,8 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('profile.edit', absolute: false));
+        // Updated: Normal users without special permissions are redirected to 'home'
+        $response->assertRedirect(route('home', absolute: false));
     }
 
     public function test_admin_redirected_to_admin_dashboard(): void
@@ -37,6 +44,7 @@ class AuthenticationTest extends TestCase
         $admin = User::factory()->create([
             'is_admin' => true,
         ]);
+        $admin->assignRole('admin');
 
         $response = $this->post('/login', [
             'email' => $admin->email,
@@ -44,6 +52,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
+        // Redirects directly to admin dashboard via redirectBasedOnRole helper
         $response->assertRedirect(route('admin.dashboard', absolute: false));
     }
 

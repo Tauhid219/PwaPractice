@@ -16,22 +16,7 @@
 
     <div class="row">
         <div class="col-12">
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="icon fas fa-check"></i> {{ session('success') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="icon fas fa-ban"></i> {{ session('error') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            @endif
+
 
             <div class="card card-outline card-primary shadow-sm">
                 <div class="card-body p-0">
@@ -82,7 +67,7 @@
                                                 </a>
                                                 @endcan
                                                 @can('delete users')
-                                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
+                                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline confirm-delete">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger" title="Delete User">

@@ -19,6 +19,7 @@ class AuthenticatedSessionController extends Controller
         if (Auth::check()) {
             return $this->redirectBasedOnRole();
         }
+
         return view('auth.login');
     }
 
@@ -30,6 +31,7 @@ class AuthenticatedSessionController extends Controller
         if (Auth::check()) {
             return $this->redirectBasedOnRole();
         }
+
         return view('auth.admin-login');
     }
 
@@ -41,6 +43,7 @@ class AuthenticatedSessionController extends Controller
         if (Auth::user()->hasPermissionTo('access dashboard') || Auth::user()->hasRole('super-admin')) {
             return redirect()->intended(route('admin.dashboard', absolute: false));
         }
+
         return redirect()->intended(route('home', absolute: false));
     }
 

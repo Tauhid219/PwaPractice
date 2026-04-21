@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\QuestionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
 class Question extends Model
 {
-    /** @use HasFactory<\Database\Factories\QuestionFactory> */
+    /** @use HasFactory<QuestionFactory> */
     use HasFactory;
 
     protected $fillable = ['category_id', 'level_id', 'question_text', 'option_1', 'option_2', 'option_3', 'answer_text'];

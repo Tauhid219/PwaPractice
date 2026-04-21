@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Level;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Level>
+ * @extends Factory<Level>
  */
 class LevelFactory extends Factory
 {

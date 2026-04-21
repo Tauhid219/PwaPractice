@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -23,15 +24,17 @@ class RegisteredUserController extends Controller
             if (Auth::user()->hasPermissionTo('access dashboard') || Auth::user()->hasRole('super-admin')) {
                 return redirect()->intended(route('admin.dashboard', absolute: false));
             }
+
             return redirect()->intended(route('home', absolute: false));
         }
+
         return view('auth.register');
     }
 
     /**
      * Handle an incoming registration request.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
@@ -39,6 +42,7 @@ class RegisteredUserController extends Controller
             if (Auth::user()->hasPermissionTo('access dashboard') || Auth::user()->hasRole('super-admin')) {
                 return redirect()->intended(route('admin.dashboard', absolute: false));
             }
+
             return redirect()->intended(route('home', absolute: false));
         }
         $request->validate([

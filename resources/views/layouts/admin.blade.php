@@ -126,5 +126,6 @@
 </script>
 
 @stack('scripts')
+@include('partials._flash_messages')
 </body>
 </html>

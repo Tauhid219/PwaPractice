@@ -25,6 +25,7 @@
 
                 <form action="{{ route('live-exams.submit', $exam->id) }}" method="POST" id="liveExamForm">
                     @csrf
+                    <input type="hidden" name="tab_switches" id="tabSwitchesInput" value="0">
                     
                     @if($questions->isEmpty())
                         <div class="alert alert-warning">এই পরীক্ষায় কোন প্রশ্ন নেই।</div>
@@ -40,6 +41,14 @@
                             </div>
                         </div>
                         <!-- Progress Bar End -->
+                        
+                        <!-- Skeleton Loader -->
+                        <div id="skeleton-loader" style="display: none;">
+                            <div class="skeleton skeleton-title"></div>
+                            <div class="skeleton skeleton-option"></div>
+                            <div class="skeleton skeleton-option"></div>
+                            <div class="skeleton skeleton-option"></div>
+                        </div>
 
                         @foreach($questions as $index => $question)
                             <div class="mb-4 question-container" id="q_{{ $index }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
@@ -108,13 +117,20 @@
                     return;
                 }
 
-                // Move to next question immediately (No ting/buzzer for Live Exam)
+                // Move to next question immediately with a brief skeleton effect
                 const nextIndex = currentIndex + 1;
+                const skeleton = document.getElementById('skeleton-loader');
+                const nextQuestion = document.getElementById('q_' + nextIndex);
+
                 document.getElementById('q_' + currentIndex).style.display = 'none';
-                document.getElementById('q_' + nextIndex).style.display = 'block';
-                
-                // Update Progress Bar
-                updateProgressBar(nextIndex);
+                skeleton.style.display = 'block';
+
+                setTimeout(() => {
+                    skeleton.style.display = 'none';
+                    nextQuestion.style.display = 'block';
+                    // Update Progress Bar after switch
+                    updateProgressBar(nextIndex);
+                }, 400);
             });
         });
 
@@ -143,46 +159,74 @@
         document.addEventListener('paste', event => event.preventDefault());
         document.addEventListener('cut', event => event.preventDefault());
 
-        // Timer Logic
+        // Timer Logic (Web Worker Upgrade)
         let durationInSeconds = {{ $exam->duration_minutes * 60 }};
         const timerDisplay = document.getElementById('timer');
         const form = document.getElementById('liveExamForm');
         let isSubmitting = false;
 
-        function updateTimer() {
-            if (isSubmitting) return;
+        if (window.Worker && timerDisplay) {
+            const timerWorker = new Worker('{{ asset("frontend/js/timer-worker.js") }}');
+            
+            timerWorker.postMessage({ action: 'start', seconds: durationInSeconds });
 
-            let minutes = Math.floor(durationInSeconds / 60);
-            let seconds = durationInSeconds % 60;
+            timerWorker.onmessage = function(e) {
+                if (isSubmitting) return;
 
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            seconds = seconds < 10 ? '0' + seconds : seconds;
+                if (e.data.action === 'tick') {
+                    let secondsRemaining = e.data.secondsRemaining;
+                    
+                    let minutes = Math.floor(secondsRemaining / 60);
+                    let seconds = secondsRemaining % 60;
 
-            timerDisplay.textContent = minutes + ':' + seconds;
+                    minutes = minutes < 10 ? '0' + minutes : minutes;
+                    seconds = seconds < 10 ? '0' + seconds : seconds;
 
-            if (durationInSeconds <= 120) { // Highlight when strictly less than 2 mins
-                timerDisplay.classList.add('text-danger', 'fw-bolder');
+                    timerDisplay.textContent = minutes + ':' + seconds;
+
+                    if (secondsRemaining <= 120) {
+                        timerDisplay.classList.add('text-danger', 'fw-bolder');
+                    }
+                } else if (e.data.action === 'finished') {
+                    isSubmitting = true;
+                    timerDisplay.textContent = "00:00";
+                    alert('সময় শেষ! আপনার উত্তর স্বয়ংক্রিয়ভাবে জমা হচ্ছে।');
+                    
+                    // Prevent further changes
+                    document.querySelectorAll('.btn-check:not(:checked)').forEach(opt => opt.disabled = true);
+                    
+                    form.submit();
+                }
+            };
+        } else if (timerDisplay) {
+            // Fallback for browsers without Web Worker support
+            function updateTimer() {
+                if (isSubmitting) return;
+
+                let minutes = Math.floor(durationInSeconds / 60);
+                let seconds = durationInSeconds % 60;
+
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+
+                timerDisplay.textContent = minutes + ':' + seconds;
+
+                if (durationInSeconds <= 120) {
+                    timerDisplay.classList.add('text-danger', 'fw-bolder');
+                }
+
+                if (durationInSeconds <= 0) {
+                    isSubmitting = true;
+                    timerDisplay.textContent = "00:00";
+                    alert('সময় শেষ! আপনার উত্তর স্বয়ংক্রিয়ভাবে জমা হচ্ছে।');
+                    document.querySelectorAll('.btn-check:not(:checked)').forEach(opt => opt.disabled = true);
+                    form.submit();
+                } else {
+                    durationInSeconds--;
+                }
             }
-
-            if (durationInSeconds <= 0) {
-                clearInterval(timerInterval);
-                isSubmitting = true;
-                timerDisplay.textContent = "00:00";
-                alert('সময় শেষ! আপনার উত্তর স্বয়ংক্রিয়ভাবে জমা হচ্ছে।');
-                
-                // Prevent further changes
-                const unselectedOptions = document.querySelectorAll('.btn-check:not(:checked)');
-                unselectedOptions.forEach(opt => opt.disabled = true);
-                
-                form.submit();
-            } else {
-                durationInSeconds--;
-            }
-        }
-
-        if(timerDisplay) {
             updateTimer();
-            const timerInterval = setInterval(updateTimer, 1000);
+            setInterval(updateTimer, 1000);
         }
         
         // Prevent accidental page leave
@@ -208,6 +252,27 @@
                 document.getElementById('liveExamForm').submit();
             }
         }
+
+        // Anti-Cheat: Tab Switch Detection
+        let tabSwitchCount = 0;
+        const maxTabSwitches = 3;
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+                if (isSubmitting) return;
+                
+                tabSwitchCount++;
+                document.getElementById('tabSwitchesInput').value = tabSwitchCount;
+
+                if (tabSwitchCount >= maxTabSwitches) {
+                    isSubmitting = true;
+                    alert('সতর্কবার্তা: আপনি ৩ বার ট্যাব পরিবর্তন করেছেন। আপনার পরীক্ষাটি এখন সাবমিট হয়ে যাবে।');
+                    form.submit();
+                } else {
+                    alert('সতর্কবার্তা: পরীক্ষা চলাকালীন অন্য ট্যাব বা উইন্ডোতে যাওয়া নিষেধ! আপনার ' + tabSwitchCount + ' টি সতর্কবার্তা জমা হয়েছে। ' + maxTabSwitches + ' বার এমন করলে পরীক্ষা অটো-সাবমিট হয়ে যাবে।');
+                }
+            }
+        });
     });
 
 </script>
