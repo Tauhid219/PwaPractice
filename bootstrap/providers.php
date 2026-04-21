@@ -5,5 +5,4 @@ use App\Providers\TelescopeServiceProvider;
 
 return [
     AppServiceProvider::class,
-    TelescopeServiceProvider::class,
 ];
