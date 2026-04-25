@@ -42,6 +42,15 @@
         </li>
         @endcan
 
+        @can('manage levels')
+        <li class="nav-item">
+          <a href="{{ route('admin.levels.index') }}" class="nav-link {{ request()->routeIs('admin.levels.*') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-layer-group"></i>
+            <p>Levels</p>
+          </a>
+        </li>
+        @endcan
+
         @can('manage questions')
         <li class="nav-item">
           <a href="{{ route('admin.questions.index') }}" class="nav-link {{ request()->routeIs('admin.questions.*') ? 'active' : '' }}">

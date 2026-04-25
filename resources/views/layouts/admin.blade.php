@@ -41,6 +41,24 @@
 
   <!-- Navbar -->
   @include('layouts.admin.navbar')
+  <script>
+    // Sync navbar theme immediately after it's rendered to prevent flash
+    (function() {
+      const theme = localStorage.getItem('admin-theme') || 'light';
+      if (theme === 'dark') {
+        const nav = document.getElementById('main-nav');
+        if (nav) {
+          nav.classList.remove('navbar-white', 'navbar-light');
+          nav.classList.add('navbar-dark');
+        }
+        const icon = document.getElementById('theme-icon');
+        if (icon) {
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        }
+      }
+    })();
+  </script>
   <!-- /.navbar -->
 
   <!-- Main Sidebar Container -->
@@ -109,19 +127,8 @@
       window.location.reload();
     });
 
-    // Check again on load to sync navbar classes (which might be server-side rendered)
-    if (localStorage.getItem('admin-theme') === 'dark') {
-      body.addClass('dark-mode');
-      mainNav.removeClass('navbar-white navbar-light').addClass('navbar-dark');
-      themeIcon.removeClass('fa-moon').addClass('fa-sun');
-    }
-
-    // Check again on load to sync navbar classes (which might be server-side rendered)
-    if (localStorage.getItem('admin-theme') === 'dark') {
-      body.addClass('dark-mode');
-      mainNav.removeClass('navbar-white navbar-light').addClass('navbar-dark');
-      themeIcon.removeClass('fa-moon').addClass('fa-sun');
-    }
+    // Theme icon and nav classes are now handled by inline scripts to prevent flash,
+    // but we'll keep the toggle logic here.
   });
 </script>
 

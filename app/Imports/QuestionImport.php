@@ -10,10 +10,12 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 class QuestionImport implements ToModel, WithHeadingRow
 {
     private $categoryId;
+    private $levelId;
 
-    public function __construct($categoryId)
+    public function __construct($categoryId, $levelId = null)
     {
         $this->categoryId = $categoryId;
+        $this->levelId = $levelId;
     }
 
     /**
@@ -35,7 +37,7 @@ class QuestionImport implements ToModel, WithHeadingRow
 
         return new Question([
             'category_id' => $this->categoryId,
-            'level_id' => $row['level_id'] ?? 1,
+            'level_id' => $row['level_id'] ?? $this->levelId ?? 1,
             'question_text' => $questionText,
             'option_1' => $row['option_1'] ?? '',
             'option_2' => $row['option_2'] ?? '',

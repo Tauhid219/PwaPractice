@@ -51,10 +51,15 @@ class QuestionController extends Controller implements HasMiddleware
             $query->where('category_id', $request->category_id);
         }
 
+        if ($request->filled('level_id')) {
+            $query->where('level_id', $request->level_id);
+        }
+
         $totalQuestions = $query->count();
         $questions = $query->paginate(config('quiz.pagination.admin_questions', 50));
+        $levels = Level::all();
 
-        return view('admin.questions.index', compact('questions', 'categories', 'totalQuestions'));
+        return view('admin.questions.index', compact('questions', 'categories', 'levels', 'totalQuestions'));
     }
 
     public function create()
@@ -109,7 +114,7 @@ class QuestionController extends Controller implements HasMiddleware
     {
 
         try {
-            Excel::import(new QuestionImport($request->category_id), $request->file('file'));
+            Excel::import(new QuestionImport($request->category_id, $request->level_id), $request->file('file'));
 
             return redirect()->route('admin.questions.index', ['category_id' => $request->category_id])->with('success', 'Questions imported successfully.');
         } catch (\Exception $e) {

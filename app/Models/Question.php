@@ -29,4 +29,22 @@ class Question extends Model
     {
         return $this->belongsTo(Level::class);
     }
+
+    /**
+     * Get the options for this question in a randomized order.
+     * 
+     * @return array
+     */
+    public function shuffledOptions(): array
+    {
+        $options = [
+            $this->option_1,
+            $this->option_2,
+            $this->option_3,
+        ];
+        
+        shuffle($options);
+        
+        return $options;
+    }
 }

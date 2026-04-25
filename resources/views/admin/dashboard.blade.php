@@ -71,26 +71,42 @@
             </div>
         </div>
 
-        <!-- Donut Chart: Category -->
+        <!-- Pie Chart: Category -->
         <div class="col-md-3">
-            <div class="card card-outline card-success shadow-sm">
+            <div class="card card-danger">
                 <div class="card-header">
                     <h3 class="card-title">By Category</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <canvas id="category-chart" height="200"></canvas>
+                    <canvas id="category-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Donut Chart: Difficulty -->
+        <!-- Pie Chart: Difficulty -->
         <div class="col-md-3">
-            <div class="card card-outline card-warning shadow-sm">
+            <div class="card card-danger">
                 <div class="card-header">
                     <h3 class="card-title">By Difficulty</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <canvas id="level-chart" height="200"></canvas>
+                    <canvas id="level-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                 </div>
             </div>
         </div>
@@ -270,7 +286,7 @@
             // Category Chart
             var $categoryChart = $('#category-chart')
             var categoryChart = new Chart($categoryChart, {
-                type: 'doughnut',
+                type: 'pie',
                 data: {
                     labels: {!! json_encode($categoryNames) !!},
                     datasets: [{
@@ -280,6 +296,7 @@
                 },
                 options: {
                     maintainAspectRatio: false,
+                    responsive: true,
                     legend: {
                         display: false
                     }
@@ -289,7 +306,7 @@
             // Level Chart
             var $levelChart = $('#level-chart')
             var levelChart = new Chart($levelChart, {
-                type: 'doughnut',
+                type: 'pie',
                 data: {
                     labels: {!! json_encode($levelNames) !!},
                     datasets: [{
@@ -299,6 +316,7 @@
                 },
                 options: {
                     maintainAspectRatio: false,
+                    responsive: true,
                     legend: {
                         display: false
                     }

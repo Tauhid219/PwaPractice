@@ -30,22 +30,54 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group">
-                            <label for="import_category_id">Select Category</label>
-                            <select name="category_id" id="import_category_id" class="form-control" required>
-                                <option value="">Choose a category...</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
+                        <!-- Instructions Section -->
+                        <div class="alert alert-light border shadow-sm mb-4 import-instructions">
+                            <h6 class="font-weight-bold text-primary"><i class="fas fa-info-circle mr-1"></i> এক্সেল ইমপোর্ট নির্দেশিকা:</h6>
+                            <ul class="pl-3 mb-0 small text-dark">
+                                <li>এক্সেল ফাইলের প্রথম সারিতে অবশ্যই হেডার থাকতে হবে।</li>
+                                <li>ফাইলের ফরম্যাট অবশ্যই <strong>.xlsx</strong> হতে হবে।</li>
+                                <li>হেডারগুলো হলো: <code class="text-danger bg-gray-light px-1">question_text</code>, <code class="text-danger bg-gray-light px-1">option_1</code>, <code class="text-danger bg-gray-light px-1">option_2</code>, <code class="text-danger bg-gray-light px-1">option_3</code>, <code class="text-danger bg-gray-light px-1">answer_text</code></li>
+                                <li><code class="text-danger bg-gray-light px-1">answer_text</code> ফিল্ডের মান অবশ্যই উপরের ৩টি অপশনের যেকোনো একটির সাথে হুবহু মিলতে হবে।</li>
+                                <li>ফাইলের সাইজ সর্বোচ্চ ৫ এমবি হতে পারবে।</li>
+                            </ul>
                         </div>
+                        <style>
+                            .dark-mode .import-instructions { background-color: #343a40 !important; color: #fff !important; }
+                            .dark-mode .import-instructions .text-dark { color: #dee2e6 !important; }
+                            .dark-mode .import-instructions code { color: #ffc107 !important; background-color: rgba(255,255,255,0.1) !important; }
+                        </style>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="import_category_id">Select Category</label>
+                                    <select name="category_id" id="import_category_id" class="form-control" required>
+                                        <option value="">Choose Category</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="import_level_id">Select Level</label>
+                                    <select name="level_id" id="import_level_id" class="form-control" required>
+                                        <option value="">Choose Level</option>
+                                        @foreach($levels as $level)
+                                            <option value="{{ $level->id }}" data-category="{{ $level->category_id }}">{{ $level->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label for="excel_file">Excel/CSV File</label>
                             <div class="custom-file">
                                 <input type="file" name="file" class="custom-file-input" id="excel_file" accept=".xlsx, .xls, .csv" required>
                                 <label class="custom-file-label" for="excel_file">Choose file</label>
                             </div>
-                            <small class="form-text text-muted mt-2">Required Columns: <code>question_text</code>, <code>answer_text</code>, <code>option_1</code>, <code>option_2</code>, <code>option_3</code></small>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -64,9 +96,9 @@
                 <div class="card-body py-2">
                     <form method="GET" action="{{ route('admin.questions.index') }}" class="row align-items-center">
                         <div class="col-md-4">
-                            <div class="form-group mb-0">
-                                <label for="category_id" class="mr-2 d-inline-block">Filter by Category:</label>
-                                <select name="category_id" id="category_id" class="form-control d-inline-block w-auto" onchange="this.form.submit()">
+                            <div class="form-group mb-0 d-flex align-items-center">
+                                <label for="category_id" class="mr-2 mb-0 text-nowrap">Category:</label>
+                                <select name="category_id" id="category_id" class="form-control form-control-sm" onchange="this.form.submit()">
                                     <option value="">All Categories</option>
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
@@ -76,16 +108,29 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            @if(request('category_id'))
-                                <a href="{{ route('admin.questions.index') }}" class="btn btn-sm btn-outline-danger">
-                                    <i class="fas fa-times mr-1"></i> Clear Filter
+                        <div class="col-md-3">
+                            <div class="form-group mb-0 d-flex align-items-center">
+                                <label for="index_level_id" class="mr-2 mb-0 text-nowrap">Level:</label>
+                                <select name="level_id" id="index_level_id" class="form-control form-control-sm" onchange="this.form.submit()">
+                                    <option value="">All Levels</option>
+                                    @foreach($levels as $level)
+                                        <option value="{{ $level->id }}" data-category="{{ $level->category_id }}" {{ request('level_id') == $level->id ? 'selected' : '' }}>
+                                            {{ $level->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-center">
+                            @if(request('category_id') || request('level_id'))
+                                <a href="{{ route('admin.questions.index') }}" class="btn btn-xs btn-outline-danger">
+                                    <i class="fas fa-times mr-1"></i> Clear
                                 </a>
                             @endif
                         </div>
-                        <div class="col-md-4 text-right">
-                            <span class="badge badge-info p-2 px-3">
-                                Total: {{ $totalQuestions }} Questions
+                        <div class="col-md-3 text-right d-flex align-items-center justify-content-end">
+                            <span class="badge badge-info p-2 px-3 small">
+                                Total: {{ $totalQuestions }} Qs
                             </span>
                         </div>
                     </form>
@@ -181,6 +226,66 @@
             var fileName = this.value.split('\\').pop();
             this.nextElementSibling.innerText = fileName;
         };
+
+        // Dynamic Level Filtering for Import Modal
+        $(function() {
+            const categorySelect = $('#import_category_id');
+            const levelSelect = $('#import_level_id');
+            const allLevels = levelSelect.find('option').clone();
+
+            function filterLevels() {
+                const categoryId = categorySelect.val();
+                levelSelect.empty();
+                levelSelect.append('<option value="">Choose Level</option>');
+
+                if (categoryId) {
+                    const filteredLevels = allLevels.filter(function() {
+                        return $(this).data('category') == categoryId;
+                    });
+                    levelSelect.append(filteredLevels);
+                }
+            }
+
+            categorySelect.on('change', filterLevels);
+        });
+
+        // Dynamic Level Filtering for Index Filter Form
+        $(function() {
+            const categorySelect = $('#category_id');
+            const levelSelect = $('#index_level_id');
+            const allLevels = levelSelect.find('option').clone();
+
+            function filterLevels() {
+                const categoryId = categorySelect.val();
+                const currentLevelId = levelSelect.val();
+                
+                levelSelect.empty();
+                levelSelect.append('<option value="">All Levels</option>');
+
+                if (categoryId) {
+                    const filteredLevels = allLevels.filter(function() {
+                        return $(this).data('category') == categoryId;
+                    });
+                    levelSelect.append(filteredLevels);
+                } else {
+                    // Show all levels if no category is selected (since it's a filter)
+                    levelSelect.append(allLevels.filter(function() {
+                        return $(this).val() !== "";
+                    }));
+                }
+
+                // Restore selection if it still exists in the filtered list
+                if (currentLevelId) {
+                    levelSelect.val(currentLevelId);
+                }
+            }
+
+            // Note: We don't filter on change here because category change submits the form.
+            // But we filter on page load if a category is already selected.
+            if (categorySelect.val()) {
+                filterLevels();
+            }
+        });
     </script>
     @endpush
 </x-admin-layout>

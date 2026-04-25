@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\LiveExamController as AdminLiveExamController;
+use App\Http\Controllers\Admin\LevelController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\RoleController;
@@ -58,8 +59,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
 
-    // Categories
+    // Categories & Levels
     Route::resource('categories', CategoryController::class);
+    Route::resource('levels', LevelController::class);
 
     // Questions
     Route::resource('questions', QuestionController::class);

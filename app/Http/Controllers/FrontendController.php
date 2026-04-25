@@ -35,17 +35,11 @@ class FrontendController extends Controller
 
     public function categoryLevels($slug)
     {
-        $category = Cache::rememberForever('category_'.$slug, function () use ($slug) {
-            return Category::where('slug', $slug)->firstOrFail();
+        $category = Cache::rememberForever('category_full_'.$slug, function () use ($slug) {
+            return Category::with('levels')->where('slug', $slug)->firstOrFail();
         });
 
-        $levels = Cache::rememberForever('levels_for_cat_'.$category->id, function () use ($category) {
-            $l = Level::whereHas('questions', function ($q) use ($category) {
-                $q->where('category_id', $category->id);
-            })->get();
-
-            return $l->isEmpty() ? Level::all() : $l;
-        });
+        $levels = $category->levels;
 
         return view('frontend.levels', compact('category', 'levels'));
     }
@@ -59,10 +53,11 @@ class FrontendController extends Controller
      */
     public function levelQuestions($categorySlug, $levelId)
     {
-        $category = Cache::rememberForever('category_'.$categorySlug, function () use ($categorySlug) {
-            return Category::where('slug', $categorySlug)->firstOrFail();
+        $category = Cache::rememberForever('category_full_'.$categorySlug, function () use ($categorySlug) {
+            return Category::with('levels')->where('slug', $categorySlug)->firstOrFail();
         });
-        $level = Level::findOrFail($levelId);
+        
+        $level = $category->levels->where('id', $levelId)->first() ?? abort(404);
 
         $query = Question::where('category_id', $category->id)
             ->where('level_id', $level->id);

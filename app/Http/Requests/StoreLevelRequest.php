@@ -5,14 +5,14 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ImportQuestionRequest extends FormRequest
+class StoreLevelRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return true; // We'll handle authorization in the controller
     }
 
     /**
@@ -23,9 +23,11 @@ class ImportQuestionRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name' => 'required|string|max:100',
             'category_id' => 'required|exists:categories,id',
-            'level_id' => 'required|exists:levels,id',
-            'file' => 'required|mimes:xlsx,csv,xls|max:5120', // Increased to 5MB as per instructions
+            'order' => 'required|integer|min:1|max:100',
+            'required_score_to_unlock' => 'required|integer|min:0',
+            'is_free' => 'boolean',
         ];
     }
 }

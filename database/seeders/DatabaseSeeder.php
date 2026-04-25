@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
-            LevelSeeder::class,
+            // LevelSeeder::class, // Levels are now created dynamically in CategorySeeder
             CategorySeeder::class,
             RolesAndPermissionsSeeder::class,
         ]);

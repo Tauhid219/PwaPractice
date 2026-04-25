@@ -24,4 +24,9 @@ class Category extends Model
     {
         return $this->hasMany(Question::class);
     }
+
+    public function levels()
+    {
+        return $this->hasMany(Level::class)->orderBy('order');
+    }
 }

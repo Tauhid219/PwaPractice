@@ -19,7 +19,7 @@ class QuizController extends Controller
      */
     public function start($slug, Level $level)
     {
-        $category = Cache::rememberForever('category_'.$slug, function () use ($slug) {
+        $category = Cache::rememberForever('category_full_'.$slug, function () use ($slug) {
             return Category::where('slug', $slug)->firstOrFail();
         });
 
@@ -42,7 +42,7 @@ class QuizController extends Controller
      */
     public function submit(SubmitQuizRequest $request, $slug, Level $level)
     {
-        $category = Cache::rememberForever('category_'.$slug, function () use ($slug) {
+        $category = Cache::rememberForever('category_full_'.$slug, function () use ($slug) {
             return Category::where('slug', $slug)->firstOrFail();
         });
 
@@ -75,7 +75,11 @@ class QuizController extends Controller
             );
 
             // Unlock next level logic for this specific category
-            $nextLevel = Level::where('id', '>', $level->id)->orderBy('id', 'asc')->first();
+            $nextLevel = Level::where('category_id', $category->id)
+                ->where('order', '>', $level->order)
+                ->orderBy('order', 'asc')
+                ->first();
+
             if ($nextLevel) {
                 UserProgress::firstOrCreate(
                     ['user_id' => $user->id, 'category_id' => $category->id, 'level_id' => $nextLevel->id],

@@ -98,57 +98,65 @@
             <div class="col-12">
                 <div class="bg-light rounded p-4 shadow-sm border-top border-primary border-5">
                     <h3 class="mb-4"><i class="fa fa-award text-primary me-2"></i> অর্জিত ব্যাজসমূহ</h3>
-                    <div class="d-flex flex-wrap gap-4">
+                    <div class="row row-cols-2 row-cols-md-4 g-4">
                         <!-- 7 Day Streak Badge -->
-                        <div class="badge-item text-center {{ $user->current_streak >= config('quiz.milestones.streak_bronze') ? '' : 'grayscale opacity-50' }}" style="width: 100px;">
-                            <div class="badge-icon mb-2">
-                                <img src="https://cdn-icons-png.flaticon.com/512/616/616412.png" alt="7 Days" width="60">
+                        <div class="col text-center">
+                            <div class="badge-item {{ $user->current_streak >= config('quiz.milestones.streak_bronze') ? '' : 'grayscale opacity-50' }}">
+                                <div class="badge-icon mb-2">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/616/616412.png" alt="7 Days" width="60">
+                                </div>
+                                <small class="fw-bold d-block">{{ config('quiz.milestones.streak_bronze') }} দিনের ধারা</small>
+                                @if($user->current_streak >= config('quiz.milestones.streak_bronze'))
+                                    <span class="badge bg-success rounded-pill small">অর্জিত</span>
+                                @else
+                                    <span class="badge bg-secondary rounded-pill small">বাকি</span>
+                                @endif
                             </div>
-                            <small class="fw-bold d-block">{{ config('quiz.milestones.streak_bronze') }} দিনের ধারা</small>
-                            @if($user->current_streak >= config('quiz.milestones.streak_bronze'))
-                                <span class="badge bg-success rounded-pill small">অর্জিত</span>
-                            @else
-                                <span class="badge bg-secondary rounded-pill small">বাকি</span>
-                            @endif
                         </div>
 
                         <!-- 30 Day Streak Badge -->
-                        <div class="badge-item text-center {{ $user->current_streak >= config('quiz.milestones.streak_silver') ? '' : 'grayscale opacity-50' }}" style="width: 100px;">
-                            <div class="badge-icon mb-2">
-                                <img src="https://cdn-icons-png.flaticon.com/512/10432/10432486.png" alt="30 Days" width="60">
+                        <div class="col text-center">
+                            <div class="badge-item {{ $user->current_streak >= config('quiz.milestones.streak_silver') ? '' : 'grayscale opacity-50' }}">
+                                <div class="badge-icon mb-2">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/10432/10432486.png" alt="30 Days" width="60">
+                                </div>
+                                <small class="fw-bold d-block">{{ config('quiz.milestones.streak_silver') }} দিনের ধারা</small>
+                                @if($user->current_streak >= config('quiz.milestones.streak_silver'))
+                                    <span class="badge bg-success rounded-pill small">অর্জিত</span>
+                                @else
+                                    <span class="badge bg-secondary rounded-pill small">বাকি</span>
+                                @endif
                             </div>
-                            <small class="fw-bold d-block">{{ config('quiz.milestones.streak_silver') }} দিনের ধারা</small>
-                            @if($user->current_streak >= config('quiz.milestones.streak_silver'))
-                                <span class="badge bg-success rounded-pill small">অর্জিত</span>
-                            @else
-                                <span class="badge bg-secondary rounded-pill small">বাকি</span>
-                            @endif
                         </div>
 
                         <!-- 100 Quiz Attempts Badge -->
-                        <div class="badge-item text-center {{ $quizAttempts->total() >= config('quiz.milestones.quiz_century') ? '' : 'grayscale opacity-50' }}" style="width: 100px;">
-                            <div class="badge-icon mb-2">
-                                <img src="https://cdn-icons-png.flaticon.com/512/4345/4345094.png" alt="100 Quizzes" width="60">
+                        <div class="col text-center">
+                            <div class="badge-item {{ $quizAttempts->total() >= config('quiz.milestones.quiz_century') ? '' : 'grayscale opacity-50' }}">
+                                <div class="badge-icon mb-2">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/5406/5406796.png" alt="100 Quizzes" width="60">
+                                </div>
+                                <small class="fw-bold d-block">শতক কুইজ</small>
+                                @if($quizAttempts->total() >= config('quiz.milestones.quiz_century'))
+                                    <span class="badge bg-success rounded-pill small">অর্জিত</span>
+                                @else
+                                    <span class="badge bg-secondary rounded-pill small">বাকি</span>
+                                @endif
                             </div>
-                            <small class="fw-bold d-block">শতক কুইজ</small>
-                            @if($quizAttempts->total() >= config('quiz.milestones.quiz_century'))
-                                <span class="badge bg-success rounded-pill small">অর্জিত</span>
-                            @else
-                                <span class="badge bg-secondary rounded-pill small">বাকি</span>
-                            @endif
                         </div>
 
                         <!-- Level Master (10+ levels completed) -->
-                        <div class="badge-item text-center {{ $progressStats['total_completed_levels'] >= config('quiz.milestones.level_master') ? '' : 'grayscale opacity-50' }}" style="width: 100px;">
-                            <div class="badge-icon mb-2">
-                                <img src="https://cdn-icons-png.flaticon.com/512/2583/2583344.png" alt="Level Master" width="60">
+                        <div class="col text-center">
+                            <div class="badge-item {{ $progressStats['total_completed_levels'] >= config('quiz.milestones.level_master') ? '' : 'grayscale opacity-50' }}">
+                                <div class="badge-icon mb-2">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/2583/2583344.png" alt="Level Master" width="60">
+                                </div>
+                                <small class="fw-bold d-block">লেভেল মাস্টার</small>
+                                @if($progressStats['total_completed_levels'] >= config('quiz.milestones.level_master'))
+                                    <span class="badge bg-success rounded-pill small">অর্জিত</span>
+                                @else
+                                    <span class="badge bg-secondary rounded-pill small">বাকি</span>
+                                @endif
                             </div>
-                            <small class="fw-bold d-block">লেভেল মাস্টার</small>
-                            @if($progressStats['total_completed_levels'] >= config('quiz.milestones.level_master'))
-                                <span class="badge bg-success rounded-pill small">অর্জিত</span>
-                            @else
-                                <span class="badge bg-secondary rounded-pill small">বাকি</span>
-                            @endif
                         </div>
                     </div>
                 </div>

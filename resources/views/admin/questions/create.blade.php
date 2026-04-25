@@ -46,7 +46,9 @@
                                     <select name="level_id" id="level_id" class="form-control @error('level_id') is-invalid @enderror" required>
                                         <option value="">Select Level</option>
                                         @foreach($levels as $level)
-                                            <option value="{{ $level->id }}" {{ old('level_id') == $level->id ? 'selected' : '' }}>
+                                            <option value="{{ $level->id }}" 
+                                                data-category="{{ $level->category_id }}"
+                                                {{ old('level_id') == $level->id ? 'selected' : '' }}>
                                                 {{ $level->name }}
                                             </option>
                                         @endforeach
@@ -57,6 +59,47 @@
                                 </div>
                             </div>
                         </div>
+
+                        @push('scripts')
+                        <script>
+                            $(function() {
+                                const categorySelect = $('#category_id');
+                                const levelSelect = $('#level_id');
+                                const allLevels = levelSelect.find('option').clone();
+
+                                function filterLevels() {
+                                    const categoryId = categorySelect.val();
+                                    const currentLevelId = levelSelect.val();
+                                    
+                                    levelSelect.empty();
+                                    levelSelect.append('<option value="">Select Level</option>');
+
+                                    if (categoryId) {
+                                        const filteredLevels = allLevels.filter(function() {
+                                            return $(this).data('category') == categoryId;
+                                        });
+                                        levelSelect.append(filteredLevels);
+                                    } else {
+                                        // If no category selected, maybe show nothing or all? 
+                                        // The requirement says "select category then levels". 
+                                        // So if no category, keep it empty.
+                                    }
+
+                                    // Restore selection if it still exists in the filtered list
+                                    if (currentLevelId) {
+                                        levelSelect.val(currentLevelId);
+                                    }
+                                }
+
+                                categorySelect.on('change', filterLevels);
+
+                                // Initial filter on page load (for old input)
+                                if (categorySelect.val()) {
+                                    filterLevels();
+                                }
+                            });
+                        </script>
+                        @endpush
 
                         <div class="form-group">
                             <label for="question_text">Question Text</label>

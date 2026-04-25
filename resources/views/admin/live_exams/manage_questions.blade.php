@@ -47,13 +47,56 @@
                                 <select name="level_id" id="level_id" class="form-control form-control-sm d-inline-block w-auto" onchange="this.form.submit()">
                                     <option value="">All Levels</option>
                                     @foreach($levels as $level)
-                                        <option value="{{ $level->id }}" {{ request('level_id') == $level->id ? 'selected' : '' }}>
+                                        <option value="{{ $level->id }}" 
+                                            data-category="{{ $level->category_id }}"
+                                            {{ request('level_id') == $level->id ? 'selected' : '' }}>
                                             {{ $level->name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
+
+                        @push('scripts')
+                        <script>
+                            $(function() {
+                                const categorySelect = $('#category_id');
+                                const levelSelect = $('#level_id');
+                                const allLevels = levelSelect.find('option').clone();
+
+                                function filterLevels() {
+                                    const categoryId = categorySelect.val();
+                                    const currentLevelId = levelSelect.val();
+                                    
+                                    levelSelect.empty();
+                                    levelSelect.append('<option value="">All Levels</option>');
+
+                                    if (categoryId) {
+                                        const filteredLevels = allLevels.filter(function() {
+                                            return $(this).data('category') == categoryId;
+                                        });
+                                        levelSelect.append(filteredLevels);
+                                    } else {
+                                        // If no category, show all levels (since it's a filter)
+                                        levelSelect.append(allLevels.filter(function() {
+                                            return $(this).val() !== "";
+                                        }));
+                                    }
+
+                                    // Restore selection if it still exists in the filtered list
+                                    if (currentLevelId) {
+                                        levelSelect.val(currentLevelId);
+                                    }
+                                }
+
+                                // We don't want to filter on change here because change triggers form submit
+                                // But we do want to filter on page load if a category is already selected
+                                if (categorySelect.val()) {
+                                    filterLevels();
+                                }
+                            });
+                        </script>
+                        @endpush
                         <div class="col-md-4 text-right">
                             @if(request('category_id') || request('level_id'))
                                 <a href="{{ route('admin.live-exams.questions.manage', $liveExam->id) }}" class="btn btn-xs btn-outline-danger mr-2">

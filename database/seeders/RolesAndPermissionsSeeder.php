@@ -20,7 +20,7 @@ class RolesAndPermissionsSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Standardized Permissions
-        $modules = ['users', 'roles', 'categories', 'questions', 'exams'];
+        $modules = ['users', 'roles', 'categories', 'levels', 'questions', 'exams'];
         $actions = ['manage', 'create', 'edit', 'delete'];
 
         foreach ($modules as $module) {
@@ -59,6 +59,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $roleModerator = Role::findOrCreate('moderator');
         $roleModerator->givePermissionTo([
             'manage categories', 'create categories', 'edit categories',
+            'manage levels', 'create levels', 'edit levels',
             'manage questions', 'create questions', 'edit questions',
             'manage exams', 'create exams', 'edit exams', 'view results',
             'manage users',
@@ -69,6 +70,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $roleEditor = Role::findOrCreate('editor');
         $roleEditor->givePermissionTo([
             'manage categories', 'edit categories', 'create categories',
+            'manage levels', 'edit levels', 'create levels',
             'manage questions', 'create questions', 'edit questions',
             'access dashboard',
         ]);

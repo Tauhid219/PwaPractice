@@ -31,16 +31,31 @@ class CategorySeeder extends Seeder
 
             $category = Category::create($catData);
 
+            // Create 10 Levels for each category
+            $levels = [];
+            for ($i = 1; $i <= 10; $i++) {
+                $levels[$i] = \App\Models\Level::create([
+                    'name' => 'Level ' . $i,
+                    'category_id' => $category->id,
+                    'order' => $i,
+                    'required_score_to_unlock' => 80, // Default passing score
+                    'is_free' => ($i === 1), // Only level 1 is free by default
+                ]);
+            }
+
             // Load questions from separate file
             $questions = require __DIR__.'/questions/'.$questionFile;
 
             foreach ($questions as $qData) {
+                $levelOrder = $qData[0];
+                $levelId = $levels[$levelOrder]->id ?? $levels[1]->id;
+
                 $options = [$qData[2], $qData[3], $qData[4]];
                 shuffle($options);
 
                 Question::create([
                     'category_id' => $category->id,
-                    'level_id' => $qData[0],
+                    'level_id' => $levelId,
                     'question_text' => $qData[1],
                     'option_1' => $options[0],
                     'option_2' => $options[1],
