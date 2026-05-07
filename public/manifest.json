@@ -1,8 +1,11 @@
 {
     "name": "জিনিয়াস কিডস - কুইজ গাইডবুক",
     "short_name": "Genius Kids",
-    "start_url": "/",
+    "id": "/",
+    "start_url": "/?source=pwa",
+    "scope": "/",
     "display": "standalone",
+    "display_override": ["standalone", "minimal-ui"],
     "background_color": "#ffffff",
     "theme_color": "#FE5D37",
     "orientation": "portrait",
