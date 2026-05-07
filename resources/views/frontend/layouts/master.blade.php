@@ -11,13 +11,11 @@
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="theme-color" content="#FE5D37">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="জিনিয়াস কিডস">
     <link rel="apple-touch-icon" href="{{ asset('icons/app-icon.svg') }}">
-
-    <!-- Favicon -->
-    <link href="{{ asset('frontend/img/favicon.ico') }}" rel="icon">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -107,11 +105,23 @@
         }
 
         // PWA Install Prompt Logic
-        let deferredPrompt;
-        const installButtons = document.querySelectorAll('#install-btn, .pwa-install-trigger');
+        let deferredPrompt = null;
+        let installProgressInterval = null;
+        let installFinalizeTimeout = null;
+        const installButtons = document.querySelectorAll('#install-btn');
+        const installOverlay = document.getElementById('install-overlay');
+        const overlayBar = document.getElementById('overlay-progress-bar');
+        const overlayText = document.getElementById('overlay-progress-text');
         const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-        const isMobileBrowser = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        const isIos = () => /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const isIosSafari = () => {
+            const ua = navigator.userAgent;
+            const isIosDevice = /iPhone|iPad|iPod/i.test(ua);
+            const isWebkit = /WebKit/i.test(ua);
+            const isCriOS = /CriOS/i.test(ua);
+            const isFxiOS = /FxiOS/i.test(ua);
+
+            return isIosDevice && isWebkit && !isCriOS && !isFxiOS;
+        };
         const showInstallButtons = () => {
             if (!isStandalone()) {
                 installButtons.forEach((button) => button.classList.remove('d-none'));
@@ -119,6 +129,66 @@
         };
         const hideInstallButtons = () => {
             installButtons.forEach((button) => button.classList.add('d-none'));
+        };
+        const resetInstallOverlay = () => {
+            if (installProgressInterval) {
+                clearInterval(installProgressInterval);
+                installProgressInterval = null;
+            }
+
+            if (installFinalizeTimeout) {
+                clearTimeout(installFinalizeTimeout);
+                installFinalizeTimeout = null;
+            }
+
+            if (overlayBar) {
+                overlayBar.style.width = '0%';
+            }
+
+            if (overlayText) {
+                overlayText.innerText = '0%';
+            }
+
+            if (installOverlay) {
+                installOverlay.classList.add('d-none');
+            }
+        };
+        const showInstallOverlay = () => {
+            if (!installOverlay || !overlayBar || !overlayText) {
+                return;
+            }
+
+            resetInstallOverlay();
+            installOverlay.classList.remove('d-none');
+
+            let progress = 0;
+            installProgressInterval = setInterval(() => {
+                progress += 4;
+                if (progress > 92) {
+                    progress = 92;
+                }
+
+                overlayBar.style.width = progress + '%';
+                overlayText.innerText = progress + '%';
+            }, 120);
+        };
+        const completeInstallOverlay = () => {
+            if (!installOverlay || !overlayBar || !overlayText) {
+                return;
+            }
+
+            if (installProgressInterval) {
+                clearInterval(installProgressInterval);
+                installProgressInterval = null;
+            }
+
+            overlayBar.style.width = '100%';
+            overlayText.innerText = '100%';
+
+            installFinalizeTimeout = setTimeout(() => {
+                installOverlay.classList.add('d-none');
+                alert('\u0985\u09cd\u09af\u09be\u09aa \u0987\u09a8\u09cd\u09b8\u099f\u09b2 \u09b8\u09ab\u09b2 \u09b9\u09df\u09c7\u099b\u09c7!');
+            }, 500);
         };
 
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -128,61 +198,52 @@
         });
 
         window.addEventListener('load', () => {
-            setTimeout(() => {
-                if (!deferredPrompt && isMobileBrowser() && !isStandalone()) {
-                    showInstallButtons();
-                }
-            }, 1200);
+            if (isStandalone()) {
+                hideInstallButtons();
+                return;
+            }
+
+            if (isIosSafari()) {
+                showInstallButtons();
+            }
         });
 
         installButtons.forEach((installBtn) => {
-            installBtn.addEventListener('click', (e) => {
+            installBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
 
-                if(deferredPrompt) {
+                if (deferredPrompt) {
                     hideInstallButtons();
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then((choiceResult) => {
-                        if (choiceResult.outcome === 'accepted') {
-                            console.log('User accepted the A2HS prompt');
-                            const overlay = document.getElementById('install-overlay');
-                            const overlayBar = document.getElementById('overlay-progress-bar');
-                            const overlayText = document.getElementById('overlay-progress-text');
-                            overlay.classList.remove('d-none');
+                    showInstallOverlay();
 
-                            let progress = 0;
-                            const progressInterval = setInterval(() => {
-                                progress += 5;
-                                if (progress > 100) progress = 100;
-                                overlayBar.style.width = progress + '%';
-                                overlayText.innerText = progress + '%';
-                                if (progress >= 100) {
-                                    clearInterval(progressInterval);
-                                    setTimeout(() => {
-                                        overlay.classList.add('d-none');
-                                        alert('\u0985\u09cd\u09af\u09be\u09aa \u0987\u09a8\u09cd\u09b8\u099f\u09b2 \u09b8\u09ab\u09b2 \u09b9\u09df\u09c7\u099b\u09c7!');
-                                    }, 400);
-                                }
-                            }, 100);
-                        } else {
-                            console.log('User dismissed the A2HS prompt');
-                            showInstallButtons();
-                        }
+                    deferredPrompt.prompt();
+                    const choiceResult = await deferredPrompt.userChoice;
+
+                    if (choiceResult.outcome !== 'accepted') {
+                        console.log('User dismissed the A2HS prompt');
                         deferredPrompt = null;
-                    });
+                        resetInstallOverlay();
+                        showInstallButtons();
+                        return;
+                    }
+
+                    console.log('User accepted the A2HS prompt');
+                    deferredPrompt = null;
+                    installFinalizeTimeout = setTimeout(() => {
+                        completeInstallOverlay();
+                    }, 3500);
                     return;
                 }
 
-                if (isIos()) {
+                if (isIosSafari()) {
                     alert('\u09b6\u09c7\u09df\u09be\u09b0 \u09ac\u09be\u099f\u09a8\u09c7 \u099f\u09cd\u09af\u09be\u09aa \u0995\u09b0\u09c7 "Add to Home Screen" \u09b8\u09bf\u09b2\u09c7\u0995\u09cd\u099f \u0995\u09b0\u09c1\u09a8\u0964');
-                } else {
-                    alert('\u09ac\u09cd\u09b0\u09be\u0989\u099c\u09be\u09b0\u09c7\u09b0 \u09ae\u09c7\u09a8\u09c1 \u09a5\u09c7\u0995\u09c7 "Install app" \u09ac\u09be "Add to Home screen" \u09b8\u09bf\u09b2\u09c7\u0995\u09cd\u099f \u0995\u09b0\u09c1\u09a8\u0964');
                 }
             });
         });
-        
+
         window.addEventListener('appinstalled', () => {
             console.log('App was successfully installed');
+            completeInstallOverlay();
             hideInstallButtons();
         });
 
