@@ -62,7 +62,7 @@ class FrontendController extends Controller
         $query = Question::where('category_id', $category->id)
             ->where('level_id', $level->id);
 
-        if (! auth()->check() && $levelId > 1) {
+        if (! auth()->check() && ! $level->is_free && $level->order !== 1) {
             // Unauthenticated users can only view level 1 properly.
             // Though route should protect this, adding explicit fallback check
             abort(403, 'এই লেভেলের প্রশ্নগুলো দেখতে অনুগ্রহ করে লগিন করুন।');

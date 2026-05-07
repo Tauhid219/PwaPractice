@@ -53,7 +53,11 @@ class ProgressTest extends TestCase
     {
         $user = User::factory()->create();
         $category = Category::factory()->create();
-        $level = Level::factory()->create();
+        $level = Level::factory()->create([
+            'category_id' => $category->id,
+            'order' => 2,
+            'is_free' => false,
+        ]);
 
         // Level is not in user_progress table with 'active' or 'completed' status
         // The middleware check.level.access should prevent access to quiz
@@ -64,5 +68,57 @@ class ProgressTest extends TestCase
         ]));
 
         $response->assertRedirect(); // Should redirect back or elsewhere if locked
+    }
+
+    public function test_guest_can_view_first_level_questions_even_when_level_id_is_greater_than_one()
+    {
+        $category = Category::factory()->create();
+        $level = Level::factory()->create([
+            'category_id' => $category->id,
+            'order' => 1,
+            'is_free' => true,
+        ]);
+
+        Question::factory()->create([
+            'category_id' => $category->id,
+            'level_id' => $level->id,
+        ]);
+
+        $response = $this->get(route('level.questions', [
+            'slug' => $category->slug,
+            'level' => $level->id,
+        ]));
+
+        $response->assertOk();
+        $response->assertViewIs('frontend.questions');
+    }
+
+    public function test_guest_cannot_view_non_free_higher_level_questions()
+    {
+        $category = Category::factory()->create();
+
+        Level::factory()->create([
+            'category_id' => $category->id,
+            'order' => 1,
+            'is_free' => true,
+        ]);
+
+        $lockedLevel = Level::factory()->create([
+            'category_id' => $category->id,
+            'order' => 2,
+            'is_free' => false,
+        ]);
+
+        Question::factory()->create([
+            'category_id' => $category->id,
+            'level_id' => $lockedLevel->id,
+        ]);
+
+        $response = $this->get(route('level.questions', [
+            'slug' => $category->slug,
+            'level' => $lockedLevel->id,
+        ]));
+
+        $response->assertForbidden();
     }
 }
