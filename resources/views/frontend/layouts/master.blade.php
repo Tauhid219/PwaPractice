@@ -108,25 +108,43 @@
 
         // PWA Install Prompt Logic
         let deferredPrompt;
-        const installBtn = document.getElementById('install-btn');
+        const installButtons = document.querySelectorAll('#install-btn, .pwa-install-trigger');
+        const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const isMobileBrowser = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const isIos = () => /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const showInstallButtons = () => {
+            if (!isStandalone()) {
+                installButtons.forEach((button) => button.classList.remove('d-none'));
+            }
+        };
+        const hideInstallButtons = () => {
+            installButtons.forEach((button) => button.classList.add('d-none'));
+        };
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            if(installBtn) {
-                installBtn.classList.remove('d-none');
-            }
+            showInstallButtons();
         });
 
-        if(installBtn) {
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (!deferredPrompt && isMobileBrowser() && !isStandalone()) {
+                    showInstallButtons();
+                }
+            }, 1200);
+        });
+
+        installButtons.forEach((installBtn) => {
             installBtn.addEventListener('click', (e) => {
-                installBtn.classList.add('d-none');
+                e.preventDefault();
+
                 if(deferredPrompt) {
+                    hideInstallButtons();
                     deferredPrompt.prompt();
                     deferredPrompt.userChoice.then((choiceResult) => {
                         if (choiceResult.outcome === 'accepted') {
                             console.log('User accepted the A2HS prompt');
-                            // Show overlay and animate progress bar directly in frontend
                             const overlay = document.getElementById('install-overlay');
                             const overlayBar = document.getElementById('overlay-progress-bar');
                             const overlayText = document.getElementById('overlay-progress-text');
@@ -145,21 +163,27 @@
                                         alert('\u0985\u09cd\u09af\u09be\u09aa \u0987\u09a8\u09cd\u09b8\u099f\u09b2 \u09b8\u09ab\u09b2 \u09b9\u09df\u09c7\u099b\u09c7!');
                                     }, 400);
                                 }
-                            }, 100); // 0-100% in ~2 seconds
+                            }, 100);
                         } else {
                             console.log('User dismissed the A2HS prompt');
+                            showInstallButtons();
                         }
                         deferredPrompt = null;
                     });
+                    return;
+                }
+
+                if (isIos()) {
+                    alert('\u09b6\u09c7\u09df\u09be\u09b0 \u09ac\u09be\u099f\u09a8\u09c7 \u099f\u09cd\u09af\u09be\u09aa \u0995\u09b0\u09c7 "Add to Home Screen" \u09b8\u09bf\u09b2\u09c7\u0995\u09cd\u099f \u0995\u09b0\u09c1\u09a8\u0964');
+                } else {
+                    alert('\u09ac\u09cd\u09b0\u09be\u0989\u099c\u09be\u09b0\u09c7\u09b0 \u09ae\u09c7\u09a8\u09c1 \u09a5\u09c7\u0995\u09c7 "Install app" \u09ac\u09be "Add to Home screen" \u09b8\u09bf\u09b2\u09c7\u0995\u09cd\u099f \u0995\u09b0\u09c1\u09a8\u0964');
                 }
             });
-        }
+        });
         
-        window.addEventListener('appinstalled', (evt) => {
+        window.addEventListener('appinstalled', () => {
             console.log('App was successfully installed');
-            if(installBtn) {
-               installBtn.classList.add('d-none');
-            }
+            hideInstallButtons();
         });
 
         // UI Audio Interaction Logic
