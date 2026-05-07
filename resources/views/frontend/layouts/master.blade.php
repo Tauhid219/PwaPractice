@@ -113,6 +113,11 @@
         const overlayBar = document.getElementById('overlay-progress-bar');
         const overlayText = document.getElementById('overlay-progress-text');
         const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const isAndroidChrome = () => {
+            const ua = navigator.userAgent;
+
+            return /Android/i.test(ua) && /Chrome/i.test(ua) && !/EdgA|OPR|SamsungBrowser/i.test(ua);
+        };
         const isIosSafari = () => {
             const ua = navigator.userAgent;
             const isIosDevice = /iPhone|iPad|iPod/i.test(ua);
@@ -153,7 +158,7 @@
                 installOverlay.classList.add('d-none');
             }
         };
-        const showInstallOverlay = () => {
+        const showInstallOverlay = (maxProgress = 92) => {
             if (!installOverlay || !overlayBar || !overlayText) {
                 return;
             }
@@ -164,15 +169,15 @@
             let progress = 0;
             installProgressInterval = setInterval(() => {
                 progress += 4;
-                if (progress > 92) {
-                    progress = 92;
+                if (progress > maxProgress) {
+                    progress = maxProgress;
                 }
 
                 overlayBar.style.width = progress + '%';
                 overlayText.innerText = progress + '%';
             }, 120);
         };
-        const completeInstallOverlay = () => {
+        const completeInstallOverlay = (successMessage) => {
             if (!installOverlay || !overlayBar || !overlayText) {
                 return;
             }
@@ -187,7 +192,7 @@
 
             installFinalizeTimeout = setTimeout(() => {
                 installOverlay.classList.add('d-none');
-                alert('\u0985\u09cd\u09af\u09be\u09aa \u0987\u09a8\u09cd\u09b8\u099f\u09b2 \u09b8\u09ab\u09b2 \u09b9\u09df\u09c7\u099b\u09c7!');
+                alert(successMessage);
             }, 500);
         };
 
@@ -203,7 +208,7 @@
                 return;
             }
 
-            if (isIosSafari()) {
+            if (isAndroidChrome() || isIosSafari()) {
                 showInstallButtons();
             }
         });
@@ -230,8 +235,20 @@
                     console.log('User accepted the A2HS prompt');
                     deferredPrompt = null;
                     installFinalizeTimeout = setTimeout(() => {
-                        completeInstallOverlay();
-                    }, 3500);
+                        completeInstallOverlay('\u0985\u09cd\u09af\u09be\u09aa \u0987\u09a8\u09cd\u09b8\u099f\u09b2 \u09b8\u09ab\u09b2 \u09b9\u09df\u09c7\u099b\u09c7!');
+                    }, 3200);
+                    return;
+                }
+
+                if (isAndroidChrome()) {
+                    hideInstallButtons();
+                    showInstallOverlay(100);
+
+                    installFinalizeTimeout = setTimeout(() => {
+                        resetInstallOverlay();
+                        alert('\u09ac\u09cd\u09b0\u09be\u0989\u099c\u09be\u09b0\u09c7\u09b0 \u09ae\u09c7\u09a8\u09c1 \u09a5\u09c7\u0995\u09c7 "Add to Home screen" \u0985\u09a5\u09ac\u09be "Install app" \u0991\u09aa\u09b6\u09a8 \u09a5\u09be\u0995\u09b2\u09c7 \u09b8\u09c7\u099f\u09be \u099a\u09be\u09aa\u09c1\u09a8\u0964 \u098f\u0987 \u09a1\u09bf\u09ad\u09be\u0987\u09b8\u09c7 \u09ac\u09cd\u09b0\u09be\u0989\u099c\u09be\u09b0 \u09b8\u09b0\u09be\u09b8\u09b0\u09bf \u0987\u09a8\u09b8\u099f\u09b2 \u09aa\u09cd\u09b0\u09ae\u09cd\u09aa\u099f \u09a6\u09c7\u099a\u09cd\u099b\u09c7 \u09a8\u09be\u0964');
+                        showInstallButtons();
+                    }, 3400);
                     return;
                 }
 
@@ -243,7 +260,7 @@
 
         window.addEventListener('appinstalled', () => {
             console.log('App was successfully installed');
-            completeInstallOverlay();
+            completeInstallOverlay('\u0985\u09cd\u09af\u09be\u09aa \u0987\u09a8\u09cd\u09b8\u099f\u09b2 \u09b8\u09ab\u09b2 \u09b9\u09df\u09c7\u099b\u09c7!');
             hideInstallButtons();
         });
 
