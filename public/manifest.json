@@ -1,4 +1,6 @@
 {
+    "lang": "bn",
+    "dir": "ltr",
     "name": "জিনিয়াস কিডস - কুইজ গাইডবুক",
     "short_name": "Genius Kids",
     "id": "/",
@@ -6,6 +8,7 @@
     "scope": "/",
     "display": "standalone",
     "display_override": ["standalone", "minimal-ui"],
+    "prefer_related_applications": false,
     "background_color": "#ffffff",
     "theme_color": "#FE5D37",
     "orientation": "portrait",
@@ -15,46 +18,14 @@
             "src": "icons/icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "any"
         },
         {
             "src": "icons/icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "any"
         }
     ],
-    "shortcuts": [
-        {
-            "name": "লাইভ এক্সাম",
-            "short_name": "এক্সাম",
-            "description": "সরাসরি লাইভ পরীক্ষায় অংশগ্রহণ করুন",
-            "url": "/live-exams",
-            "icons": [{ "src": "icons/icon-192x192.png", "sizes": "192x192" }]
-        },
-        {
-            "name": "ফলাফল",
-            "short_name": "ফলাফল",
-            "description": "আপনার দেওয়া সব কুইজের রেজাল্ট দেখুন",
-            "url": "/profile/progress",
-            "icons": [{ "src": "icons/icon-192x192.png", "sizes": "192x192" }]
-        }
-    ],
-    "categories": ["education", "games", "books"],
-    "screenshots": [
-        {
-            "src": "frontend/img/carousel-1.jpg",
-            "sizes": "1000x800",
-            "type": "image/jpeg",
-            "form_factor": "wide",
-            "label": "Genius Kids Home Screen"
-        },
-        {
-            "src": "frontend/img/classes-1.jpg",
-            "sizes": "400x600",
-            "type": "image/jpeg",
-            "form_factor": "narrow",
-            "label": "Category List"
-        }
-    ]
+    "categories": ["education", "books"]
 }

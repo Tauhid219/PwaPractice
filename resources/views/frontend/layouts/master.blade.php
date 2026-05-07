@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 
 <head>
     <meta charset="utf-8">
     <title>@yield('title', 'জিনিয়াস কিডস - কুইজ গাইডবুক')</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
-    <meta content="" name="description">
+    <meta content="জিনিয়াস কিডস কুইজ প্রতিযোগিতার স্মার্ট গাইডবুক। বিভিন্ন ক্যাটাগরির কুইজ, প্রগ্রেস ট্র্যাকিং এবং অনলাইন প্রস্তুতির জন্য একটি Bangla-first learning app।" name="description">
 
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="{{ asset('manifest.json') }}">
@@ -16,7 +16,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="জিনিয়াস কিডস">
-    <link rel="apple-touch-icon" sizes="192x192" href="{{ asset('icons/icon-192x192.png') }}">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icons/icon-180x180.png') }}">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,7 +33,7 @@
     <link href="{{ asset('frontend/lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{ asset('frontend/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -57,7 +58,7 @@
 
         <!-- Online/Offline Banner -->
         <div id="offline-banner" class="offline-status-banner">
-            <i class="fa fa-wifi me-2"></i> <span id="offline-banner-text">ইন্টারনেট সংযোগ নেই</span>
+            <i class="fa fa-wifi me-2"></i> <span id="offline-banner-text">ইন্টারনেট সংযোগ নেই - অ্যাপটি অনলাইনে ব্যবহার করুন</span>
         </div>
 
         @include('frontend.layouts.navbar')
@@ -128,10 +129,18 @@
 
             return isIosDevice && isWebkit && !isCriOS && !isFxiOS;
         };
+        const hasNativeInstallPrompt = () => deferredPrompt !== null;
         const showInstallButtons = () => {
-            if (!isStandalone()) {
-                installButtons.forEach((button) => button.classList.remove('d-none'));
+            if (isStandalone()) {
+                hideInstallButtons();
+                return;
             }
+
+            const shouldShowButton = hasNativeInstallPrompt() || isIosSafari();
+
+            installButtons.forEach((button) => {
+                button.classList.toggle('d-none', !shouldShowButton);
+            });
         };
         const hideInstallButtons = () => {
             installButtons.forEach((button) => button.classList.add('d-none'));
@@ -209,9 +218,7 @@
                 return;
             }
 
-            if (isAndroidChrome() || isIosSafari()) {
-                showInstallButtons();
-            }
+            showInstallButtons();
         });
 
         installButtons.forEach((installBtn) => {
@@ -242,14 +249,7 @@
                 }
 
                 if (isAndroidChrome()) {
-                    hideInstallButtons();
-                    showInstallOverlay(100);
-
-                    installFinalizeTimeout = setTimeout(() => {
-                        resetInstallOverlay();
-                        alert('\u09ac\u09cd\u09b0\u09be\u0989\u099c\u09be\u09b0\u09c7\u09b0 \u09ae\u09c7\u09a8\u09c1 \u09a5\u09c7\u0995\u09c7 "Add to Home screen" \u0985\u09a5\u09ac\u09be "Install app" \u0991\u09aa\u09b6\u09a8 \u09a5\u09be\u0995\u09b2\u09c7 \u09b8\u09c7\u099f\u09be \u099a\u09be\u09aa\u09c1\u09a8\u0964 \u098f\u0987 \u09a1\u09bf\u09ad\u09be\u0987\u09b8\u09c7 \u09ac\u09cd\u09b0\u09be\u0989\u099c\u09be\u09b0 \u09b8\u09b0\u09be\u09b8\u09b0\u09bf \u0987\u09a8\u09b8\u099f\u09b2 \u09aa\u09cd\u09b0\u09ae\u09cd\u09aa\u099f \u09a6\u09c7\u099a\u09cd\u099b\u09c7 \u09a8\u09be\u0964');
-                        showInstallButtons();
-                    }, 3400);
+                    alert('\u098f\u0987 \u09ae\u09c1\u09b9\u09c2\u09b0\u09cd\u09a4\u09c7 \u09ac\u09cd\u09b0\u09be\u0989\u099c\u09be\u09b0 \u09a8\u09c7\u099f\u09bf\u09ad \u0987\u09a8\u09b8\u099f\u09b2 \u09aa\u09cd\u09b0\u09ae\u09cd\u09aa\u099f \u09a6\u09c7\u099a\u09cd\u099b\u09c7 \u09a8\u09be\u0964 Chrome \u09ae\u09c7\u09a8\u09c1 \u09a5\u09c7\u0995\u09c7 "Install app" \u0985\u09a5\u09ac\u09be "Add to Home screen" \u09a5\u09be\u0995\u09b2\u09c7 \u09b8\u09c7\u099f\u09bf \u09ac\u09cd\u09af\u09ac\u09b9\u09be\u09b0 \u0995\u09b0\u09c1\u09a8\u0964');
                     return;
                 }
 
@@ -309,7 +309,7 @@
         window.addEventListener('offline', () => {
             offlineBanner.classList.remove('is-online');
             offlineBanner.classList.add('is-offline');
-            offlineText.innerText = 'ইন্টারনেট সংযোগ নেই';
+            offlineText.innerText = 'ইন্টারনেট সংযোগ নেই - অ্যাপটি অনলাইনে ব্যবহার করুন';
         });
 
         // Initial check
