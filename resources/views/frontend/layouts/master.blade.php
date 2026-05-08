@@ -240,57 +240,58 @@
             showInstallButtons();
         });
 
-        installButtons.forEach((installBtn) => {
-            installBtn.addEventListener('click', async (e) => {
-                e.preventDefault();
+        // Event Delegation for Install Button (handles dynamic elements)
+        document.addEventListener('click', async (e) => {
+            const installBtn = e.target.closest('#install-btn');
+            if (!installBtn) return;
 
-                if (deferredPrompt) {
-                    hideInstallButtons();
-                    showInstallOverlay();
+            e.preventDefault();
+            console.log('Install button clicked, deferredPrompt status:', !!deferredPrompt);
 
-                    deferredPrompt.prompt();
-                    const choiceResult = await deferredPrompt.userChoice;
+            if (deferredPrompt) {
+                hideInstallButtons();
+                showInstallOverlay();
 
-                    if (choiceResult.outcome !== 'accepted') {
-                        console.log('User dismissed the A2HS prompt');
-                        deferredPrompt = null;
-                        resetInstallOverlay();
-                        showInstallButtons();
-                        return;
-                    }
+                deferredPrompt.prompt();
+                const choiceResult = await deferredPrompt.userChoice;
 
-                    console.log('User accepted the A2HS prompt');
+                if (choiceResult.outcome !== 'accepted') {
+                    console.log('User dismissed the install prompt');
+                    deferredPrompt = null;
+                    resetInstallOverlay();
+                    showInstallButtons();
+                } else {
+                    console.log('User accepted the install prompt');
                     deferredPrompt = null;
                     installFinalizeTimeout = setTimeout(() => {
-                        completeInstallOverlay('\u0985\u09cd\u09af\u09be\u09aa \u0987\u09a8\u09cd\u09b8\u099f\u09b2 \u09b8\u09ab\u09b2 \u09b9\u09df\u09c7\u099b\u09c7!');
+                        completeInstallOverlay('অ্যাপ ইন্সটল সফল হয়েছে!');
                     }, 3200);
-                    return;
                 }
+                return;
+            }
 
-                if (isAndroidChrome()) {
-                    // Show guide for Chrome without native prompt
-                    showIosModal(
-                        'Chrome-এ ইন্সটল করুন',
-                        [
-                            '① উপরের <strong>⋮ তিন-ডট মেনু</strong> খুলুন',
-                            '② <strong>"Install app"</strong> বা <strong>"Add to Home screen"</strong> ট্যাপ করুন',
-                            '③ নিশ্চিত করতে <strong>"Install"</strong> বোতামে ট্যাপ করুন',
-                        ]
-                    );
-                    return;
-                }
-
-                if (isIosSafari()) {
-                    showIosModal(
-                        'iPhone/iPad-এ ইন্সটল করুন',
-                        [
-                            '① নিচের টুলবারে <strong>শেয়ার বাটন (↑)</strong> ট্যাপ করুন',
-                            '② স্ক্রল করে <strong>"Add to Home Screen"</strong> খুঁজুন',
-                            '③ ডানে উপরে <strong>"Add"</strong> ট্যাপ করুন',
-                        ]
-                    );
-                }
-            });
+            // Fallback for Manual Guides
+            if (isAndroidChrome()) {
+                showIosModal(
+                    'Chrome-এ ইন্সটল করুন',
+                    [
+                        '① উপরের <strong>⋮ তিন-ডট মেনু</strong> খুলুন',
+                        '② <strong>"Install app"</strong> বা <strong>"Add to Home screen"</strong> ট্যাপ করুন',
+                        '③ নিশ্চিত করতে <strong>"Install"</strong> বোতামে ট্যাপ করুন',
+                    ]
+                );
+            } else if (isIosSafari()) {
+                showIosModal(
+                    'iPhone/iPad-এ ইন্সটল করুন',
+                    [
+                        '① নিচের টুলবারে <strong>শেয়ার বাটন (↑)</strong> ট্যাপ করুন',
+                        '② স্ক্রল করে <strong>"Add to Home Screen"</strong> খুঁজুন',
+                        '③ ডানে উপরে <strong>"Add"</strong> ট্যাপ করুন',
+                    ]
+                );
+            } else {
+                alert('আপনার ব্রাউজারের মেনু থেকে "Add to Home screen" অপশনটি খুঁজে নিন।');
+            }
         });
 
         window.addEventListener('appinstalled', () => {
