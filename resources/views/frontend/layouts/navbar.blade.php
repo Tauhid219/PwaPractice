@@ -24,7 +24,7 @@
             </div>
             <a href="{{ url('/contact') }}" class="nav-item nav-link {{ Request::is('contact') ? 'active' : '' }}">Contact Us</a> --}}
         </div>
-        
+
         <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
             @auth
                 @if(auth()->user()->hasPermissionTo('access dashboard') || auth()->user()->hasRole('super-admin'))
@@ -56,7 +56,7 @@
                 <a href="{{ route('login') }}" class="btn btn-outline-primary rounded-pill px-3">Login</a>
             @endauth
 
-            <a href="javascript:void(0)" id="install-btn" class="btn btn-primary rounded-pill px-3 d-none">অ্যাপ ইনস্টল করুন <i class="fa fa-download ms-2"></i></a>
+            <a href="javascript:void(0)" id="install-btn" class="btn btn-primary rounded-pill px-3 d-none">অ্যাপ ইন্সটল করুন <i class="fa fa-download ms-2"></i></a>
         </div>
     </div>
 </nav>

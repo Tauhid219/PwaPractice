@@ -23,7 +23,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Inter:wght@600&family=Lobster+Two:wght@700&display=swap" rel="stylesheet">
-    
+
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
@@ -40,7 +40,7 @@
 
     <!-- Template Stylesheet -->
     <link href="{{ asset('frontend/css/style.css') }}" rel="stylesheet">
-    
+
     <!-- NProgress -->
     <link href="https://unpkg.com/nprogress@0.2.0/nprogress.css" rel="stylesheet">
     <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
@@ -52,7 +52,10 @@
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
                 <span class="sr-only">Loading...</span>
-        
+            </div>
+        </div>
+        <!-- Spinner End -->
+
         <!-- iOS / Manual Install Guide Modal -->
         <div id="pwa-install-guide-modal" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-end align-items-sm-center justify-content-center" style="z-index: 10500; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);" role="dialog" aria-modal="true" aria-labelledby="pwa-modal-title">
             <div class="pwa-install-sheet">
@@ -70,9 +73,6 @@
                 <button id="pwa-modal-close" class="pwa-install-sheet-close" aria-label="বন্ধ করুন">বুঝেছি, বন্ধ করুন</button>
             </div>
         </div>
-    </div>
-        </div>
-        <!-- Spinner End -->
 
         <!-- Online/Offline Banner -->
         <div id="offline-banner" class="offline-status-banner">
@@ -84,7 +84,7 @@
         @yield('content')
 
         @include('frontend.layouts.footer')
-        
+
         @include('frontend.layouts.bottom_nav')
 
         <!-- Install Overlay Spinner -->
@@ -106,7 +106,8 @@
     <script src="{{ asset('frontend/lib/easing/easing.min.js') }}"></script>
     <script src="{{ asset('frontend/lib/waypoints/waypoints.min.js') }}"></script>
     <script src="{{ asset('frontend/lib/owlcarousel/owl.carousel.min.js') }}"></script>
-    <!-- Template Javascript -->
+
+    <!-- Template Javascript -->
     <script src="{{ asset('frontend/js/main.js') }}"></script>
 
     <!-- Service Worker Registration & PWA Install -->
@@ -284,7 +285,7 @@
                 showIosModal(
                     'iPhone/iPad-এ ইন্সটল করুন',
                     [
-                        '① নিচের টুলবারে <strong>শেয়ার বাটন (↑)</strong> ট্যাপ করুন',
+                        '① নিচের টুলবারে <strong>শেয়ার বাটন (↑)</strong> ট্যাপ করুন',
                         '② স্ক্রল করে <strong>"Add to Home Screen"</strong> খুঁজুন',
                         '③ ডানে উপরে <strong>"Add"</strong> ট্যাপ করুন',
                     ]
@@ -333,7 +334,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const clickAudio = new Audio('{{ asset("frontend/sounds/click.mp3") }}');
             const popAudio = new Audio('{{ asset("frontend/sounds/pop.mp3") }}');
-            
+
             clickAudio.volume = 0.5;
             popAudio.volume = 0.6;
 
@@ -342,7 +343,7 @@
                 el.addEventListener('mousedown', () => {
                     if(!el.classList.contains('accordion-button')) {
                         clickAudio.currentTime = 0;
-                        clickAudio.play().catch(e => {}); 
+                        clickAudio.play().catch(e => {});
                     }
                 });
             });
@@ -355,7 +356,7 @@
                 });
             });
         });
-        
+
         // Online/Offline Status Logic
         const offlineBanner = document.getElementById('offline-banner');
         const offlineText = document.getElementById('offline-banner-text');
@@ -364,7 +365,7 @@
             offlineBanner.classList.remove('is-offline');
             offlineBanner.classList.add('is-online');
             offlineText.innerText = 'ইন্টারনেট সংযোগ পুনরায় স্থাপিত হয়েছে';
-            
+
             setTimeout(() => {
                 offlineBanner.classList.remove('is-online');
             }, 3000);
