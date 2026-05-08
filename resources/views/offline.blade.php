@@ -6,12 +6,12 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta name="theme-color" content="#FE5D37">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Lobster+Two:wght@700&display=swap');
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Heebo', sans-serif;
+            /* System font stack — works offline, no CDN needed */
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                         'Helvetica Neue', Arial, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;

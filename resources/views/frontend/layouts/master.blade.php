@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="bn">
 
 <head>
@@ -52,7 +52,25 @@
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
                 <span class="sr-only">Loading...</span>
+        
+        <!-- iOS / Manual Install Guide Modal -->
+        <div id="pwa-install-guide-modal" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-end align-items-sm-center justify-content-center" style="z-index: 10500; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);" role="dialog" aria-modal="true" aria-labelledby="pwa-modal-title">
+            <div class="pwa-install-sheet">
+                <div class="pwa-install-sheet-header">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <img src="{{ asset('icons/icon-72x72.png') }}" width="40" height="40" alt="" class="rounded-2">
+                        <div>
+                            <div class="fw-bold" style="color:#FE5D37; font-size:1rem;">জিনিয়াস কিডস</div>
+                            <div style="font-size:0.8rem; color:#888;">Genius Kids Quiz App</div>
+                        </div>
+                    </div>
+                    <h2 id="pwa-modal-title" class="pwa-install-sheet-title">অ্যাপ ইন্সটল করুন</h2>
+                </div>
+                <ol id="pwa-modal-steps" class="pwa-install-sheet-steps"></ol>
+                <button id="pwa-modal-close" class="pwa-install-sheet-close" aria-label="বন্ধ করুন">বুঝেছি, বন্ধ করুন</button>
             </div>
+        </div>
+    </div>
         </div>
         <!-- Spinner End -->
 
@@ -249,20 +267,64 @@
                 }
 
                 if (isAndroidChrome()) {
-                    alert('\u098f\u0987 \u09ae\u09c1\u09b9\u09c2\u09b0\u09cd\u09a4\u09c7 \u09ac\u09cd\u09b0\u09be\u0989\u099c\u09be\u09b0 \u09a8\u09c7\u099f\u09bf\u09ad \u0987\u09a8\u09b8\u099f\u09b2 \u09aa\u09cd\u09b0\u09ae\u09cd\u09aa\u099f \u09a6\u09c7\u099a\u09cd\u099b\u09c7 \u09a8\u09be\u0964 Chrome \u09ae\u09c7\u09a8\u09c1 \u09a5\u09c7\u0995\u09c7 "Install app" \u0985\u09a5\u09ac\u09be "Add to Home screen" \u09a5\u09be\u0995\u09b2\u09c7 \u09b8\u09c7\u099f\u09bf \u09ac\u09cd\u09af\u09ac\u09b9\u09be\u09b0 \u0995\u09b0\u09c1\u09a8\u0964');
+                    // Show guide for Chrome without native prompt
+                    showIosModal(
+                        'Chrome-এ ইন্সটল করুন',
+                        [
+                            '① উপরের <strong>⋮ তিন-ডট মেনু</strong> খুলুন',
+                            '② <strong>"Install app"</strong> বা <strong>"Add to Home screen"</strong> ট্যাপ করুন',
+                            '③ নিশ্চিত করতে <strong>"Install"</strong> বোতামে ট্যাপ করুন',
+                        ]
+                    );
                     return;
                 }
 
                 if (isIosSafari()) {
-                    alert('\u09b6\u09c7\u09df\u09be\u09b0 \u09ac\u09be\u099f\u09a8\u09c7 \u099f\u09cd\u09af\u09be\u09aa \u0995\u09b0\u09c7 "Add to Home Screen" \u09b8\u09bf\u09b2\u09c7\u0995\u09cd\u099f \u0995\u09b0\u09c1\u09a8\u0964');
+                    showIosModal(
+                        'iPhone/iPad-এ ইন্সটল করুন',
+                        [
+                            '① নিচের টুলবারে <strong>শেয়ার বাটন (↑)</strong> ট্যাপ করুন',
+                            '② স্ক্রল করে <strong>"Add to Home Screen"</strong> খুঁজুন',
+                            '③ ডানে উপরে <strong>"Add"</strong> ট্যাপ করুন',
+                        ]
+                    );
                 }
             });
         });
 
         window.addEventListener('appinstalled', () => {
             console.log('App was successfully installed');
-            completeInstallOverlay('\u0985\u09cd\u09af\u09be\u09aa \u0987\u09a8\u09cd\u09b8\u099f\u09b2 \u09b8\u09ab\u09b2 \u09b9\u09df\u09c7\u099b\u09c7!');
+            completeInstallOverlay('অ্যাপ ইন্সটল সফল হয়েছে!');
             hideInstallButtons();
+        });
+
+        // --- iOS/Manual install guide modal ---
+        function showIosModal(title, steps) {
+            const modal = document.getElementById('pwa-install-guide-modal');
+            if (!modal) return;
+            document.getElementById('pwa-modal-title').textContent = title;
+            const list = document.getElementById('pwa-modal-steps');
+            list.innerHTML = steps.map(s => `<li>${s}</li>`).join('');
+            modal.classList.remove('d-none');
+            modal.classList.add('pwa-modal-show');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const closeBtn = document.getElementById('pwa-modal-close');
+            const modal    = document.getElementById('pwa-install-guide-modal');
+            if (closeBtn && modal) {
+                closeBtn.addEventListener('click', () => {
+                    modal.classList.remove('pwa-modal-show');
+                    modal.classList.add('d-none');
+                });
+                // Close on backdrop click
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('pwa-modal-show');
+                        modal.classList.add('d-none');
+                    }
+                });
+            }
         });
 
         // UI Audio Interaction Logic
@@ -344,8 +406,75 @@
         /* Mobile adjustment for bottom nav */
         @media (max-width: 991.98px) {
             body {
-                padding-bottom: 60px; /* Space for fixed bottom nav */
+                padding-bottom: 60px;
             }
+        }
+
+        /* PWA Install Guide Modal (iOS / Manual) */
+        .pwa-install-guide-modal.pwa-modal-show,
+        #pwa-install-guide-modal.pwa-modal-show {
+            display: flex !important;
+        }
+        .pwa-install-sheet {
+            background: #fff;
+            border-radius: 20px 20px 0 0;
+            padding: 24px 20px 32px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
+            animation: slideUp 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @media (min-width: 576px) {
+            .pwa-install-sheet {
+                border-radius: 20px;
+                margin: 16px;
+            }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to   { transform: translateY(0);   opacity: 1; }
+        }
+        .pwa-install-sheet-header {
+            margin-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 14px;
+        }
+        .pwa-install-sheet-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 0;
+        }
+        .pwa-install-sheet-steps {
+            padding: 0 0 0 4px;
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        .pwa-install-sheet-steps li {
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: #fff8f5;
+            border-left: 3px solid #FE5D37;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            color: #333;
+            line-height: 1.5;
+        }
+        .pwa-install-sheet-close {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            background: #FE5D37;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .pwa-install-sheet-close:hover {
+            background: #e04d2c;
         }
     </style>
     @include('partials._flash_messages')

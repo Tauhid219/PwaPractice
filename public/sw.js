@@ -1,4 +1,4 @@
-const CACHE_NAME = "genius-kids-pwa-v13";
+const CACHE_NAME = "genius-kids-pwa-v14";
 const OFFLINE_FALLBACK_URL = "/offline";
 const PRECACHE_URLS = [
     OFFLINE_FALLBACK_URL,
@@ -59,7 +59,13 @@ self.addEventListener("install", (event) => {
     self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(PRECACHE_URLS);
+            // Cache each URL individually so one failure doesn't block the whole install
+            const cachePromises = PRECACHE_URLS.map((url) =>
+                cache.add(url).catch((err) => {
+                    console.warn(`[SW] Failed to precache: ${url}`, err);
+                })
+            );
+            return Promise.all(cachePromises);
         })
     );
 });
@@ -67,20 +73,23 @@ self.addEventListener("install", (event) => {
 // Activate SW
 self.addEventListener("activate", (event) => {
     event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
-                    }
-
-                    return Promise.resolve();
-                })
-            );
-        })
+        Promise.all([
+            // Clean up old caches
+            caches.keys().then((cacheNames) => {
+                return Promise.all(
+                    cacheNames.map((cacheName) => {
+                        if (cacheName !== CACHE_NAME) {
+                            console.log(`[SW] Deleting old cache: ${cacheName}`);
+                            return caches.delete(cacheName);
+                        }
+                        return Promise.resolve();
+                    })
+                );
+            }),
+            // Take control of all open clients immediately
+            self.clients.claim(),
+        ])
     );
-
-    return self.clients.claim();
 });
 
 // Fetch SW
