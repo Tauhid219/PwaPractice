@@ -106,6 +106,23 @@
     <script src="{{ asset('frontend/lib/easing/easing.min.js') }}"></script>
     <script src="{{ asset('frontend/lib/waypoints/waypoints.min.js') }}"></script>
     <script src="{{ asset('frontend/lib/owlcarousel/owl.carousel.min.js') }}"></script>
+    <!-- Template Javascript -->
+    <script src="{{ asset('frontend/js/main.js') }}"></script>
+
+    <!-- Service Worker Registration & PWA Install -->
+    <script>
+        // SW Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register("{{ asset('sw.js') }}")
+                    .then((registration) => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch((err) => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
 
         // PWA Install Prompt Logic
         let deferredPrompt = null;
