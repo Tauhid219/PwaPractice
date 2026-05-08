@@ -129,16 +129,34 @@
         let deferredPrompt = null;
         let installProgressInterval = null;
         let installFinalizeTimeout = null;
+        const INSTALL_STATE_KEY = 'pwa-installed';
         const installButtons = document.querySelectorAll('#install-btn');
         const installOverlay = document.getElementById('install-overlay');
         const overlayBar = document.getElementById('overlay-progress-bar');
         const overlayText = document.getElementById('overlay-progress-text');
-        const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-        const isAndroidChrome = () => {
-            const ua = navigator.userAgent;
 
-            return /Android/i.test(ua) && /Chrome/i.test(ua) && !/EdgA|OPR|SamsungBrowser/i.test(ua);
+        const isStandalone = () => {
+            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
         };
+
+        const wasInstalled = () => {
+            try {
+                return localStorage.getItem(INSTALL_STATE_KEY) === '1';
+            } catch (error) {
+                return false;
+            }
+        };
+
+        const markInstalled = () => {
+            try {
+                localStorage.setItem(INSTALL_STATE_KEY, '1');
+            } catch (error) {
+                console.warn('Unable to persist install state', error);
+            }
+        };
+
+        const isEffectivelyInstalled = () => isStandalone() || wasInstalled();
+
         const isIosSafari = () => {
             const ua = navigator.userAgent;
             const isIosDevice = /iPhone|iPad|iPod/i.test(ua);
@@ -148,23 +166,26 @@
 
             return isIosDevice && isWebkit && !isCriOS && !isFxiOS;
         };
+
         const hasNativeInstallPrompt = () => deferredPrompt !== null;
+
         const showInstallButtons = () => {
-            if (isStandalone()) {
+            if (isEffectivelyInstalled()) {
                 hideInstallButtons();
                 return;
             }
 
-            // Always show on mobile (Android/iOS) or if native prompt is ready
-            const shouldShowButton = isAndroidChrome() || isIosSafari() || hasNativeInstallPrompt();
+            const shouldShowButton = hasNativeInstallPrompt() || isIosSafari();
 
             installButtons.forEach((button) => {
                 button.classList.toggle('d-none', !shouldShowButton);
             });
         };
+
         const hideInstallButtons = () => {
             installButtons.forEach((button) => button.classList.add('d-none'));
         };
+
         const resetInstallOverlay = () => {
             if (installProgressInterval) {
                 clearInterval(installProgressInterval);
@@ -188,6 +209,7 @@
                 installOverlay.classList.add('d-none');
             }
         };
+
         const showInstallOverlay = (maxProgress = 92) => {
             if (!installOverlay || !overlayBar || !overlayText) {
                 return;
@@ -207,6 +229,7 @@
                 overlayText.innerText = progress + '%';
             }, 120);
         };
+
         const completeInstallOverlay = (successMessage) => {
             if (!installOverlay || !overlayBar || !overlayText) {
                 return;
@@ -228,12 +251,19 @@
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
+
+            if (isEffectivelyInstalled()) {
+                hideInstallButtons();
+                return;
+            }
+
             deferredPrompt = e;
             showInstallButtons();
         });
 
         window.addEventListener('load', () => {
             if (isStandalone()) {
+                markInstalled();
                 hideInstallButtons();
                 return;
             }
@@ -241,7 +271,6 @@
             showInstallButtons();
         });
 
-        // Event Delegation for Install Button (handles dynamic elements)
         document.addEventListener('click', async (e) => {
             const installBtn = e.target.closest('#install-btn');
             if (!installBtn) return;
@@ -264,6 +293,7 @@
                 } else {
                     console.log('User accepted the install prompt');
                     deferredPrompt = null;
+                    markInstalled();
                     installFinalizeTimeout = setTimeout(() => {
                         completeInstallOverlay('অ্যাপ ইন্সটল সফল হয়েছে!');
                     }, 3200);
@@ -271,17 +301,7 @@
                 return;
             }
 
-            // Fallback for Manual Guides
-            if (isAndroidChrome()) {
-                showIosModal(
-                    'Chrome-এ ইন্সটল করুন',
-                    [
-                        '① উপরের <strong>⋮ তিন-ডট মেনু</strong> খুলুন',
-                        '② <strong>"Install app"</strong> বা <strong>"Add to Home screen"</strong> ট্যাপ করুন',
-                        '③ নিশ্চিত করতে <strong>"Install"</strong> বোতামে ট্যাপ করুন',
-                    ]
-                );
-            } else if (isIosSafari()) {
+            if (isIosSafari()) {
                 showIosModal(
                     'iPhone/iPad-এ ইন্সটল করুন',
                     [
@@ -290,37 +310,40 @@
                         '③ ডানে উপরে <strong>"Add"</strong> ট্যাপ করুন',
                     ]
                 );
-            } else {
-                alert('আপনার ব্রাউজারের মেনু থেকে "Add to Home screen" অপশনটি খুঁজে নিন।');
+                return;
             }
+
+            alert('Native install prompt এখনও available হয়নি। Chrome browser যখন install prompt দেবে, তখন এই বাটনটি দেখা যাবে।');
         });
 
         window.addEventListener('appinstalled', () => {
             console.log('App was successfully installed');
+            markInstalled();
             completeInstallOverlay('অ্যাপ ইন্সটল সফল হয়েছে!');
             hideInstallButtons();
         });
 
-        // --- iOS/Manual install guide modal ---
         function showIosModal(title, steps) {
             const modal = document.getElementById('pwa-install-guide-modal');
             if (!modal) return;
+
             document.getElementById('pwa-modal-title').textContent = title;
             const list = document.getElementById('pwa-modal-steps');
-            list.innerHTML = steps.map(s => `<li>${s}</li>`).join('');
+            list.innerHTML = steps.map((step) => `<li>${step}</li>`).join('');
             modal.classList.remove('d-none');
             modal.classList.add('pwa-modal-show');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             const closeBtn = document.getElementById('pwa-modal-close');
-            const modal    = document.getElementById('pwa-install-guide-modal');
+            const modal = document.getElementById('pwa-install-guide-modal');
+
             if (closeBtn && modal) {
                 closeBtn.addEventListener('click', () => {
                     modal.classList.remove('pwa-modal-show');
                     modal.classList.add('d-none');
                 });
-                // Close on backdrop click
+
                 modal.addEventListener('click', (e) => {
                     if (e.target === modal) {
                         modal.classList.remove('pwa-modal-show');
@@ -338,21 +361,19 @@
             clickAudio.volume = 0.5;
             popAudio.volume = 0.6;
 
-            // Buttons & Links get 'click' sound
-            document.querySelectorAll('a, .btn').forEach(el => {
+            document.querySelectorAll('a, .btn').forEach((el) => {
                 el.addEventListener('mousedown', () => {
-                    if(!el.classList.contains('accordion-button')) {
+                    if (!el.classList.contains('accordion-button')) {
                         clickAudio.currentTime = 0;
-                        clickAudio.play().catch(e => {});
+                        clickAudio.play().catch(() => {});
                     }
                 });
             });
 
-            // Accordion gets 'pop' sound
-            document.querySelectorAll('.accordion-button').forEach(el => {
+            document.querySelectorAll('.accordion-button').forEach((el) => {
                 el.addEventListener('mousedown', () => {
                     popAudio.currentTime = 0;
-                    popAudio.play().catch(e => {});
+                    popAudio.play().catch(() => {});
                 });
             });
         });
@@ -377,7 +398,6 @@
             offlineText.innerText = 'ইন্টারনেট সংযোগ নেই - অ্যাপটি অনলাইনে ব্যবহার করুন';
         });
 
-        // Initial check
         if (!navigator.onLine) {
             offlineBanner.classList.add('is-offline');
         }
@@ -397,10 +417,12 @@
             transition: top 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
+
         .offline-status-banner.is-offline {
             top: 0;
             background-color: #dc3545;
         }
+
         .offline-status-banner.is-online {
             top: 0;
             background-color: #28a745;
@@ -418,6 +440,7 @@
         #pwa-install-guide-modal.pwa-modal-show {
             display: flex !important;
         }
+
         .pwa-install-sheet {
             background: #fff;
             border-radius: 20px 20px 0 0;
@@ -427,32 +450,38 @@
             box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
             animation: slideUp 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+
         @media (min-width: 576px) {
             .pwa-install-sheet {
                 border-radius: 20px;
                 margin: 16px;
             }
         }
+
         @keyframes slideUp {
             from { transform: translateY(40px); opacity: 0; }
-            to   { transform: translateY(0);   opacity: 1; }
+            to { transform: translateY(0); opacity: 1; }
         }
+
         .pwa-install-sheet-header {
             margin-bottom: 16px;
             border-bottom: 1px solid #f0f0f0;
             padding-bottom: 14px;
         }
+
         .pwa-install-sheet-title {
             font-size: 1.1rem;
             font-weight: 700;
             color: #1a1a2e;
             margin: 0;
         }
+
         .pwa-install-sheet-steps {
             padding: 0 0 0 4px;
             list-style: none;
             margin-bottom: 20px;
         }
+
         .pwa-install-sheet-steps li {
             padding: 10px 12px;
             margin-bottom: 8px;
@@ -463,6 +492,7 @@
             color: #333;
             line-height: 1.5;
         }
+
         .pwa-install-sheet-close {
             display: block;
             width: 100%;
@@ -476,6 +506,7 @@
             cursor: pointer;
             transition: background 0.2s;
         }
+
         .pwa-install-sheet-close:hover {
             background: #e04d2c;
         }
