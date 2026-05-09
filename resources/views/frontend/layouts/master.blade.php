@@ -157,6 +157,12 @@
 
         const isEffectivelyInstalled = () => isStandalone() || wasInstalled();
 
+        const isAndroidChrome = () => {
+            const ua = navigator.userAgent;
+
+            return /Android/i.test(ua) && /Chrome/i.test(ua) && !/EdgA|OPR|SamsungBrowser/i.test(ua);
+        };
+
         const isIosSafari = () => {
             const ua = navigator.userAgent;
             const isIosDevice = /iPhone|iPad|iPod/i.test(ua);
@@ -169,17 +175,50 @@
 
         const hasNativeInstallPrompt = () => deferredPrompt !== null;
 
+        const updateInstallButtonState = () => {
+            const nativePromptReady = hasNativeInstallPrompt();
+
+            installButtons.forEach((button) => {
+                if (isEffectivelyInstalled()) {
+                    button.classList.add('d-none');
+                    button.removeAttribute('data-install-pending');
+                    button.removeAttribute('aria-disabled');
+                    return;
+                }
+
+                if (isIosSafari()) {
+                    button.innerHTML = 'অ্যাপ ইন্সটল করুন <i class="fa fa-download ms-2"></i>';
+                    button.removeAttribute('data-install-pending');
+                    button.removeAttribute('aria-disabled');
+                    return;
+                }
+
+                if (isAndroidChrome() && !nativePromptReady) {
+                    button.innerHTML = 'অ্যাপ ইন্সটল প্রস্তুত হচ্ছে <i class="fa fa-mobile-alt ms-2"></i>';
+                    button.setAttribute('data-install-pending', 'true');
+                    button.setAttribute('aria-disabled', 'true');
+                    return;
+                }
+
+                button.innerHTML = 'অ্যাপ ইন্সটল করুন <i class="fa fa-download ms-2"></i>';
+                button.removeAttribute('data-install-pending');
+                button.removeAttribute('aria-disabled');
+            });
+        };
+
         const showInstallButtons = () => {
             if (isEffectivelyInstalled()) {
                 hideInstallButtons();
                 return;
             }
 
-            const shouldShowButton = hasNativeInstallPrompt() || isIosSafari();
+            const shouldShowButton = hasNativeInstallPrompt() || isIosSafari() || isAndroidChrome();
 
             installButtons.forEach((button) => {
                 button.classList.toggle('d-none', !shouldShowButton);
             });
+
+            updateInstallButtonState();
         };
 
         const hideInstallButtons = () => {
@@ -310,6 +349,12 @@
                         '③ ডানে উপরে <strong>"Add"</strong> ট্যাপ করুন',
                     ]
                 );
+                return;
+            }
+
+            if (isAndroidChrome()) {
+                alert('Native install prompt এখনও প্রস্তুত হয়নি। কিছুক্ষণ site ব্যবহার করুন বা page reload করে আবার চেষ্টা করুন।');
+                showInstallButtons();
                 return;
             }
 
@@ -509,6 +554,11 @@
 
         .pwa-install-sheet-close:hover {
             background: #e04d2c;
+        }
+
+        #install-btn[data-install-pending="true"] {
+            opacity: 0.85;
+            box-shadow: none;
         }
     </style>
     @include('partials._flash_messages')
