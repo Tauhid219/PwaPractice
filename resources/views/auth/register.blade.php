@@ -8,7 +8,7 @@
         <div class="text-center mb-6">
             <div class="text-5xl mb-2">🚀</div>
             <h1 class="text-xl font-extrabold text-slate-900 font-sans">নতুন অ্যাকাউন্ট তৈরি করো</h1>
-            <p class="text-xs text-slate-500 font-extrabold">কুইজ প্রতিযোগিতায় অংশ নিতে নাম নথিভুক্ত করো!</p>
+            <p class="text-xs text-slate-500 font-extrabold">নতুন বিষয় শিখতে, কুইজ খেলতে এবং পরীক্ষায় অংশ নিতে অ্যাকাউন্ট তৈরি করো! 🌟</p>
         </div>
 
         <form method="POST" action="{{ route('register') }}" class="space-y-4">
