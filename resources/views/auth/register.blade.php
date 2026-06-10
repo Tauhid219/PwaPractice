@@ -1,77 +1,96 @@
 @extends('frontend.layouts.master')
-
-@section('title', 'রেজিস্ট্রেশন | জিনিয়াস কিডস - কুইজ গাইডবুক')
+@section('title', 'রেজিস্ট্রেশন | জিনিয়াস কিডস')
 
 @section('content')
-<!-- Page Header End -->
-<div class="container-xxl py-5 page-header position-relative mb-5">
-    <div class="container py-5">
-        <h1 class="display-2 text-white animated slideInDown mb-4">Register</h1>
-        <nav aria-label="breadcrumb animated slideInDown">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
-                <li class="breadcrumb-item text-white active" aria-current="page">Register</li>
-            </ol>
-        </nav>
+<div class="max-w-md mx-auto py-6">
+    <!-- Form Card -->
+    <div class="bg-white rounded-3xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] p-6 mb-12">
+        <div class="text-center mb-6">
+            <div class="text-5xl mb-2">🚀</div>
+            <h1 class="text-xl font-extrabold text-slate-900 font-sans">নতুন অ্যাকাউন্ট তৈরি করো</h1>
+            <p class="text-xs text-slate-500 font-extrabold">কুইজ প্রতিযোগিতায় অংশ নিতে নাম নথিভুক্ত করো!</p>
+        </div>
+
+        <form method="POST" action="{{ route('register') }}" class="space-y-4">
+            @csrf
+
+            <!-- Name -->
+            <div>
+                <label for="name" class="block text-xs font-extrabold text-slate-650 mb-1.5">সম্পূর্ণ নাম</label>
+                <input type="text" 
+                    id="name" 
+                    name="name" 
+                    value="{{ old('name') }}" 
+                    required 
+                    autofocus 
+                    placeholder="যেমন: আবির রহমান" 
+                    class="w-full px-4 py-2.5 rounded-2xl border-2 border-slate-900 bg-white text-slate-800 text-sm font-sans focus:outline-none focus:bg-amber-50 focus:border-slate-900 placeholder:text-slate-400 transition-colors"
+                >
+                @error('name')
+                    <p class="text-xs text-rose-500 font-extrabold mt-1.5 font-sans">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Email Address -->
+            <div>
+                <label for="email" class="block text-xs font-extrabold text-slate-650 mb-1.5">ইমেইল এড্রেস</label>
+                <input type="email" 
+                    id="email" 
+                    name="email" 
+                    value="{{ old('email') }}" 
+                    required 
+                    placeholder="name@email.com" 
+                    class="w-full px-4 py-2.5 rounded-2xl border-2 border-slate-900 bg-white text-slate-800 text-sm font-sans focus:outline-none focus:bg-amber-50 focus:border-slate-900 placeholder:text-slate-400 transition-colors"
+                >
+                @error('email')
+                    <p class="text-xs text-rose-500 font-extrabold mt-1.5 font-sans">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label for="password" class="block text-xs font-extrabold text-slate-650 mb-1.5">পাসওয়ার্ড</label>
+                <input type="password" 
+                    id="password" 
+                    name="password" 
+                    required 
+                    placeholder="••••••••" 
+                    class="w-full px-4 py-2.5 rounded-2xl border-2 border-slate-900 bg-white text-slate-800 text-sm font-sans focus:outline-none focus:bg-amber-50 focus:border-slate-900 placeholder:text-slate-400 transition-colors"
+                >
+                @error('password')
+                    <p class="text-xs text-rose-500 font-extrabold mt-1.5 font-sans">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Confirm Password -->
+            <div>
+                <label for="password_confirmation" class="block text-xs font-extrabold text-slate-650 mb-1.5">পাসওয়ার্ড নিশ্চিত করো</label>
+                <input type="password" 
+                    id="password_confirmation" 
+                    name="password_confirmation" 
+                    required 
+                    placeholder="••••••••" 
+                    class="w-full px-4 py-2.5 rounded-2xl border-2 border-slate-900 bg-white text-slate-800 text-sm font-sans focus:outline-none focus:bg-amber-50 focus:border-slate-900 placeholder:text-slate-400 transition-colors"
+                >
+                @error('password_confirmation')
+                    <p class="text-xs text-rose-500 font-extrabold mt-1.5 font-sans">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Register Button -->
+            <div class="pt-2">
+                <button type="submit" class="w-full py-3 rounded-2xl bg-amber-300 hover:bg-amber-400 border-2 border-slate-900 text-slate-900 font-extrabold text-xs transition-all shadow-[3px_3px_0px_#000000] active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center justify-center gap-1">
+                    রেজিস্ট্রেশন করো <i class="fa-solid fa-user-plus"></i>
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mt-6 pt-4 border-t border-slate-100 text-xs font-extrabold text-slate-500">
+            <span>ইতিমধ্যে অ্যাকাউন্ট আছে?</span>
+            <a href="{{ route('login') }}" class="text-indigo-650 hover:underline decoration-none ms-1 font-bold">
+                লগইন করো 🚀
+            </a>
+        </div>
     </div>
 </div>
-<!-- Page Header End -->
-
-<!-- Register Start -->
-<div class="container-xxl py-5">
-    <div class="container">
-        <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-            <h1 class="mb-3">Create an Account!</h1>
-            <p>Join us today to access your exams and track your study progress.</p>
-        </div>
-        <div class="bg-light rounded p-5 wow fadeInUp" data-wow-delay="0.5s" style="max-width: 600px; margin: 0 auto;">
-            
-            <form method="POST" action="{{ route('register') }}">
-                @csrf
-                <div class="row g-3">
-                    <div class="col-12">
-                        <div class="form-floating">
-                            <input type="text" class="form-control border-0" id="name" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" placeholder="Full Name">
-                            <label for="name">Full Name</label>
-                        </div>
-                        <x-input-error :messages="$errors->get('name')" class="mt-2 text-danger" />
-                    </div>
-
-                    <div class="col-12">
-                        <div class="form-floating">
-                            <input type="email" class="form-control border-0" id="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="Your Email">
-                            <label for="email">Email Address</label>
-                        </div>
-                        <x-input-error :messages="$errors->get('email')" class="mt-2 text-danger" />
-                    </div>
-
-                    <div class="col-12">
-                        <div class="form-floating">
-                            <input type="password" class="form-control border-0" id="password" name="password" required autocomplete="new-password" placeholder="Password">
-                            <label for="password">Password</label>
-                        </div>
-                        <x-input-error :messages="$errors->get('password')" class="mt-2 text-danger" />
-                    </div>
-
-                    <div class="col-12">
-                        <div class="form-floating">
-                            <input type="password" class="form-control border-0" id="password_confirmation" name="password_confirmation" required autocomplete="new-password" placeholder="Confirm Password">
-                            <label for="password_confirmation">Confirm Password</label>
-                        </div>
-                        <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 text-danger" />
-                    </div>
-
-                    <div class="col-12 mt-4">
-                        <button class="btn btn-primary w-100 py-3" type="submit">Register</button>
-                    </div>
-
-                    <div class="col-12 text-center mt-3">
-                        <p>Already have an account? <a class="text-primary fw-bold" href="{{ route('login') }}">Log In</a></p>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<!-- Register End -->
 @endsection

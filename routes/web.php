@@ -22,7 +22,7 @@ Route::view('/offline', 'offline')->name('offline');
 Route::post('/mark-read', [FrontendController::class, 'markQuestionAsRead'])->name('mark.read');
 
 Route::get('/dashboard', function () {
-    if (auth()->user()->hasPermissionTo('access dashboard') || auth()->user()->hasRole('super-admin')) {
+    if (auth()->user()->can('access dashboard') || auth()->user()->hasRole('super-admin')) {
         return redirect()->route('admin.dashboard');
     }
 
@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile/progress', [ProfileController::class, 'progress'])->name('profile.progress');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Quiz Routes

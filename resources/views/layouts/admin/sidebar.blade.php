@@ -9,6 +9,7 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <!-- Sidebar user panel (optional) -->
+    @auth
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
       <div class="image">
         <img src="{{ Auth::user()->avatar }}" class="img-circle elevation-2" alt="User Image">
@@ -20,6 +21,7 @@
         </small>
       </div>
     </div>
+    @endauth
 
     <!-- Sidebar Menu -->
     <nav class="mt-2">
@@ -105,7 +107,8 @@
           </a>
         </li>
 
-        @if(auth()->user()->hasPermissionTo('access dashboard') || auth()->user()->hasRole('super-admin'))
+        @auth
+        @if(auth()->user()->can('access dashboard') || auth()->user()->hasRole('super-admin'))
         <li class="nav-item">
           <a href="{{ route('profile.progress') }}" class="nav-link {{ request()->routeIs('profile.progress') ? 'active' : '' }}">
             <i class="nav-icon fas fa-chart-line"></i>
@@ -113,7 +116,9 @@
           </a>
         </li>
         @endif
+        @endauth
 
+        @auth
         <li>
           <form method="POST" action="{{ route('logout') }}">
             @csrf
@@ -124,6 +129,7 @@
             </a>
           </form>
         </li>
+        @endauth
       </ul>
     </nav>
     <!-- /.sidebar-menu -->

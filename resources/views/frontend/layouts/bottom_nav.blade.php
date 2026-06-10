@@ -1,67 +1,40 @@
-<nav
-    class="navbar fixed-bottom navbar-light bg-white shadow-lg d-lg-none d-flex justify-content-around py-2 border-top">
-    <a href="{{ url('/') }}"
-        class="text-center text-decoration-none {{ Request::is('/') ? 'text-primary' : 'text-muted' }}">
-        <i class="fa fa-home fs-4"></i>
-        <span class="d-block" style="font-size: 12px;">হোম</span>
+<nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t-4 border-slate-900 px-2 py-2 flex justify-around items-center">
+    <!-- Home -->
+    <a href="{{ url('/') }}" class="flex flex-col items-center justify-center px-3 py-1.5 rounded-2xl font-extrabold decoration-none text-slate-850 {{ Request::is('/') ? 'bg-amber-300 nb-sm' : '' }}">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] mt-0.5">হোম</span>
     </a>
 
-    <a href="{{ route('live-exams.index') }}"
-        class="text-center text-decoration-none {{ Request::routeIs('live-exams.*') ? 'text-primary' : 'text-muted' }}">
-        <i class="fa fa-clock fs-4"></i>
-        <span class="d-block" style="font-size: 12px;">লাইভ এক্সাম</span>
-    </a>
-
-    <a href="#" class="text-center text-decoration-none text-muted" data-bs-toggle="offcanvas"
-        data-bs-target="#mobileCategoriesMenu">
-        <i class="fa fa-th-large fs-4"></i>
-        <span class="d-block" style="font-size: 12px;">বিষয়</span>
+    <!-- Live Exam -->
+    <a href="{{ route('live-exams.index') }}" class="flex flex-col items-center justify-center px-3 py-1.5 rounded-2xl font-extrabold decoration-none text-slate-850 {{ Request::routeIs('live-exams.*') ? 'bg-amber-300 nb-sm' : '' }}">
+        <i class="fa-solid fa-stopwatch text-lg"></i>
+        <span class="text-[10px] mt-0.5">পরীক্ষা</span>
     </a>
 
     @auth
-        <a href="{{ auth()->user()->is_admin ? route('admin.dashboard') : route('profile.edit') }}"
-            class="text-center text-decoration-none text-muted position-relative">
-            @if (auth()->user()->current_streak > 0)
-                <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger"
-                    style="font-size: 10px; margin-left: 15px; border: 2px solid white;">
-                    🔥 {{ auth()->user()->current_streak }}
+        <!-- Profile / Progress -->
+        <a href="{{ route('profile.progress') }}" class="flex flex-col items-center justify-center px-3 py-1.5 rounded-2xl font-extrabold decoration-none text-slate-850 position-relative {{ Request::routeIs('profile.progress') ? 'bg-amber-300 nb-sm' : '' }}">
+            @if(auth()->user()->current_streak > 0)
+                <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] text-white font-extrabold border border-slate-900">
+                    🔥
                 </span>
             @endif
-            <i class="fa fa-user fs-4"></i>
-            <span class="d-block" style="font-size: 12px;">প্রোফাইল</span>
+            <i class="fa-solid fa-user-astronaut text-lg"></i>
+            <span class="text-[10px] mt-0.5">প্রোফাইল</span>
         </a>
+
+        @if(auth()->user()->can('access dashboard') || auth()->user()->hasRole('super-admin'))
+            <!-- Admin -->
+            <a href="{{ route('admin.dashboard') }}" class="flex flex-col items-center justify-center px-3 py-1.5 rounded-2xl font-extrabold decoration-none text-slate-850 bg-sky-200 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a]">
+                <i class="fa-solid fa-gears text-lg"></i>
+                <span class="text-[10px] mt-0.5">অ্যাডমিন</span>
+            </a>
+        @endif
     @else
-        <a href="{{ route('login') }}" class="text-center text-decoration-none text-muted">
-            <i class="fa fa-sign-in-alt fs-4"></i>
-            <span class="d-block" style="font-size: 12px;">লগিন</span>
+        <!-- Login -->
+        <a href="{{ route('login') }}" class="flex flex-col items-center justify-center px-3 py-1.5 rounded-2xl font-extrabold decoration-none text-slate-850 {{ Request::routeIs('login') ? 'bg-amber-300 nb-sm' : '' }}">
+            <i class="fa-solid fa-right-to-bracket text-lg"></i>
+            <span class="text-[10px] mt-0.5">লগইন</span>
         </a>
     @endauth
 </nav>
-
-<!-- Mobile Categories Offcanvas -->
-<div class="offcanvas offcanvas-bottom rounded-top" tabindex="-1" id="mobileCategoriesMenu"
-    aria-labelledby="mobileCategoriesMenuLabel" style="height: 60vh;">
-    <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="mobileCategoriesMenuLabel">বিষয় নির্বাচন করুন</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <div class="row g-3">
-            @foreach ($globalCategories as $mobileCategory)
-                <div class="col-6">
-                    <a href="{{ route('category.levels', $mobileCategory->slug) }}" class="text-decoration-none">
-                        <div
-                            class="card border-0 shadow-sm text-center py-3 {{ Request::is('category/' . $mobileCategory->slug . '*') ? 'bg-primary text-white' : 'bg-light text-dark' }}">
-                            <i
-                                class="fa {{ $mobileCategory->icon }} fs-3 mb-2 {{ Request::is('category/' . $mobileCategory->slug . '*') ? 'text-white' : 'text-primary' }}"></i>
-                            <h6
-                                class="mb-0 {{ Request::is('category/' . $mobileCategory->slug . '*') ? 'text-white' : '' }}">
-                                {{ $mobileCategory->name }}
-                            </h6>
-                        </div>
-                    </a>
-                </div>
-            @endforeach
-        </div>
-    </div>
-</div>

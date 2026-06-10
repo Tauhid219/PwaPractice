@@ -1,62 +1,61 @@
-<nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0">
-    <a href="{{ url('/') }}" class="navbar-brand">
-        <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>জিনিয়াস কিডস</h1>
+<nav class="hidden md:flex fixed top-0 inset-x-0 z-40 bg-white border-b-4 border-slate-900 px-6 py-3 items-center justify-between">
+    <!-- Brand Logo -->
+    <a href="{{ url('/') }}" class="flex items-center gap-2 text-slate-900 hover:text-slate-900 decoration-none">
+        <div class="w-10 h-10 rounded-2xl bg-amber-300 nb-sm flex items-center justify-center text-xl">🦉</div>
+        <span class="font-extrabold text-xl font-sans">জিনিয়াস কিডস</span>
     </a>
-    <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-        <div class="navbar-nav mx-auto">
-            <a href="{{ url('/') }}" class="nav-item nav-link {{ Request::is('/') ? 'active' : '' }}">Home</a>
-            <a href="{{ route('live-exams.index') }}" class="nav-item nav-link {{ Request::routeIs('live-exams.*') ? 'active' : '' }}">Live Exam</a>
-            {{-- <a href="{{ url('/about') }}" class="nav-item nav-link {{ Request::is('about') ? 'active' : '' }}">About Us</a>
-            <a href="{{ url('/classes') }}" class="nav-item nav-link {{ Request::is('classes') ? 'active' : '' }}">Classes</a>
-            <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle {{ Request::is('facility') || Request::is('team') || Request::is('call-to-action') || Request::is('appointment') || Request::is('testimonial') || Request::is('404') ? 'active' : '' }}" data-bs-toggle="dropdown">Pages</a>
-                <div class="dropdown-menu rounded-0 rounded-bottom border-0 shadow-sm m-0">
-                    <a href="{{ url('/facility') }}" class="dropdown-item">School Facilities</a>
-                    <a href="{{ url('/team') }}" class="dropdown-item">Popular Teachers</a>
-                    <a href="{{ url('/call-to-action') }}" class="dropdown-item">Become A Teachers</a>
-                    <a href="{{ url('/appointment') }}" class="dropdown-item">Make Appointment</a>
-                    <a href="{{ url('/testimonial') }}" class="dropdown-item">Testimonial</a>
-                    <a href="{{ url('/404') }}" class="dropdown-item">404 Error</a>
-                </div>
-            </div>
-            <a href="{{ url('/contact') }}" class="nav-item nav-link {{ Request::is('contact') ? 'active' : '' }}">Contact Us</a> --}}
-        </div>
 
-        <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
-            @auth
-                @if(auth()->user()->hasPermissionTo('access dashboard') || auth()->user()->hasRole('super-admin'))
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-primary rounded-pill px-3">Admin Panel</a>
-                @else
-                    <div class="d-flex align-items-center gap-2">
-                        @if(auth()->user()->current_streak > 0)
-                            <div class="streak-badge bg-light border rounded-pill px-3 py-1 shadow-sm d-flex align-items-center">
-                                <span class="me-1">🔥</span>
-                                <span class="fw-bold text-danger">{{ auth()->user()->current_streak }}</span>
-                            </div>
-                        @endif
-                        <div class="nav-item dropdown d-inline-block">
-                            <a href="#" class="btn btn-outline-primary rounded-pill px-3 dropdown-toggle shadow-sm" data-bs-toggle="dropdown">
-                                <i class="fa fa-user-circle me-1"></i> Profile
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end border-0 rounded-bottom shadow-sm m-0">
-                                <a href="{{ route('profile.edit') }}" class="dropdown-item"><i class="fa fa-user me-2 text-primary"></i>My Profile</a>
-                                <a href="{{ route('profile.progress') }}" class="dropdown-item"><i class="fa fa-chart-line me-2 text-primary"></i>Study Progress</a>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-                <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn btn-danger rounded-pill px-3">Logout</button>
-                </form>
-            @else
-                <a href="{{ route('login') }}" class="btn btn-outline-primary rounded-pill px-3">Login</a>
-            @endauth
+    <!-- Top Nav Links -->
+    <div class="flex gap-3">
+        <a href="{{ url('/') }}" class="nav-btn px-4 py-2 rounded-2xl font-extrabold border-2 border-slate-900 {{ Request::is('/') ? 'bg-amber-300 shadow-[4px_4px_0px_#000000] -translate-y-0.5' : 'bg-white hover:bg-amber-50' }} transition-all text-slate-900 decoration-none">
+            <i class="fa-solid fa-house me-1"></i> হোম
+        </a>
+        <a href="{{ route('live-exams.index') }}" class="nav-btn px-4 py-2 rounded-2xl font-extrabold border-2 border-slate-900 {{ Request::routeIs('live-exams.*') ? 'bg-amber-300 shadow-[4px_4px_0px_#000000] -translate-y-0.5' : 'bg-white hover:bg-amber-50' }} transition-all text-slate-900 decoration-none">
+            <i class="fa-solid fa-stopwatch me-1"></i> পরীক্ষা
+        </a>
+        @auth
+            <a href="{{ route('profile.progress') }}" class="nav-btn px-4 py-2 rounded-2xl font-extrabold border-2 border-slate-900 {{ Request::routeIs('profile.*') ? 'bg-amber-300 shadow-[4px_4px_0px_#000000] -translate-y-0.5' : 'bg-white hover:bg-amber-50' }} transition-all text-slate-900 decoration-none">
+                <i class="fa-solid fa-user-astronaut me-1"></i> প্রোফাইল
+            </a>
+            @if(auth()->user()->can('access dashboard') || auth()->user()->hasRole('super-admin'))
+                <a href="{{ route('admin.dashboard') }}" class="nav-btn px-4 py-2 rounded-2xl font-extrabold border-2 border-slate-900 bg-sky-200 hover:bg-sky-300 transition-all text-slate-900 decoration-none">
+                    <i class="fa-solid fa-gears me-1"></i> অ্যাডমিন প্যানেল
+                </a>
+            @endif
+        @endauth
+    </div>
 
-            <a href="javascript:void(0)" id="install-btn" class="btn btn-primary rounded-pill px-3 d-none">অ্যাপ ইন্সটল করুন <i class="fa fa-download ms-2"></i></a>
-        </div>
+    <!-- Right Actions: Streak, XP & PWA Install/Auth -->
+    <div class="flex items-center gap-3">
+        @auth
+            <!-- Streak -->
+            @if(auth()->user()->current_streak > 0)
+                <span class="px-3 py-1.5 rounded-full bg-amber-100 border-2 border-slate-900 font-extrabold text-sm text-slate-800 shadow-sm">
+                    🔥 {{ auth()->user()->current_streak }} দিনের ধারা
+                </span>
+            @endif
+
+            <!-- XP Points -->
+            <span class="px-3 py-1.5 rounded-full bg-emerald-100 border-2 border-slate-900 font-extrabold text-sm text-slate-800 shadow-sm">
+                ⭐ {{ auth()->user()->quizAttempts()->sum('score') * 10 }} XP
+            </span>
+
+            <!-- Logout Button -->
+            <form method="POST" action="{{ route('logout') }}" class="inline m-0">
+                @csrf
+                <button type="submit" class="px-4 py-2 rounded-2xl bg-rose-400 hover:bg-rose-500 border-2 border-slate-900 text-white font-extrabold text-sm transition-all shadow-[2px_2px_0px_#000000] active:translate-y-0.5 active:shadow-none">
+                    লগআউট
+                </button>
+            </form>
+        @else
+            <a href="{{ route('login') }}" class="px-4 py-2 rounded-2xl bg-emerald-400 hover:bg-emerald-500 border-2 border-slate-900 text-white font-extrabold text-sm transition-all shadow-[3px_3px_0px_#000000] text-center decoration-none">
+                লগইন 🚀
+            </a>
+        @endauth
+
+        <!-- Install Button (PWA) -->
+        <a href="javascript:void(0)" id="install-btn" class="hidden px-4 py-2 rounded-2xl bg-sky-400 hover:bg-sky-500 border-2 border-slate-900 text-white font-extrabold text-sm transition-all shadow-[3px_3px_0px_#000000] decoration-none">
+            অ্যাপ ইন্সটল <i class="fa fa-download ms-1"></i>
+        </a>
     </div>
 </nav>

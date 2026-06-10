@@ -18,7 +18,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        if ($user->hasPermissionTo('access dashboard') || $user->hasRole('super-admin')) {
+        if ($user->can('access dashboard') || $user->hasRole('super-admin')) {
             return view('admin.profile.edit', [
                 'user' => $user,
             ]);
@@ -91,10 +91,31 @@ class ProfileController extends Controller
             ->orderBy('level_id')
             ->get();
 
-        if ($user->hasPermissionTo('access dashboard') || $user->hasRole('super-admin')) {
+        if ($user->can('access dashboard') || $user->hasRole('super-admin')) {
             return view('admin.users.show', compact('user', 'totalRead', 'progressStats', 'quizAttempts', 'userProgress'));
         }
 
         return view('profile.progress', compact('user', 'totalRead', 'progressStats', 'quizAttempts', 'userProgress'));
+    }
+
+    /**
+     * Update the user's avatar emoji.
+     */
+    public function updateAvatar(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $request->validate([
+            'avatar_emoji' => ['required', 'string', 'max:10'],
+        ]);
+
+        $user = $request->user();
+        $user->avatar_emoji = $request->input('avatar_emoji');
+        $user->save();
+
+        session(['avatar_emoji' => $user->avatar_emoji]);
+
+        return response()->json([
+            'success' => true,
+            'avatar_emoji' => $user->avatar_emoji,
+        ]);
     }
 }

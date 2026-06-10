@@ -1,86 +1,104 @@
 @extends('frontend.layouts.master')
-@section('title', 'Quiz Result')
+@section('title', 'জিনিয়াস কিডস - ফলাফল')
 
 @section('content')
-<div class="container-xxl py-5 page-header position-relative mb-5">
-    <div class="container py-5">
-        <h1 class="display-2 text-white animated slideInDown mb-4">ফলাফল</h1>
-    </div>
-</div>
+    @php
+        $total = $totalQuestions;
+        $score = $attempt->score;
+        $pct = $total > 0 ? round(($score / $total) * 100) : 0;
+        $pass = $attempt->passed;
+        $xp = $score * 10;
+        
+        $nextLevel = \App\Models\Level::where('category_id', $category->id)
+            ->where('order', '>', $level->order)
+            ->orderBy('order', 'asc')
+            ->first();
+    @endphp
 
-<div class="container-xxl py-5">
-    <div class="container">
-        <div class="row g-4 justify-content-center">
-            <div class="col-lg-8 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="bg-light rounded p-5 text-center">
-                    
-                    @if($attempt->passed)
-                        <i class="fa fa-trophy text-success display-1 mb-4 animate__animated animate__tada"></i>
-                        <h2 class="text-success mb-3">অভিনন্দন! আপনি পাস করেছেন।</h2>
-                    @else
-                        <i class="fa fa-times-circle text-danger display-1 mb-4 animate__animated animate__shakeX"></i>
-                        <h2 class="text-danger mb-3">দুঃখিত, আপনি পাস করতে পারেননি।</h2>
-                    @endif
+    <div class="text-center pt-6 pb-12 max-w-sm mx-auto">
+        <!-- Emoji Badge -->
+        <div class="text-7xl mb-4 {{ $pass ? 'bouncy' : '' }}">
+            {{ $pass ? '🏆' : '😅' }}
+        </div>
+        
+        <!-- Result Message -->
+        <h1 class="text-2xl font-extrabold text-slate-800 mb-1">
+            {{ $pass ? 'অভিনন্দন! তুমি পাস করেছো!' : 'ইশ! আরেকটু চেষ্টা করো!' }}
+        </h1>
+        <p class="text-slate-500 font-bold mb-6">
+            {{ $pass ? 'তুমি সত্যিই দারুণ!' : 'হার মেনো না, আবার চেষ্টা করো!' }}
+        </p>
 
-                    <h4 class="mb-4">আপনার স্কোর: <span class="{{ $attempt->passed ? 'text-success' : 'text-danger' }}">{{ $attempt->score }}</span> / {{ $totalQuestions }}</h4>
-
-                    <div class="mt-5">
-                        <a href="{{ route('level.questions', ['slug' => $category->slug, 'level' => $level->id]) }}" class="btn btn-primary px-4 py-2 me-2">
-                            <i class="fa fa-refresh me-2"></i> আবার পড়ুন
-                        </a>
-                        
-                        @if($attempt->passed)
-                            @php
-                                $nextLevel = \App\Models\Level::where('id', '>', $level->id)->orderBy('id', 'asc')->first();
-                            @endphp
-
-                            @if($nextLevel)
-                                <a href="{{ route('level.questions', ['slug' => $category->slug, 'level' => $nextLevel->id]) }}" class="btn btn-success px-4 py-2">
-                                    পরবর্তী লেভেল <i class="fa fa-arrow-right ms-2"></i>
-                                </a>
-                            @else
-                                <a href="{{ route('category.levels', $category->slug) }}" class="btn btn-outline-success px-4 py-2">
-                                    <i class="fa fa-list me-2"></i> ক্যাটাগরিতে ফিরে যান
-                                </a>
-                            @endif
-                        @else
-                           <a href="{{ route('quiz.start', ['slug' => $category->slug, 'level' => $level->id]) }}" class="btn btn-warning px-4 py-2 text-white">
-                                <i class="fa fa-play-circle me-2"></i> আবার কুইজ দিন
-                           </a>
-                        @endif
-                    </div>
-                </div>
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+            <div class="bg-white rounded-2xl nb-sm p-3 text-center">
+                <p class="text-2xl font-extrabold mb-0 {{ $pass ? 'text-emerald-500' : 'text-rose-500' }}">
+                    {{ $score }}/{{ $total }}
+                </p>
+                <p class="text-[10px] font-extrabold text-slate-500 mt-1 mb-0">সঠিক</p>
+            </div>
+            <div class="bg-white rounded-2xl nb-sm p-3 text-center">
+                <p class="text-2xl font-extrabold text-amber-500 mb-0">+{{ $xp }}</p>
+                <p class="text-[10px] font-extrabold text-slate-500 mt-1 mb-0">XP</p>
+            </div>
+            <div class="bg-white rounded-2xl nb-sm p-3 text-center">
+                <!-- Elapsed time calculation (fallback to default if not saved) -->
+                <p class="text-2xl font-extrabold text-sky-500 mb-0">
+                    {{ $attempt->created_at->diffInSeconds($attempt->updated_at) ?: 25 }}s
+                </p>
+                <p class="text-[10px] font-extrabold text-slate-500 mt-1 mb-0">সময়</p>
             </div>
         </div>
+
+        <!-- Navigation Buttons -->
+        <div class="space-y-3">
+            @if($pass)
+                @if($nextLevel)
+                    <a href="{{ route('level.questions', ['slug' => $category->slug, 'level' => $nextLevel->id]) }}" class="w-full py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-base transition-all nb shadow-[3px_3px_0px_#000000] text-center block decoration-none">
+                        পরবর্তী লেভেল আনলক করো <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </a>
+                @else
+                    <a href="{{ route('category.levels', $category->slug) }}" class="w-full py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-base transition-all nb shadow-[3px_3px_0px_#000000] text-center block decoration-none">
+                        ক্যাটাগরিতে ফিরে যাও <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </a>
+                @endif
+                <a href="{{ route('quiz.start', ['slug' => $category->slug, 'level' => $level->id]) }}" class="w-full py-4 rounded-2xl bg-white hover:bg-amber-50 border-2 border-slate-900 text-slate-800 font-extrabold text-base transition-all shadow-[2px_2px_0px_#0f172a] text-center block decoration-none">
+                    <i class="fa-solid fa-rotate-right me-1"></i> আবার পরীক্ষা দাও
+                </a>
+            @else
+                <a href="{{ route('quiz.start', ['slug' => $category->slug, 'level' => $level->id]) }}" class="w-full py-4 rounded-2xl bg-rose-400 hover:bg-rose-500 text-white font-extrabold text-base transition-all nb shadow-[3px_3px_0px_#000000] text-center block decoration-none">
+                    <i class="fa-solid fa-rotate-right me-1"></i> আবার পরীক্ষা দাও
+                </a>
+                <a href="{{ route('level.questions', ['slug' => $category->slug, 'level' => $level->id]) }}" class="w-full py-4 rounded-2xl bg-white hover:bg-amber-50 border-2 border-slate-900 text-slate-800 font-extrabold text-base transition-all shadow-[2px_2px_0px_#0f172a] text-center block decoration-none">
+                    📖 আবার রিভিশন দাও
+                </a>
+            @endif
+        </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        @if($attempt->passed)
-            const winAudio = new Audio('{{ asset("frontend/sounds/ting.mp3") }}');
-            winAudio.volume = 0.5;
-            winAudio.play().catch(e => {});
-            
-            Swal.fire({
-                title: 'অভিনন্দন!',
-                text: 'আপনি লেভেলটি সফলভাবে সম্পন্ন করেছেন।',
-                icon: 'success',
-                timer: 3000,
-                confirmButtonText: 'ঠিক আছে'
-            });
-        @else
-            const loseAudio = new Audio('{{ asset("frontend/sounds/buzzer.mp3") }}');
-            loseAudio.volume = 0.5;
-            loseAudio.play().catch(e => {});
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Play correct/wrong sound logic on load
+            @if($pass)
+                if (window.sfx) window.sfx.win();
+                launchConfetti();
+            @else
+                if (window.sfx) window.sfx.wrong();
+            @endif
+        });
 
-            Swal.fire({
-                title: 'ইশ!',
-                text: 'পাস করতে হলে অন্তত ৮০% নম্বর পেতে হবে। আবার চেষ্টা করুন!',
-                icon: 'error',
-                confirmButtonText: 'ঠিক আছে'
-            });
-        @endif
-    });
-</script>
+        // Confetti Launcher (Vanilla JS Canvas/DOM shower)
+        function launchConfetti() {
+            const colors = ['#0ea5e9', '#10b981', '#f59e0b', '#f43f5e', '#fb923c', '#a78bfa'];
+            for (let i = 0; i < 80; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.background = colors[i % colors.length];
+                c.style.animation = `fall ${2 + Math.random() * 2}s linear ${Math.random() * 0.6}s forwards`;
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 4500);
+            }
+        }
+    </script>
 @endsection

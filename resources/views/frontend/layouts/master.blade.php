@@ -22,55 +22,39 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Inter:wght@600&family=Lobster+Two:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <!-- Icon Font Stylesheet -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
-    <link href="{{ asset('frontend/lib/animate/animate.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('frontend/lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+    <!-- Icon Font Stylesheet (FontAwesome 6) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
 
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="{{ asset('frontend/css/bootstrap.min.css') }}" rel="stylesheet">
-
-    <!-- Template Stylesheet -->
-    <link href="{{ asset('frontend/css/style.css') }}" rel="stylesheet">
+    <!-- Vite Assets (compiled Tailwind CSS and Javascript) -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- NProgress -->
     <link href="https://unpkg.com/nprogress@0.2.0/nprogress.css" rel="stylesheet">
     <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
 </head>
 
-<body>
-    <div class="container-xxl bg-white p-0">
-        <!-- Spinner Start -->
-        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-        </div>
-        <!-- Spinner End -->
+<body class="min-h-screen pb-28 md:pb-0 md:pt-24 bg-[#FFFBEB]">
 
         <!-- iOS / Manual Install Guide Modal -->
-        <div id="pwa-install-guide-modal" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-end align-items-sm-center justify-content-center" style="z-index: 10500; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);" role="dialog" aria-modal="true" aria-labelledby="pwa-modal-title">
+        <div id="pwa-install-guide-modal" class="hidden fixed inset-0 flex items-end sm:items-center justify-content-center" style="z-index: 10500; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);" role="dialog" aria-modal="true" aria-labelledby="pwa-modal-title">
             <div class="pwa-install-sheet">
                 <div class="pwa-install-sheet-header">
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <img src="{{ asset('icons/icon-72x72.png') }}" width="40" height="40" alt="" class="rounded-2">
+                    <div class="flex items-center gap-2 mb-2">
+                        <img src="{{ asset('icons/icon-72x72.png') }}" width="40" height="40" alt="" class="rounded-lg">
                         <div>
-                            <div class="fw-bold" style="color:#FE5D37; font-size:1rem;">জিনিয়াস কিডস</div>
-                            <div style="font-size:0.8rem; color:#888;">Genius Kids Quiz App</div>
+                            <div class="font-extrabold text-orange-500 text-sm font-sans">জিনিয়াস কিডস</div>
+                            <div class="text-[10px] text-slate-400 font-extrabold font-sans">Genius Kids Quiz App</div>
                         </div>
                     </div>
                     <h2 id="pwa-modal-title" class="pwa-install-sheet-title">অ্যাপ ইন্সটল করুন</h2>
                 </div>
                 <ol id="pwa-modal-steps" class="pwa-install-sheet-steps"></ol>
-                <button id="pwa-modal-close" class="pwa-install-sheet-close" aria-label="বন্ধ করুন">বুঝেছি, বন্ধ করুন</button>
+                <button id="pwa-modal-close" class="pwa-install-sheet-close font-sans" aria-label="বন্ধ করুন">বুঝেছি, বন্ধ করুন</button>
             </div>
         </div>
 
@@ -81,34 +65,25 @@
 
         @include('frontend.layouts.navbar')
 
-        @yield('content')
-
-        @include('frontend.layouts.footer')
+        <main id="app" class="max-w-3xl mx-auto px-4 py-4 md:py-6">
+            @yield('content')
+        </main>
 
         @include('frontend.layouts.bottom_nav')
 
-        <!-- Install Overlay Spinner -->
-        <div id="install-overlay" class="d-none position-fixed w-100 vh-100 top-0 start-0 d-flex flex-column align-items-center justify-content-center" style="background: rgba(0,0,0,0.85); z-index: 9999;">
-            <div class="spinner-border text-primary mb-3" style="width: 4rem; height: 4rem;" role="status"></div>
-            <h3 class="text-white mb-2">অ্যাপ প্রস্তুত করা হচ্ছে...</h3>
-            <p class="text-white-50">দয়া করে ব্রাউজার কিংবা পেজ বন্ধ করবেন না</p>
-            <div class="progress w-50 mt-3" style="height: 10px; border-radius: 10px;">
-                <div id="overlay-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%;"></div>
+        <!-- Install Overlay Spinner (Tailwind Styled) -->
+        <div id="install-overlay" class="hidden fixed inset-0 flex flex-col items-center justify-center bg-black/85 z-[9999]">
+            <div class="w-16 h-16 border-4 border-slate-200 border-t-orange-500 rounded-full animate-spin mb-4"></div>
+            <h3 class="text-white text-lg font-extrabold mb-2">অ্যাপ প্রস্তুত করা হচ্ছে...</h3>
+            <p class="text-slate-400 text-sm font-semibold">দয়া করে ব্রাউজার কিংবা পেজ বন্ধ করবেন না</p>
+            <div class="w-1/2 h-2 bg-slate-800 rounded-full overflow-hidden mt-4">
+                <div id="overlay-progress-bar" class="h-full bg-orange-500 rounded-full transition-all duration-150" style="width: 0%;"></div>
             </div>
-            <h5 id="overlay-progress-text" class="text-white mt-3 fw-bold">0%</h5>
+            <h5 id="overlay-progress-text" class="text-white mt-3 font-extrabold">0%</h5>
         </div>
-    </div>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('frontend/lib/wow/wow.min.js') }}"></script>
-    <script src="{{ asset('frontend/lib/easing/easing.min.js') }}"></script>
-    <script src="{{ asset('frontend/lib/waypoints/waypoints.min.js') }}"></script>
-    <script src="{{ asset('frontend/lib/owlcarousel/owl.carousel.min.js') }}"></script>
-
-    <!-- Template Javascript -->
-    <script src="{{ asset('frontend/js/main.js') }}"></script>
 
     <!-- Service Worker Registration & PWA Install -->
     <script>
@@ -180,7 +155,7 @@
 
             installButtons.forEach((button) => {
                 if (isEffectivelyInstalled()) {
-                    button.classList.add('d-none');
+                    button.classList.add('hidden');
                     button.removeAttribute('data-install-pending');
                     button.removeAttribute('aria-disabled');
                     return;
@@ -215,14 +190,14 @@
             const shouldShowButton = hasNativeInstallPrompt() || isIosSafari() || isAndroidChrome();
 
             installButtons.forEach((button) => {
-                button.classList.toggle('d-none', !shouldShowButton);
+                button.classList.toggle('hidden', !shouldShowButton);
             });
 
             updateInstallButtonState();
         };
 
         const hideInstallButtons = () => {
-            installButtons.forEach((button) => button.classList.add('d-none'));
+            installButtons.forEach((button) => button.classList.add('hidden'));
         };
 
         const resetInstallOverlay = () => {
@@ -245,7 +220,7 @@
             }
 
             if (installOverlay) {
-                installOverlay.classList.add('d-none');
+                installOverlay.classList.add('hidden');
             }
         };
 
@@ -255,7 +230,7 @@
             }
 
             resetInstallOverlay();
-            installOverlay.classList.remove('d-none');
+            installOverlay.classList.remove('hidden');
 
             let progress = 0;
             installProgressInterval = setInterval(() => {
@@ -283,7 +258,7 @@
             overlayText.innerText = '100%';
 
             installFinalizeTimeout = setTimeout(() => {
-                installOverlay.classList.add('d-none');
+                installOverlay.classList.add('hidden');
                 alert(successMessage);
             }, 500);
         };
@@ -375,8 +350,8 @@
             document.getElementById('pwa-modal-title').textContent = title;
             const list = document.getElementById('pwa-modal-steps');
             list.innerHTML = steps.map((step) => `<li>${step}</li>`).join('');
-            modal.classList.remove('d-none');
-            modal.classList.add('pwa-modal-show');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -385,42 +360,56 @@
 
             if (closeBtn && modal) {
                 closeBtn.addEventListener('click', () => {
-                    modal.classList.remove('pwa-modal-show');
-                    modal.classList.add('d-none');
+                    modal.classList.remove('flex');
+                    modal.classList.add('hidden');
                 });
 
                 modal.addEventListener('click', (e) => {
                     if (e.target === modal) {
-                        modal.classList.remove('pwa-modal-show');
-                        modal.classList.add('d-none');
+                        modal.classList.remove('flex');
+                        modal.classList.add('hidden');
                     }
                 });
             }
         });
 
-        // UI Audio Interaction Logic
-        document.addEventListener('DOMContentLoaded', () => {
-            const clickAudio = new Audio('{{ asset("frontend/sounds/click.mp3") }}');
-            const popAudio = new Audio('{{ asset("frontend/sounds/pop.mp3") }}');
+        /* ============================== AUDIO (Web Audio API Synth) ============================== */
+        let actx;
+        function tone(freq=600, dur=.12, type='sine', vol=.2) {
+            try {
+                actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+                const o = actx.createOscillator(), g = actx.createGain();
+                o.type = type; o.frequency.value = freq;
+                g.gain.value = vol;
+                o.connect(g).connect(actx.destination);
+                o.start();
+                g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + dur);
+                o.stop(actx.currentTime + dur);
+            } catch(e){}
+        }
 
-            clickAudio.volume = 0.5;
-            popAudio.volume = 0.6;
+        const sfx = {
+            click: () => tone(440, .06, 'square', .12),
+            correct: () => { 
+                tone(660, .1, 'sine', .2); 
+                setTimeout(() => tone(880, .14, 'sine', .2), 100); 
+                setTimeout(() => tone(1175, .18, 'sine', .2), 220);
+            },
+            wrong: () => { 
+                tone(220, .18, 'sawtooth', .2); 
+                setTimeout(() => tone(160, .22, 'sawtooth', .2), 160);
+            },
+            win: () => { 
+                [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, .18, 'triangle', .22), i * 120)); 
+            },
+        };
 
-            document.querySelectorAll('a, .btn').forEach((el) => {
-                el.addEventListener('mousedown', () => {
-                    if (!el.classList.contains('accordion-button')) {
-                        clickAudio.currentTime = 0;
-                        clickAudio.play().catch(() => {});
-                    }
-                });
-            });
-
-            document.querySelectorAll('.accordion-button').forEach((el) => {
-                el.addEventListener('mousedown', () => {
-                    popAudio.currentTime = 0;
-                    popAudio.play().catch(() => {});
-                });
-            });
+        // UI Audio Interaction Logic (Global Event Binder)
+        document.addEventListener('mousedown', (e) => {
+            const clickTarget = e.target.closest('a, button, .level-node, .av-pick, .speak, .nav-btn');
+            if (clickTarget) {
+                sfx.click();
+            }
         });
 
         // Online/Offline Status Logic

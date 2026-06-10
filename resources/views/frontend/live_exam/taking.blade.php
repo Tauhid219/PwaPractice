@@ -3,99 +3,152 @@
 
 @section('content')
 <!-- Page Header Start -->
-<div class="container-xxl py-5 page-header position-relative mb-5" style="user-select: none;">
-    <div class="container py-5">
-        <h1 class="display-3 text-white animated slideInDown mb-4">{{ $exam->title }}</h1>
-        <p class="text-white-50 fs-5">সময়: {{ $exam->duration_minutes }} মিনিট</p>
+<div class="rounded-3xl bg-gradient-to-br from-indigo-300 to-purple-500 nb p-5 text-white mb-6" style="user-select: none;">
+    <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+            <p class="text-xs opacity-90 font-extrabold text-white mb-0">লাইভ পরীক্ষা</p>
+            <h1 class="text-xl font-extrabold leading-tight text-white mb-0 font-sans">{{ $exam->title }}</h1>
+        </div>
+        <div class="text-right">
+            <span class="px-3 py-1.5 rounded-full bg-purple-600/30 border border-white/20 font-extrabold text-xs">
+                ⏱️ সময়: {{ $exam->duration_minutes }} মিনিট
+            </span>
+        </div>
     </div>
 </div>
 
-<div class="container-xxl py-5" style="user-select: none;">
-    <div class="container">
-        <div class="row g-4 justify-content-center">
-            <div class="col-lg-8 wow border border-warning rounded rounded-3 p-4 shadow-sm fadeInUp" data-wow-delay="0.1s">
-                
-                <!-- Fixed Timer Warning Header -->
-                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3 position-sticky top-0 bg-white shadow-sm p-3 z-3" style="top: 10px; border-radius: 8px;">
-                    <h3 class="mb-0 text-primary"><i class="fa fa-pen me-2"></i> পরীক্ষা চলছে...</h3>
-                    <div class="fs-4 fw-bold text-danger pulse-animation-slow">
-                        <i class="fa fa-stopwatch me-1"></i> <span id="timer">--:--</span>
-                    </div>
+<div class="pb-16" style="user-select: none;">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-3xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] p-5">
+            
+            <!-- Sticky Timer Warning Header -->
+            <div class="sticky top-3 z-30 bg-white rounded-2xl border-3 border-slate-900 shadow-[3px_3px_0px_#0f172a] p-3 flex justify-between items-center mb-6">
+                <h3 class="mb-0 text-slate-800 font-extrabold text-sm font-sans flex items-center gap-1.5"><i class="fa-solid fa-pen-nib text-indigo-500"></i> পরীক্ষা চলছে...</h3>
+                <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-rose-100 border-2 border-slate-900 font-extrabold text-rose-700 text-sm animate-pulse">
+                    <i class="fa-solid fa-stopwatch"></i> <span id="timer">--:--</span>
                 </div>
-
-                <form action="{{ route('live-exams.submit', $exam->id) }}" method="POST" id="liveExamForm">
-                    @csrf
-                    <input type="hidden" name="tab_switches" id="tabSwitchesInput" value="0">
-                    
-                    @if($questions->isEmpty())
-                        <div class="alert alert-warning">এই পরীক্ষায় কোন প্রশ্ন নেই।</div>
-                    @else
-                        <!-- Progress Bar Start -->
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-primary fw-bold" id="progressText">প্রশ্ন ১ / {{ count($questions) }}</span>
-                                <span class="text-muted" id="percentageText">০% সম্পন্ন</span>
-                            </div>
-                            <div class="progress" style="height: 10px; border-radius: 5px;">
-                                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <!-- Progress Bar End -->
-                        
-                        <!-- Skeleton Loader -->
-                        <div id="skeleton-loader" style="display: none;">
-                            <div class="skeleton skeleton-title"></div>
-                            <div class="skeleton skeleton-option"></div>
-                            <div class="skeleton skeleton-option"></div>
-                            <div class="skeleton skeleton-option"></div>
-                        </div>
-
-                        @foreach($questions as $index => $question)
-                            <div class="mb-4 question-container" id="q_{{ $index }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
-                                <h4><span class="text-primary">প্রশ্ন {{ $index + 1 }}:</span> {{ $question->question_text }}</h4>
-                                
-                                <div class="mt-4 quiz-options">
-                                    @php
-                                        $options = $question->shuffledOptions();
-                                        $labels = ['ক)', 'খ)', 'গ)'];
-                                    @endphp
-                                    @foreach($options as $optIndex => $option)
-                                        <div class="option-item mb-3">
-                                            <input type="radio" name="answers[{{ $question->id }}]" id="opt{{ $optIndex }}_{{ $question->id }}" value="{{ $option }}" class="btn-check" required>
-                                            <label class="btn btn-outline-primary w-100 text-start p-3 fs-5" for="opt{{ $optIndex }}_{{ $question->id }}">
-                                                <span class="fw-bold me-2">{{ $labels[$optIndex] }}</span> {{ $option }}
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-
-                                <div class="mt-4 text-end">
-                                    @if($index < count($questions) - 1)
-                                        <button type="button" class="btn btn-warning text-dark px-4 py-2 next-btn" data-index="{{ $index }}">পরের প্রশ্ন <i class="fa fa-arrow-right ms-2"></i></button>
-                                    @else
-                                        <button type="button" class="btn btn-success px-5 py-3 fs-5 shadow pulse-animation" onclick="confirmSubmit()">সাবমিট করুন <i class="fa fa-paper-plane ms-2"></i></button>
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
-                    @endif
-                </form>
             </div>
+
+            <form action="{{ route('live-exams.submit', $exam->id) }}" method="POST" id="liveExamForm">
+                @csrf
+                <input type="hidden" name="tab_switches" id="tabSwitchesInput" value="0">
+                
+                @if($questions->isEmpty())
+                    <div class="bg-amber-100 border-2 border-slate-900 rounded-2xl p-4 text-center font-extrabold text-amber-850">
+                        এই পরীক্ষায় কোনো প্রশ্ন নেই।
+                    </div>
+                @else
+                    <!-- Progress Bar Start -->
+                    <div class="mb-5">
+                        <div class="flex justify-between items-center text-xs font-extrabold text-slate-500 mb-1.5">
+                            <span id="progressText">প্রশ্ন ১ / {{ count($questions) }}</span>
+                            <span id="percentageText">০% সম্পন্ন</span>
+                        </div>
+                        <div class="w-full h-4 rounded-full bg-white border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] overflow-hidden">
+                            <div id="progressBar" class="h-full bg-amber-300 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <!-- Progress Bar End -->
+                    
+                    <!-- Skeleton Loader -->
+                    <div id="skeleton-loader" class="space-y-3 mb-4" style="display: none;">
+                        <div class="h-14 bg-slate-50 rounded-2xl border-2 border-slate-200 animate-pulse"></div>
+                        <div class="h-16 bg-slate-50 rounded-2xl border-2 border-slate-200 animate-pulse"></div>
+                        <div class="h-16 bg-slate-50 rounded-2xl border-2 border-slate-200 animate-pulse"></div>
+                        <div class="h-16 bg-slate-50 rounded-2xl border-2 border-slate-200 animate-pulse"></div>
+                    </div>
+
+                    @foreach($questions as $index => $question)
+                        <div class="question-container" id="q_{{ $index }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
+                            <!-- Question Text -->
+                            <div class="bg-slate-50 rounded-2xl border-2 border-slate-900 p-4 mb-4">
+                                <h4 class="font-extrabold text-sm sm:text-base text-slate-800 leading-snug font-sans">
+                                    <span class="text-indigo-600 font-sans">প্রশ্ন {{ $index + 1 }}:</span> {{ $question->question_text }}
+                                </h4>
+                            </div>
+                            
+                            <!-- Hidden inputs for Laravel backend validation -->
+                            <div class="hidden">
+                                @php
+                                    $options = $question->shuffledOptions();
+                                    $labels = ['ক', 'খ', 'গ'];
+                                @endphp
+                                @foreach($options as $optIndex => $option)
+                                    <input type="radio" name="answers[{{ $question->id }}]" id="opt{{ $optIndex }}_{{ $question->id }}" value="{{ $option }}" required>
+                                @endforeach
+                            </div>
+
+                            <!-- Interactive Neobrutalist Options -->
+                            <div class="space-y-3 quiz-options mb-6">
+                                @foreach($options as $optIndex => $option)
+                                    <button type="button" 
+                                        class="opt-btn w-full p-4 rounded-2xl bg-white border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] hover:-translate-y-0.5 active:translate-y-0 transition-all text-slate-800 font-extrabold text-left flex items-center gap-3 outline-none cursor-pointer"
+                                        data-val="{{ $option }}" 
+                                        data-radio-id="opt{{ $optIndex }}_{{ $question->id }}"
+                                    >
+                                        <span class="label-badge w-9 h-9 rounded-xl bg-indigo-50 border-2 border-slate-900 flex items-center justify-center text-slate-950 font-extrabold shrink-0 font-sans text-xs">
+                                            {{ $labels[$optIndex] }}
+                                        </span>
+                                        <span class="flex-1 text-sm sm:text-base font-sans">{{ $option }}</span>
+                                    </button>
+                                @endforeach
+                            </div>
+
+                            <!-- Control Button -->
+                            <div class="text-end">
+                                @if($index < count($questions) - 1)
+                                    <button type="button" class="px-5 py-2.5 rounded-2xl bg-amber-300 hover:bg-amber-400 border-2 border-slate-900 text-slate-900 font-extrabold text-xs transition-all shadow-[2px_2px_0px_#000000] active:translate-y-0.5 active:shadow-none next-btn cursor-pointer" data-index="{{ $index }}">
+                                        পরের প্রশ্ন <i class="fa-solid fa-arrow-right ms-1"></i>
+                                    </button>
+                                @else
+                                    <button type="button" class="px-6 py-3 rounded-2xl bg-emerald-400 hover:bg-emerald-500 border-2 border-slate-900 text-white font-extrabold text-sm transition-all shadow-[3px_3px_0px_#000000] active:translate-y-0.5 active:shadow-none cursor-pointer pulse-animation" onclick="confirmSubmit()">
+                                        পরীক্ষা জমা দাও <i class="fa-solid fa-paper-plane ms-1"></i>
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
+            </form>
         </div>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const popAudio = new Audio('{{ asset("frontend/sounds/pop.mp3") }}');
         const nextBtns = document.querySelectorAll('.next-btn');
-        const options = document.querySelectorAll('.btn-check');
+        const optButtons = document.querySelectorAll('.opt-btn');
 
-        // Play pop sound on option select
-        options.forEach(opt => {
-            opt.addEventListener('change', () => {
-                popAudio.volume = 0.5;
-                popAudio.play().catch(e => {});
+        // Play pop sound using synthesized sound on option select, and update selected states
+        optButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (window.tone) {
+                    window.tone('triangle', 300, 0.08); // Play audio synth chime
+                }
+
+                const radioId = this.getAttribute('data-radio-id');
+                const radioInput = document.getElementById(radioId);
+                if (radioInput) {
+                    radioInput.checked = true;
+                }
+
+                // Remove highlight from all option buttons in the same question container
+                const container = this.closest('.question-container');
+                const siblings = container.querySelectorAll('.opt-btn');
+                siblings.forEach(sib => {
+                    sib.className = "opt-btn w-full p-4 rounded-2xl bg-white border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] hover:-translate-y-0.5 active:translate-y-0 transition-all text-slate-800 font-extrabold text-left flex items-center gap-3 outline-none cursor-pointer";
+                    const badge = sib.querySelector('.label-badge');
+                    if (badge) {
+                        badge.className = "label-badge w-9 h-9 rounded-xl bg-indigo-50 border-2 border-slate-900 flex items-center justify-center text-slate-950 font-extrabold shrink-0 font-sans text-xs";
+                    }
+                });
+
+                // Add active neobrutalist styling to the clicked button
+                this.className = "opt-btn w-full p-4 rounded-2xl bg-amber-350 border-3 border-slate-900 shadow-[2px_2px_0px_#0f172a] translate-y-0.5 transition-all text-slate-900 font-extrabold text-left flex items-center gap-3 outline-none cursor-pointer";
+                const badge = this.querySelector('.label-badge');
+                if (badge) {
+                    badge.className = "label-badge w-9 h-9 rounded-xl bg-amber-400 border-2 border-slate-900 flex items-center justify-center text-slate-900 shrink-0 font-sans text-xs";
+                }
             });
         });
 
@@ -136,7 +189,6 @@
             document.getElementById('progressText').innerText = `প্রশ্ন ${current} / ${total}`;
             document.getElementById('percentageText').innerText = `${percentage}% সম্পন্ন`;
             document.getElementById('progressBar').style.width = percentage + '%';
-            document.getElementById('progressBar').setAttribute('aria-valuenow', percentage);
         }
 
         // Initialize progress bar
@@ -179,7 +231,8 @@
                     timerDisplay.textContent = minutes + ':' + seconds;
 
                     if (secondsRemaining <= 120) {
-                        timerDisplay.classList.add('text-danger', 'fw-bolder');
+                        timerDisplay.parentNode.classList.remove('bg-rose-100', 'text-rose-700');
+                        timerDisplay.parentNode.classList.add('bg-rose-500', 'text-white');
                     }
                 } else if (e.data.action === 'finished') {
                     isSubmitting = true;
@@ -187,7 +240,7 @@
                     alert('সময় শেষ! আপনার উত্তর স্বয়ংক্রিয়ভাবে জমা হচ্ছে।');
                     
                     // Prevent further changes
-                    document.querySelectorAll('.btn-check:not(:checked)').forEach(opt => opt.disabled = true);
+                    document.querySelectorAll('input[type="radio"]').forEach(opt => opt.disabled = true);
                     
                     form.submit();
                 }
@@ -206,14 +259,15 @@
                 timerDisplay.textContent = minutes + ':' + seconds;
 
                 if (durationInSeconds <= 120) {
-                    timerDisplay.classList.add('text-danger', 'fw-bolder');
+                    timerDisplay.parentNode.classList.remove('bg-rose-100', 'text-rose-700');
+                    timerDisplay.parentNode.classList.add('bg-rose-500', 'text-white');
                 }
 
                 if (durationInSeconds <= 0) {
                     isSubmitting = true;
                     timerDisplay.textContent = "00:00";
                     alert('সময় শেষ! আপনার উত্তর স্বয়ংক্রিয়ভাবে জমা হচ্ছে।');
-                    document.querySelectorAll('.btn-check:not(:checked)').forEach(opt => opt.disabled = true);
+                    document.querySelectorAll('input[type="radio"]').forEach(opt => opt.disabled = true);
                     form.submit();
                 } else {
                     durationInSeconds--;
@@ -268,6 +322,5 @@
             }
         });
     });
-
 </script>
 @endsection

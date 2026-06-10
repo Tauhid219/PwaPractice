@@ -1,3 +1,131 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ==========================================================================
+   NEOBRUTALISM & PLAYFUL CUSTOM STYLE SYSTEM (Duolingo / Nintendo style)
+   ========================================================================== */
+
+:root {
+    font-family: 'Hind Siliguri', 'Nunito', system-ui, sans-serif;
+}
+
+body {
+    font-family: 'Hind Siliguri', 'Nunito', system-ui, sans-serif;
+    background: #FFFBEB; /* Soft amber/cream background for kid-friendliness */
+}
+
+/* 3D Neobrutalist Buttons */
+.btn3d {
+    box-shadow: 0 6px 0 0 rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn3d:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.15);
+}
+
+/* 3D Neobrutalist Cards */
+.card3d {
+    box-shadow: 0 8px 0 0 #E2E8F0, 0 0 0 3px #0f172a10;
+}
+
+/* Thick Borders and Shadows (Neobrutalism) */
+.nb {
+    border: 3px solid #0f172a;
+    box-shadow: 6px 6px 0 0 #0f172a;
+}
+
+.nb-sm {
+    border: 3px solid #0f172a;
+    box-shadow: 4px 4px 0 0 #0f172a;
+}
+
+/* --- Keyframe Animations --- */
+
+/* Bouncy animation for CTA or highlight elements */
+@keyframes bouncy {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.bouncy {
+    animation: bouncy 1.6s ease-in-out infinite;
+}
+
+/* Shake animation for incorrect answers */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Pop animation for correct answers or popup modals */
+@keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.pop {
+    animation: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Glow animation for unlocked level nodes */
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6), 0 8px 0 #065f46;
+    }
+    50% {
+        box-shadow: 0 0 0 18px rgba(16, 185, 129, 0), 0 8px 0 #065f46;
+    }
+}
+
+.pulse-glow {
+    animation: pulseGlow 1.8s infinite;
+}
+
+/* Dotted Level Path Line */
+.path-line {
+    background-image: radial-gradient(circle, #0f172a 2px, transparent 2px);
+    background-size: 12px 12px;
+    background-repeat: repeat-y;
+    background-position: center;
+}
+
+/* Confetti Shower Elements */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 14px;
+    top: -20px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+    border-radius: 2px;
+}
+
+@keyframes fall {
+    0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 1; }
+}
+
+/* Utilities */
+.hide {
+    display: none !important;
+}
+
+.tab-active {
+    background: #0ea5e9;
+    color: white;
+}
+
+/* Hide scrollbars on horizontal scrollers */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+

@@ -49,20 +49,26 @@
 
     <!-- User Dropdown Menu (Logout) -->
     <li class="nav-item dropdown">
-      <a class="nav-link" data-toggle="dropdown" href="#" title="Roles: {{ Auth::user()->getRoleNames()->implode(', ') ?: 'User' }}">
-        <i class="fas fa-user"></i> {{ Auth::user()->name }}
-      </a>
-      <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-        <a href="{{ route('profile.edit') }}" class="dropdown-item">Profile</a>
-        <div class="dropdown-divider"></div>
-        <form method="POST" action="{{ route('logout') }}">
-          @csrf
-          <a href="{{ route('logout') }}" class="dropdown-item" 
-             onclick="event.preventDefault(); this.closest('form').submit();">
-            Logout
-          </a>
-        </form>
-      </div>
+      @auth
+        <a class="nav-link" data-toggle="dropdown" href="#" title="Roles: {{ Auth::user()->getRoleNames()->implode(', ') ?: 'User' }}">
+          <i class="fas fa-user"></i> {{ Auth::user()->name }}
+        </a>
+        <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+          <a href="{{ route('profile.edit') }}" class="dropdown-item">Profile</a>
+          <div class="dropdown-divider"></div>
+          <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}" class="dropdown-item" 
+               onclick="event.preventDefault(); this.closest('form').submit();">
+              Logout
+            </a>
+          </form>
+        </div>
+      @else
+        <a class="nav-link" href="{{ route('login') }}">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </a>
+      @endauth
     </li>
   </ul>
 </nav>
