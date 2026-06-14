@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-@section('title', 'পাসওয়ার্ড পুনরুদ্ধার | জিনিয়াস কিডস')
+@section('title', __('Reset Password') . ' | ' . __('Genius Kids - Quiz Guidebook'))
 
 @section('content')
 <div class="max-w-md mx-auto py-6">
@@ -7,8 +7,8 @@
     <div class="bg-white rounded-3xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] p-6 mb-12">
         <div class="text-center mb-6">
             <div class="text-5xl mb-2">🔒</div>
-            <h1 class="text-xl font-extrabold text-slate-900 font-sans">পাসওয়ার্ড ভুলে গেছ?</h1>
-            <p class="text-xs text-slate-500 font-extrabold">কোনো সমস্যা নেই! তোমার ইমেইল এড্রেস দাও, আমরা একটি পাসওয়ার্ড রিসেট লিংক পাঠিয়ে দেবো।</p>
+            <h1 class="text-xl font-extrabold text-slate-900 font-sans">{{ __('Forgot Password?') }}</h1>
+            <p class="text-xs text-slate-500 font-extrabold">{{ __('No problem! Just let us know your email address and we will email you a password reset link.') }}</p>
         </div>
 
         <!-- Session Status -->
@@ -23,7 +23,7 @@
 
             <!-- Email Address -->
             <div>
-                <label for="email" class="block text-xs font-extrabold text-slate-650 mb-1.5">ইমেইল এড্রেস</label>
+                <label for="email" class="block text-xs font-extrabold text-slate-650 mb-1.5">{{ __('Email Address') }}</label>
                 <input type="email" 
                     id="email" 
                     name="email" 
@@ -41,14 +41,14 @@
             <!-- Submit Button -->
             <div class="pt-2">
                 <button type="submit" class="w-full py-3 rounded-2xl bg-amber-300 hover:bg-amber-400 border-2 border-slate-900 text-slate-900 font-extrabold text-xs transition-all shadow-[3px_3px_0px_#000000] active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center justify-center gap-1.5">
-                    রিসেট লিংক পাঠাও <i class="fa-solid fa-paper-plane"></i>
+                    {{ __('Send Reset Link') }} <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </div>
         </form>
 
         <div class="text-center mt-6 pt-4 border-t border-slate-100 text-xs font-extrabold text-slate-500">
             <a href="{{ route('login') }}" class="text-indigo-650 hover:underline decoration-none font-bold">
-                লগইন পেজে ফিরে যাও ↩️
+                {{ __('Back to Login ↩️') }}
             </a>
         </div>
     </div>

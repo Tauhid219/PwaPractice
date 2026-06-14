@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-@section('title', 'জিনিয়াস কিডস - কুইজ গাইডবুক')
+@section('title', __('Genius Kids - Quiz Guidebook'))
 
 @section('content')
     <!-- Kid-Friendly Header Block -->
@@ -14,12 +14,12 @@
                     @endauth
                 </div>
                 <div>
-                    <p class="text-xs opacity-90 font-extrabold text-white mb-0">হ্যালো,</p>
+                    <p class="text-xs opacity-90 font-extrabold text-white mb-0">{{ __('Hello,') }}</p>
                     <h1 class="text-xl font-extrabold leading-tight text-white mb-0 font-sans">
                         @auth
                             {{ auth()->user()->name }}! 👋
                         @else
-                            জিনিয়াস কিডস! 👋
+                            {{ __('Genius Kids!') }} 👋
                         @endauth
                     </h1>
                 </div>
@@ -28,7 +28,7 @@
                 @auth
                     @if(auth()->user()->current_streak > 0)
                         <div class="px-3 py-1 rounded-full bg-amber-300 text-slate-900 nb-sm font-extrabold text-xs">
-                            🔥 {{ auth()->user()->current_streak }} দিনের ধারা
+                            🔥 {{ auth()->user()->current_streak }} {{ __('day streak') }}
                         </div>
                     @endif
                     <div class="mt-0 sm:mt-2 px-3 py-1 rounded-full bg-emerald-400 text-white nb-sm font-extrabold text-xs border-white">
@@ -36,14 +36,14 @@
                     </div>
                 @else
                     <a href="{{ route('login') }}" class="px-3 py-1.5 rounded-full bg-amber-300 hover:bg-amber-400 text-slate-900 nb-sm font-extrabold text-xs decoration-none">
-                        লগইন করো 🚀
+                        {{ __('Login 🚀') }}
                     </a>
                 @endauth
             </div>
         </div>
     </header>
 
-    <h2 class="text-xl font-extrabold mb-4 flex items-center gap-2 text-slate-800">📚 বিষয় বেছে নাও</h2>
+    <h2 class="text-xl font-extrabold mb-4 flex items-center gap-2 text-slate-800">{{ __('Choose Subject') }}</h2>
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-12">
         @php
@@ -107,17 +107,17 @@
                         <div class="h-full {{ $color['btn'] }}" style="width: {{ $progressPercent }}%"></div>
                     </div>
                     <p class="text-[11px] font-extrabold text-slate-500 mb-3">
-                        {{ $doneLevels }}/{{ $totalLevels }} লেভেল
+                        {{ $doneLevels }}/{{ $totalLevels }} {{ __('Levels') }}
                     </p>
                     <span class="inline-block w-full text-center py-2 rounded-xl {{ $color['btn'] }} text-white text-xs font-extrabold nb-sm">
-                        শুরু করো
+                        {{ __('Start') }}
                     </span>
                 </div>
             </a>
         @empty
             <div class="col-span-full text-center py-12 bg-white rounded-3xl nb p-6">
                 <div class="text-5xl mb-2">😅</div>
-                <h3 class="font-extrabold text-lg">দুঃখিত, কোনো বিষয় পাওয়া যায়নি!</h3>
+                <h3 class="font-extrabold text-lg">{{ __('Sorry, no subjects found!') }}</h3>
             </div>
         @endforelse
     </div>

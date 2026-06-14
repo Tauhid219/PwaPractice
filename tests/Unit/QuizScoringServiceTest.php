@@ -24,6 +24,15 @@ class QuizScoringServiceTest extends TestCase
         $this->assertFalse(QuizScoringService::checkAnswer(null, 'Apple'));
         $this->assertFalse(QuizScoringService::checkAnswer('Apple', null));
         $this->assertFalse(QuizScoringService::checkAnswer(null, null));
+
+        // Array matching checks (spelling variations)
+        $this->assertTrue(QuizScoringService::checkAnswer('মক্কায়', ['মক্কা', 'মক্কায়', 'মক্কাতে']));
+        $this->assertTrue(QuizScoringService::checkAnswer('মক্কা', ['মক্কা', 'মক্কায়', 'মক্কাতে']));
+        $this->assertTrue(QuizScoringService::checkAnswer(' মক্কাতে ', ['মক্কা', 'মক্কায়', 'মক্কাতে']));
+        $this->assertFalse(QuizScoringService::checkAnswer('মদীনা', ['মক্কা', 'মক্কায়', 'মক্কাতে']));
+
+        // Unicode Normalization (Precomposed vs Decomposed Bengali Nukta)
+        $this->assertTrue(QuizScoringService::checkAnswer("\u{09AF}\u{09BC}", "\u{09DF}"));
     }
 
     /**
@@ -31,22 +40,22 @@ class QuizScoringServiceTest extends TestCase
      */
     public function test_calculate_score_returns_correct_matching_count()
     {
-        // Mock collection of questions
+        // Mock collection of questions with spelling variations
         $questions = collect([
-            (object) ['id' => 1, 'answer_text' => 'A'],
-            (object) ['id' => 2, 'answer_text' => 'B'],
-            (object) ['id' => 3, 'answer_text' => 'C'],
+            (object) ['id' => 1, 'answer_text' => 'মক্কা', 'correct_answers' => ['মক্কা', 'মক্কায়', 'মক্কাতে']],
+            (object) ['id' => 2, 'answer_text' => 'নীল তিমি', 'correct_answers' => ['নীল তিমি', 'নীলতিমি']],
+            (object) ['id' => 3, 'answer_text' => 'হাতি', 'correct_answers' => null], // Fallback to answer_text
         ]);
 
         $userAnswers = [
-            1 => 'A', // Correct
-            2 => 'X', // Incorrect
-            3 => 'c ', // Correct (case + space)
+            1 => 'মক্কায়', // Correct (variation)
+            2 => 'নীলতিমি', // Correct (variation)
+            3 => 'হাতি', // Correct (fallback)
         ];
 
         $score = QuizScoringService::calculateScore($questions, $userAnswers);
 
-        $this->assertEquals(2, $score);
+        $this->assertEquals(3, $score);
     }
 
     /**

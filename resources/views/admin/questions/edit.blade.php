@@ -105,38 +105,9 @@
                             @enderror
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="option_1">Option 1</label>
-                                    <input type="text" name="option_1" id="option_1" class="form-control @error('option_1') is-invalid @enderror" value="{{ old('option_1', $question->option_1) }}" required>
-                                    @error('option_1')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="option_2">Option 2</label>
-                                    <input type="text" name="option_2" id="option_2" class="form-control @error('option_2') is-invalid @enderror" value="{{ old('option_2', $question->option_2) }}" required>
-                                    @error('option_2')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="option_3">Option 3</label>
-                                    <input type="text" name="option_3" id="option_3" class="form-control @error('option_3') is-invalid @enderror" value="{{ old('option_3', $question->option_3) }}" required>
-                                    @error('option_3')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="form-group">
-                            <label for="answer_text">Correct Answer</label>
+                            <label for="answer_text">Correct Answer (Main)</label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text"><i class="fas fa-check-circle text-success"></i></span>
@@ -146,6 +117,25 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
+                            <small class="form-text text-muted">
+                                এটি হলো প্রধান সঠিক উত্তর যা শিক্ষার্থীদের নিকট সঠিক সমাধান হিসেবে প্রদর্শিত হবে।
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="acceptable_answers">Acceptable Alternative Spellings (Optional)</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-spell-check text-info"></i></span>
+                                </div>
+                                <input type="text" name="acceptable_answers" id="acceptable_answers" class="form-control @error('acceptable_answers') is-invalid @enderror" value="{{ old('acceptable_answers', is_array($question->correct_answers) ? implode(' | ', array_values(array_filter($question->correct_answers, fn($ans) => $ans !== $question->answer_text))) : '') }}">
+                                @error('acceptable_answers')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <small class="form-text text-muted">
+                                বিকল্প সঠিক উত্তরসমূহ (যেমন বানান ভিন্নতা) পাইপ (|) দিয়ে আলাদা করে লিখুন। এগুলো সঠিক উত্তর হিসেবে গণ্য হবে, কিন্তু শিক্ষার্থীদের দেখানো হবে না।
+                            </small>
                         </div>
                     </div>
                     <!-- /.card-body -->

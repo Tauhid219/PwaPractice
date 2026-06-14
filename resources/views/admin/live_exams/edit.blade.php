@@ -94,7 +94,10 @@
                     </div>
                     <!-- /.card-body -->
 
-                    <div class="card-footer text-right">
+                    <div class="card-footer d-flex justify-content-between align-items-center">
+                        <a href="{{ route('admin.live-exams.questions.manage', $liveExam->id) }}" class="btn btn-primary">
+                            <i class="fas fa-tasks mr-1"></i> Manage & Upload Questions
+                        </a>
                         <button type="submit" class="btn btn-info">
                             <i class="fas fa-sync-alt mr-1"></i> Update Exam
                         </button>

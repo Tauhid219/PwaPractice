@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-@section('title', 'পাসওয়ার্ড রিসেট | জিনিয়াস কিডস')
+@section('title', __('Reset Password') . ' | ' . __('Genius Kids - Quiz Guidebook'))
 
 @section('content')
 <div class="max-w-md mx-auto py-6">
@@ -7,8 +7,8 @@
     <div class="bg-white rounded-3xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] p-6 mb-12">
         <div class="text-center mb-6">
             <div class="text-5xl mb-2">🛠️</div>
-            <h1 class="text-xl font-extrabold text-slate-900 font-sans">নতুন পাসওয়ার্ড তৈরি করো</h1>
-            <p class="text-xs text-slate-500 font-extrabold">তোমার নতুন পাসওয়ার্ডটি নিচে প্রদান করো!</p>
+            <h1 class="text-xl font-extrabold text-slate-900 font-sans">{{ __('Create New Password') }}</h1>
+            <p class="text-xs text-slate-500 font-extrabold">{{ __('Provide your new password below!') }}</p>
         </div>
 
         <form method="POST" action="{{ route('password.store') }}" class="space-y-4">
@@ -19,7 +19,7 @@
 
             <!-- Email Address -->
             <div>
-                <label for="email" class="block text-xs font-extrabold text-slate-650 mb-1.5">ইমেইল এড্রেস</label>
+                <label for="email" class="block text-xs font-extrabold text-slate-650 mb-1.5">{{ __('Email Address') }}</label>
                 <input type="email" 
                     id="email" 
                     name="email" 
@@ -35,7 +35,7 @@
 
             <!-- Password -->
             <div>
-                <label for="password" class="block text-xs font-extrabold text-slate-650 mb-1.5">নতুন পাসওয়ার্ড</label>
+                <label for="password" class="block text-xs font-extrabold text-slate-650 mb-1.5">{{ __('New Password') }}</label>
                 <input type="password" 
                     id="password" 
                     name="password" 
@@ -50,7 +50,7 @@
 
             <!-- Confirm Password -->
             <div>
-                <label for="password_confirmation" class="block text-xs font-extrabold text-slate-650 mb-1.5">নতুন পাসওয়ার্ড নিশ্চিত করো</label>
+                <label for="password_confirmation" class="block text-xs font-extrabold text-slate-650 mb-1.5">{{ __('Confirm New Password') }}</label>
                 <input type="password" 
                     id="password_confirmation" 
                     name="password_confirmation" 
@@ -66,7 +66,7 @@
             <!-- Submit Button -->
             <div class="pt-2">
                 <button type="submit" class="w-full py-3 rounded-2xl bg-amber-300 hover:bg-amber-400 border-2 border-slate-900 text-slate-900 font-extrabold text-xs transition-all shadow-[3px_3px_0px_#000000] active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center justify-center gap-1.5">
-                    পাসওয়ার্ড পরিবর্তন করো <i class="fa-solid fa-key"></i>
+                    {{ __('Reset Password') }} <i class="fa-solid fa-key"></i>
                 </button>
             </div>
         </form>

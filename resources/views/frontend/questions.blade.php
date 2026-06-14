@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-@section('title', $level->name . ' - প্রশ্ন ও উত্তর')
+@section('title', $level->name . ' - ' . __('Question & Answer'))
 
 @section('content')
     <!-- Header -->
@@ -8,8 +8,8 @@
             <i class="fa-solid fa-arrow-left text-lg"></i>
         </a>
         <div>
-            <p class="text-[10px] font-extrabold text-slate-400 mb-0 uppercase tracking-wider">পড়াশোনা</p>
-            <h1 class="text-xl font-extrabold text-slate-800 mb-0 font-sans">📖 আগে পড়ে নাও</h1>
+            <p class="text-[10px] font-extrabold text-slate-400 mb-0 uppercase tracking-wider">{{ __('Study') }}</p>
+            <h1 class="text-xl font-extrabold text-slate-800 mb-0 font-sans">📖 {{ __('Read Aloud') }}</h1>
         </div>
     </header>
 
@@ -19,13 +19,17 @@
             <div id="progress-bar" class="h-full bg-sky-400 transition-all duration-300" style="width: 0%;"></div>
         </div>
         <p id="progress-text" class="mt-2 text-sm font-extrabold text-slate-650 mb-0">
-            ০ / {{ $questions->total() }} পড়া হয়েছে
+            0 / {{ $questions->total() }} {{ __('read') }}
         </p>
     </div>
 
     <!-- Accordion deck -->
     <div class="space-y-4" id="questionsAccordion">
         @forelse($questions as $index => $question)
+            @php
+                // Get the primary answer variation to display
+                $displayAnswer = explode('|', $question->answer_text)[0];
+            @endphp
             <div class="bg-white rounded-2xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] overflow-hidden question-block" data-id="{{ $question->id }}">
                 <!-- Header trigger button -->
                 <div class="acc-btn w-full p-4 flex items-center gap-3 text-left cursor-pointer select-none" data-id="{{ $question->id }}">
@@ -40,7 +44,7 @@
                     <i class="fa-solid fa-circle-check text-emerald-500 text-xl hidden read-check me-1" id="check-{{ $question->id }}"></i>
 
                     <!-- Voice TTS Button -->
-                    <button class="speak shrink-0 w-9 h-9 rounded-xl bg-sky-100 border-2 border-slate-900 flex items-center justify-center text-slate-800 hover:bg-sky-200 outline-none" data-text="{{ $question->question_text }} {{ $question->answer_text }}">
+                    <button class="speak shrink-0 w-9 h-9 rounded-xl bg-sky-100 border-2 border-slate-900 flex items-center justify-center text-slate-800 hover:bg-sky-200 outline-none" data-text="{{ $question->question_text }} {{ $displayAnswer }}">
                         <i class="fa-solid fa-volume-high text-xs"></i>
                     </button>
                     
@@ -51,13 +55,13 @@
                 <!-- Body (Initially hidden except the first one) -->
                 <div id="collapse-{{ $question->id }}" class="acc-body {{ $index == 0 ? '' : 'hidden' }} px-4 pb-4 pt-0">
                     <div class="p-3 rounded-xl bg-emerald-50 border-2 border-emerald-300 text-sm font-extrabold text-emerald-800 leading-relaxed font-sans mb-3">
-                        <span class="text-emerald-600 block text-xs uppercase mb-1">উত্তর:</span>
-                        {{ $question->answer_text }}
+                        <span class="text-emerald-600 block text-xs uppercase mb-1">{{ __('Answer') }}:</span>
+                        {{ $displayAnswer }}
                     </div>
                     
                     <div class="text-right">
                         <button class="mark-read-btn px-4 py-2 rounded-xl bg-white hover:bg-emerald-50 border-2 border-slate-900 font-extrabold text-xs text-slate-800 cursor-pointer transition active:translate-y-0.5" data-id="{{ $question->id }}" data-next-id="{{ $index < count($questions)-1 ? $questions[$index+1]->id : '' }}">
-                            <i class="fa-solid fa-check me-1 text-emerald-600"></i> পড়েছি
+                            <i class="fa-solid fa-check me-1 text-emerald-600"></i> {{ __('Mark as read') }}
                         </button>
                     </div>
                 </div>
@@ -65,7 +69,7 @@
         @empty
             <div class="text-center py-12 bg-white rounded-3xl nb p-6">
                 <div class="text-5xl mb-2">😅</div>
-                <h3 class="font-extrabold text-lg">দুঃখিত, এই লেভেলে কোনো প্রশ্ন পাওয়া যায়নি!</h3>
+                <h3 class="font-extrabold text-lg">{{ __('Sorry, no questions found!') }}</h3>
             </div>
         @endforelse
     </div>
@@ -128,15 +132,15 @@
     <div class="mt-8 mb-12 text-center flex flex-col items-center">
         @auth
             <a href="{{ route('quiz.start', ['slug' => $category->slug, 'level' => $level->id]) }}" class="hidden w-full py-4 rounded-3xl bg-orange-500 hover:bg-orange-600 text-white text-base font-extrabold nb shadow-[4px_4px_0px_#0f172a] hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none transition decoration-none mb-4" id="quiz-btn">
-                পরীক্ষা দাও / কুইজ খেলো! <i class="fa-solid fa-arrow-right ms-2 bouncy inline-block"></i>
+                {{ __('Play Quiz') }} <i class="fa-solid fa-arrow-right ms-2 bouncy inline-block"></i>
             </a>
         @else
             <a href="{{ route('login') }}" class="hidden w-full py-4 rounded-3xl bg-orange-500 hover:bg-orange-600 text-white text-base font-extrabold nb shadow-[4px_4px_0px_#0f172a] hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none transition decoration-none mb-4" id="quiz-btn">
-                পরীক্ষা দাও / কুইজ খেলো! <i class="fa-solid fa-arrow-right ms-2 bouncy inline-block"></i>
+                {{ __('Play Quiz') }} <i class="fa-solid fa-arrow-right ms-2 bouncy inline-block"></i>
             </a>
         @endauth
         <a href="{{ route('category.levels', $category->slug) }}" class="px-4 py-2 rounded-2xl bg-white hover:bg-amber-50 border-2 border-slate-900 text-slate-800 font-extrabold text-sm decoration-none">
-            <i class="fa-solid fa-arrow-left me-1"></i> লেভেল তালিকায় ফিরে যাও
+            <i class="fa-solid fa-arrow-left me-1"></i> {{ __('Back to levels list') }}
         </a>
     </div>
 
@@ -163,7 +167,6 @@
             // --- Handlers for custom Accordion toggle ---
             accordions.forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    // Stop if speak button is clicked
                     if (e.target.closest('.speak')) return;
                     
                     const qId = btn.getAttribute('data-id');
@@ -206,7 +209,7 @@
             function updateUI() {
                 const progressPercentage = totalQuestions > 0 ? (readQuestions.length / totalQuestions) * 100 : 0;
                 progressBar.style.width = progressPercentage + '%';
-                progressText.innerText = readQuestions.length + ' / ' + totalQuestions + ' পড়া হয়েছে';
+                progressText.innerText = readQuestions.length + ' / ' + totalQuestions + ' ' + '{{ __('read') }}';
 
                 // Display checkmarks and disable read buttons for read questions
                 readQuestions.forEach(qId => {
@@ -217,7 +220,7 @@
                     if (btn) {
                         btn.classList.remove('bg-white', 'hover:bg-emerald-50');
                         btn.classList.add('bg-emerald-500', 'text-white');
-                        btn.innerHTML = '<i class="fa-solid fa-check-double me-1"></i> পড়া শেষ';
+                        btn.innerHTML = '<i class="fa-solid fa-check-double me-1"></i> ' + '{{ __('Read done') }}';
                         btn.disabled = true;
                     }
                 });

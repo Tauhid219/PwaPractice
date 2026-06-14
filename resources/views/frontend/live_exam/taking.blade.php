@@ -71,7 +71,7 @@
                             <div class="hidden">
                                 @php
                                     $options = $question->shuffledOptions();
-                                    $labels = ['ক', 'খ', 'গ'];
+                                    $labels = ['ক', 'খ', 'গ', 'ঘ'];
                                 @endphp
                                 @foreach($options as $optIndex => $option)
                                     <input type="radio" name="answers[{{ $question->id }}]" id="opt{{ $optIndex }}_{{ $question->id }}" value="{{ $option }}" required>
@@ -206,7 +206,12 @@
         document.addEventListener('cut', event => event.preventDefault());
 
         // Timer Logic (Web Worker Upgrade)
-        let durationInSeconds = {{ $exam->duration_minutes * 60 }};
+        @php
+            $durationSeconds = $exam->duration_minutes * 60;
+            $remainingWindowSeconds = now()->diffInSeconds($exam->end_time, false);
+            $actualSecondsLeft = min($durationSeconds, $remainingWindowSeconds);
+        @endphp
+        let durationInSeconds = {{ max(0, $actualSecondsLeft) }};
         const timerDisplay = document.getElementById('timer');
         const form = document.getElementById('liveExamForm');
         let isSubmitting = false;
@@ -240,7 +245,7 @@
                     alert('সময় শেষ! আপনার উত্তর স্বয়ংক্রিয়ভাবে জমা হচ্ছে।');
                     
                     // Prevent further changes
-                    document.querySelectorAll('input[type="radio"]').forEach(opt => opt.disabled = true);
+                    document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
                     
                     form.submit();
                 }
@@ -267,7 +272,7 @@
                     isSubmitting = true;
                     timerDisplay.textContent = "00:00";
                     alert('সময় শেষ! আপনার উত্তর স্বয়ংক্রিয়ভাবে জমা হচ্ছে।');
-                    document.querySelectorAll('input[type="radio"]').forEach(opt => opt.disabled = true);
+                    document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
                     form.submit();
                 } else {
                     durationInSeconds--;

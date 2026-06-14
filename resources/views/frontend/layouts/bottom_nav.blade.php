@@ -2,13 +2,13 @@
     <!-- Home -->
     <a href="{{ url('/') }}" class="flex flex-col items-center justify-center px-3 py-1.5 rounded-2xl font-extrabold decoration-none text-slate-850 {{ Request::is('/') ? 'bg-amber-300 nb-sm' : '' }}">
         <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px] mt-0.5">হোম</span>
+        <span class="text-[10px] mt-0.5">{{ __('Home') }}</span>
     </a>
 
     <!-- Live Exam -->
     <a href="{{ route('live-exams.index') }}" class="flex flex-col items-center justify-center px-3 py-1.5 rounded-2xl font-extrabold decoration-none text-slate-850 {{ Request::routeIs('live-exams.*') ? 'bg-amber-300 nb-sm' : '' }}">
         <i class="fa-solid fa-stopwatch text-lg"></i>
-        <span class="text-[10px] mt-0.5">পরীক্ষা</span>
+        <span class="text-[10px] mt-0.5">{{ __('Exams') }}</span>
     </a>
 
     @auth
@@ -20,21 +20,27 @@
                 </span>
             @endif
             <i class="fa-solid fa-user-astronaut text-lg"></i>
-            <span class="text-[10px] mt-0.5">প্রোফাইল</span>
+            <span class="text-[10px] mt-0.5">{{ __('Profile') }}</span>
         </a>
 
         @if(auth()->user()->can('access dashboard') || auth()->user()->hasRole('super-admin'))
             <!-- Admin -->
             <a href="{{ route('admin.dashboard') }}" class="flex flex-col items-center justify-center px-3 py-1.5 rounded-2xl font-extrabold decoration-none text-slate-850 bg-sky-200 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a]">
                 <i class="fa-solid fa-gears text-lg"></i>
-                <span class="text-[10px] mt-0.5">অ্যাডমিন</span>
+                <span class="text-[10px] mt-0.5">{{ __('Admin') }}</span>
             </a>
         @endif
     @else
         <!-- Login -->
         <a href="{{ route('login') }}" class="flex flex-col items-center justify-center px-3 py-1.5 rounded-2xl font-extrabold decoration-none text-slate-850 {{ Request::routeIs('login') ? 'bg-amber-300 nb-sm' : '' }}">
             <i class="fa-solid fa-right-to-bracket text-lg"></i>
-            <span class="text-[10px] mt-0.5">লগইন</span>
+            <span class="text-[10px] mt-0.5">{{ __('Login') }}</span>
         </a>
     @endauth
+
+    <!-- Mobile Language Toggle -->
+    <a href="{{ route('locale.change', App::getLocale() === 'bn' ? 'en' : 'bn') }}" class="flex flex-col items-center justify-center px-3 py-1.5 rounded-2xl font-extrabold decoration-none text-slate-850">
+        <i class="fa-solid fa-globe text-lg"></i>
+        <span class="text-[10px] mt-0.5">{{ App::getLocale() === 'bn' ? 'EN' : 'BN' }}</span>
+    </a>
 </nav>

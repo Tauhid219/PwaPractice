@@ -23,13 +23,15 @@ class UpdateQuestionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => 'required|exists:categories,id',
-            'level_id' => 'required|exists:levels,id',
+            'category_id' => 'nullable|exists:categories,id',
+            'level_id' => 'nullable|exists:levels,id',
             'question_text' => 'required|string',
-            'option_1' => 'required|string',
-            'option_2' => 'required|string',
-            'option_3' => 'required|string',
+            'option_1' => 'nullable|string',
+            'option_2' => 'nullable|string',
+            'option_3' => 'nullable|string',
+            'option_4' => 'nullable|string',
             'answer_text' => 'required|string',
+            'acceptable_answers' => 'nullable|string',
         ];
     }
 }

@@ -12,7 +12,11 @@ class Question extends Model
     /** @use HasFactory<QuestionFactory> */
     use HasFactory;
 
-    protected $fillable = ['category_id', 'level_id', 'question_text', 'option_1', 'option_2', 'option_3', 'answer_text'];
+    protected $fillable = ['category_id', 'level_id', 'question_text', 'option_1', 'option_2', 'option_3', 'option_4', 'answer_text', 'correct_answers'];
+
+    protected $casts = [
+        'correct_answers' => 'array',
+    ];
 
     protected static function booted()
     {
@@ -37,11 +41,12 @@ class Question extends Model
      */
     public function shuffledOptions(): array
     {
-        $options = [
+        $options = array_filter([
             $this->option_1,
             $this->option_2,
             $this->option_3,
-        ];
+            $this->option_4,
+        ]);
         
         shuffle($options);
         

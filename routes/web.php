@@ -20,6 +20,12 @@ Route::get('/category/{slug}', [FrontendController::class, 'categoryLevels'])->n
 Route::get('/category/{slug}/level/{level}', [FrontendController::class, 'levelQuestions'])->name('level.questions');
 Route::view('/offline', 'offline')->name('offline');
 Route::post('/mark-read', [FrontendController::class, 'markQuestionAsRead'])->name('mark.read');
+Route::get('/locale/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'bn'])) {
+        session(['locale' => $locale]);
+    }
+    return redirect()->back();
+})->name('locale.change');
 
 Route::get('/dashboard', function () {
     if (auth()->user()->can('access dashboard') || auth()->user()->hasRole('super-admin')) {
@@ -65,13 +71,19 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('levels', LevelController::class);
 
     // Questions
+    Route::get('questions/template/download', [QuestionController::class, 'downloadTemplate'])->name('questions.template');
     Route::resource('questions', QuestionController::class);
     Route::post('questions/import', [QuestionController::class, 'import'])->name('questions.import')->middleware('throttle:api');
 
     // Live Exams
+    Route::get('live-exams/template/download', [AdminLiveExamController::class, 'downloadTemplate'])->name('live-exams.questions.template');
     Route::resource('live-exams', AdminLiveExamController::class);
     Route::get('live-exams/{live_exam}/questions', [AdminLiveExamController::class, 'manageQuestions'])->name('live-exams.questions.manage');
     Route::post('live-exams/{live_exam}/questions', [AdminLiveExamController::class, 'updateQuestions'])->name('live-exams.questions.update');
+    Route::post('live-exams/{live_exam}/questions/store', [AdminLiveExamController::class, 'storeQuestion'])->name('live-exams.questions.store');
+    Route::post('live-exams/{live_exam}/questions/{question}/update', [AdminLiveExamController::class, 'updateSingleQuestion'])->name('live-exams.questions.update-single');
+    Route::delete('live-exams/{live_exam}/questions/{question}', [AdminLiveExamController::class, 'destroyQuestion'])->name('live-exams.questions.destroy');
+    Route::post('live-exams/{live_exam}/questions/import', [AdminLiveExamController::class, 'importQuestions'])->name('live-exams.questions.import');
     Route::get('live-exams/{live_exam}/results', [AdminLiveExamController::class, 'results'])->name('live-exams.results');
 });
 

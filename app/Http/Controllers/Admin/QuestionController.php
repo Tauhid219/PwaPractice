@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\QuestionTemplateExport;
 
 /**
  * Handles administrative management of quiz questions.
@@ -29,7 +30,7 @@ class QuestionController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('permission:manage questions', only: ['index', 'show']),
-            new Middleware('permission:create questions', only: ['create', 'store', 'import']),
+            new Middleware('permission:create questions', only: ['create', 'store', 'import', 'downloadTemplate']),
             new Middleware('permission:edit questions', only: ['edit', 'update']),
             new Middleware('permission:delete questions', only: ['destroy']),
         ];
@@ -45,7 +46,11 @@ class QuestionController extends Controller implements HasMiddleware
     {
         $categories = Category::orderBy('order')->get();
 
-        $query = Question::with(['category', 'level'])->orderBy('category_id')->orderBy('id', 'desc');
+        $query = Question::whereNotNull('category_id')
+            ->whereNotNull('level_id')
+            ->with(['category', 'level'])
+            ->orderBy('category_id')
+            ->orderBy('id', 'desc');
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
@@ -78,7 +83,26 @@ class QuestionController extends Controller implements HasMiddleware
      */
     public function store(StoreQuestionRequest $request)
     {
-        Question::create($request->validated());
+        $data = $request->validated();
+        
+        $primaryAnswer = trim($request->input('answer_text', ''));
+        $correctAnswers = [$primaryAnswer];
+        
+        if ($request->filled('acceptable_answers')) {
+            $alternatives = explode('|', $request->input('acceptable_answers'));
+            foreach ($alternatives as $alt) {
+                $trimmedAlt = trim($alt);
+                if ($trimmedAlt !== '' && !in_array($trimmedAlt, $correctAnswers)) {
+                    $correctAnswers[] = $trimmedAlt;
+                }
+            }
+        }
+        
+        $data['answer_text'] = $primaryAnswer;
+        $data['correct_answers'] = $correctAnswers;
+        unset($data['acceptable_answers']);
+
+        Question::create($data);
 
         return redirect()->route('admin.questions.index', ['category_id' => $request->category_id])->with('success', 'Question created successfully.');
     }
@@ -98,7 +122,26 @@ class QuestionController extends Controller implements HasMiddleware
 
     public function update(UpdateQuestionRequest $request, Question $question)
     {
-        $question->update($request->validated());
+        $data = $request->validated();
+        
+        $primaryAnswer = trim($request->input('answer_text', ''));
+        $correctAnswers = [$primaryAnswer];
+        
+        if ($request->filled('acceptable_answers')) {
+            $alternatives = explode('|', $request->input('acceptable_answers'));
+            foreach ($alternatives as $alt) {
+                $trimmedAlt = trim($alt);
+                if ($trimmedAlt !== '' && !in_array($trimmedAlt, $correctAnswers)) {
+                    $correctAnswers[] = $trimmedAlt;
+                }
+            }
+        }
+        
+        $data['answer_text'] = $primaryAnswer;
+        $data['correct_answers'] = $correctAnswers;
+        unset($data['acceptable_answers']);
+
+        $question->update($data);
 
         return redirect()->route('admin.questions.index', ['category_id' => $question->category_id])->with('success', 'Question updated successfully.');
     }
@@ -123,5 +166,10 @@ class QuestionController extends Controller implements HasMiddleware
 
             return redirect()->route('admin.questions.index')->with('error', 'Error importing file: '.$e->getMessage());
         }
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new QuestionTemplateExport, 'questions_template.xlsx');
     }
 }

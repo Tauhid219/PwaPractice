@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-@section('title', $level->name . ' - কুইজ খেলো')
+@section('title', $level->name . ' - ' . __('Play Quiz'))
 
 @section('content')
     <!-- Quiz Header -->
@@ -12,14 +12,14 @@
                 <div id="progressBar" class="h-full bg-sky-400 transition-all duration-300" style="width: 0%;"></div>
             </div>
             <!-- Countdown Clock -->
-            <span class="px-3 py-1.5 rounded-xl bg-rose-455 text-white font-extrabold nb-sm text-sm shrink-0 flex items-center gap-1.5">
+            <span class="px-3 py-1.5 rounded-xl bg-rose-500 border-2 border-slate-900 text-white font-extrabold nb-sm text-sm shrink-0 flex items-center gap-1.5 font-sans">
                 <i class="fa-solid fa-clock"></i>
                 <span id="countdown">30s</span>
             </span>
         </div>
         <div class="flex justify-between items-center">
-            <p id="progressText" class="text-sm font-extrabold text-slate-500 mb-0">প্রশ্ন ১ / {{ count($questions) }}</p>
-            <p id="scoreText" class="text-sm font-extrabold text-emerald-600 mb-0">সঠিক: ০</p>
+            <p id="progressText" class="text-sm font-extrabold text-slate-500 mb-0 font-sans">{{ __('Question') }} 1 / {{ count($questions) }}</p>
+            <p id="scoreText" class="text-sm font-extrabold text-emerald-600 mb-0 font-sans">{{ __('Correct') }}: 0</p>
         </div>
     </header>
 
@@ -29,39 +29,32 @@
         
         @foreach($questions as $index => $question)
             @php
-                $options = $question->shuffledOptions();
-                $labels = ['ক', 'খ', 'গ'];
+                $correctString = $question->correct_answers ? implode('|', $question->correct_answers) : $question->answer_text;
             @endphp
             
-            <div class="question-container" id="q_{{ $index }}" data-correct="{{ trim($question->answer_text) }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
+            <div class="question-container" id="q_{{ $index }}" data-correct="{{ trim($correctString) }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
                 <!-- Question Text Card -->
                 <div class="bg-white rounded-3xl nb p-6 mb-5 min-h-[120px] flex items-center justify-center text-center">
-                    <h2 class="text-lg sm:text-xl font-extrabold leading-snug text-slate-900 mb-0">
+                    <h2 class="text-lg sm:text-xl font-extrabold leading-snug text-slate-900 mb-0 font-sans">
                         {{ $question->question_text }}
                     </h2>
                 </div>
 
-                <!-- Hidden Input to store selection -->
-                <div class="hidden">
-                    @foreach($options as $optIndex => $option)
-                        <input type="radio" name="answers[{{ $question->id }}]" id="real_opt_{{ $optIndex }}_{{ $question->id }}" value="{{ $option }}" required>
-                    @endforeach
-                </div>
-
-                <!-- Playful neobrutalist options buttons -->
-                <div class="space-y-3 quiz-options">
-                    @foreach($options as $optIndex => $option)
-                        <button type="button" 
-                            class="opt-btn w-full p-4 rounded-2xl bg-white border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] hover:-translate-y-1 active:translate-y-0 transition-all text-slate-800 font-extrabold text-left flex items-center gap-3 outline-none cursor-pointer"
-                            data-val="{{ $option }}" 
-                            data-label-id="real_opt_{{ $optIndex }}_{{ $question->id }}"
-                        >
-                            <span class="w-9 h-9 rounded-xl bg-amber-300 border-2 border-slate-900 flex items-center justify-center text-slate-900 shrink-0">
-                                {{ $labels[$optIndex] }}
-                            </span>
-                            <span class="flex-1 text-sm sm:text-base font-sans">{{ $option }}</span>
-                        </button>
-                    @endforeach
+                <!-- Playful neobrutalist typed text input -->
+                <div class="px-2 py-4">
+                    <input type="text"
+                           name="answers[{{ $question->id }}]"
+                           class="quiz-input w-full p-4 rounded-2xl bg-white border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] text-slate-800 font-extrabold text-center text-lg sm:text-xl outline-none focus:border-amber-400 transition-colors placeholder-slate-400 font-sans"
+                           placeholder="{{ __('Type your answer here...') }}"
+                           autocomplete="off"
+                           required
+                    >
+                    <!-- Verify button -->
+                    <button type="button"
+                            class="verify-btn w-full mt-5 py-4 rounded-2xl bg-amber-300 border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] hover:-translate-y-1 active:translate-y-0 transition-all text-slate-900 font-extrabold text-center outline-none cursor-pointer text-base font-sans"
+                    >
+                        {{ __('Verify Answer') }} <i class="fa-solid fa-circle-question ms-1"></i>
+                    </button>
                 </div>
             </div>
         @endforeach
@@ -74,8 +67,8 @@
                 <h3 id="fbTitle" class="font-extrabold text-base sm:text-lg mb-1"></h3>
                 <p id="fbText" class="text-xs sm:text-sm font-semibold mb-0"></p>
             </div>
-            <button id="nextBtn" class="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 border-2 border-slate-900 text-slate-900 font-extrabold text-sm transition-all active:translate-y-0.5 shrink-0 cursor-pointer">
-                পরের প্রশ্ন <i class="fa-solid fa-arrow-right ml-1"></i>
+            <button id="nextBtn" class="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 border-2 border-slate-900 text-slate-900 font-extrabold text-sm transition-all active:translate-y-0.5 shrink-0 cursor-pointer font-sans">
+                {{ __('Next Question') }} <i class="fa-solid fa-arrow-right ml-1"></i>
             </button>
         </div>
     </div>
@@ -117,6 +110,7 @@
                 }, 1000);
             }
 
+            // Stop Timer
             function stopTimer() {
                 clearInterval(timerInterval);
             }
@@ -125,60 +119,65 @@
             function updateProgressBar() {
                 const percent = (currentQIndex / questionsCount) * 100;
                 progressBar.style.width = `${percent}%`;
-                progressText.textContent = `প্রশ্ন ${currentQIndex + 1} / ${questionsCount}`;
+                progressText.textContent = `{{ __('Question') }} ${currentQIndex + 1} / ${questionsCount}`;
             }
 
-            // --- Click option triggers ---
+            // --- Input and Verification triggers ---
             function setupQuestionInteraction(qIndex) {
                 const container = document.getElementById('q_' + qIndex);
-                const optionBtns = container.querySelectorAll('.opt-btn');
-                const correctAnswer = container.getAttribute('data-correct').trim();
+                const input = container.querySelector('.quiz-input');
+                const verifyBtn = container.querySelector('.verify-btn');
+                const correctAnswerAttr = container.getAttribute('data-correct').trim();
+                const correctAnswers = correctAnswerAttr.split('|').map(a => a.trim().toLowerCase().normalize('NFC'));
                 answered = false;
 
-                optionBtns.forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        if (answered) return;
-                        answered = true;
-                        stopTimer();
+                // Auto focus input
+                setTimeout(() => {
+                    input.focus();
+                }, 200);
 
-                        const selectedVal = this.getAttribute('data-val').trim();
-                        const radioId = this.getAttribute('data-label-id');
-                        
-                        // Select hidden Laravel input radio button
-                        const radioInput = document.getElementById(radioId);
-                        if (radioInput) radioInput.checked = true;
+                // Handle Enter Key
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        verifyBtn.click();
+                    }
+                });
 
-                        const isCorrect = (selectedVal === correctAnswer);
+                verifyBtn.addEventListener('click', function() {
+                    if (answered) return;
+                    
+                    const userTyped = input.value.trim();
+                    if (!userTyped) {
+                        alert('{{ __('Please write an answer!') }}');
+                        return;
+                    }
 
-                        // Disable all other options
-                        optionBtns.forEach(b => b.setAttribute('disabled', 'true'));
+                    answered = true;
+                    stopTimer();
 
-                        if (isCorrect) {
-                            // Correct state: correct tone, emerald green coloring, checkmark icon
-                            if (window.sfx) window.sfx.correct();
-                            this.classList.remove('bg-white');
-                            this.classList.add('bg-emerald-500', 'text-white', 'pop');
-                            this.insertAdjacentHTML('beforeend', '<span class="ml-auto text-xl shrink-0">🎉</span>');
-                            currentScore++;
-                            scoreText.textContent = `সভিক: ${currentScore}`;
-                            showFeedback(true, correctAnswer);
-                        } else {
-                            // Wrong state: wrong tone, red coloring, shake animation, highlight correct
-                            if (window.sfx) window.sfx.wrong();
-                            this.classList.remove('bg-white');
-                            this.classList.add('bg-rose-500', 'text-white', 'shake');
-                            this.insertAdjacentHTML('beforeend', '<span class="ml-auto text-xl shrink-0">❌</span>');
-                            
-                            // Highlight correct option
-                            optionBtns.forEach(b => {
-                                if (b.getAttribute('data-val').trim() === correctAnswer) {
-                                    b.classList.remove('bg-white');
-                                    b.classList.add('bg-emerald-500', 'text-white');
-                                }
-                            });
-                            showFeedback(false, correctAnswer);
-                        }
-                    });
+                    const userTypedLower = userTyped.toLowerCase().normalize('NFC');
+                    const isCorrect = correctAnswers.includes(userTypedLower);
+
+                    // Set readOnly on text input to prevent editing but allow form submission
+                    input.readOnly = true;
+                    verifyBtn.disabled = true;
+
+                    if (isCorrect) {
+                        // Correct state
+                        if (window.sfx) window.sfx.correct();
+                        input.classList.remove('bg-white');
+                        input.classList.add('bg-emerald-500', 'text-white', 'pop');
+                        currentScore++;
+                        scoreText.textContent = `{{ __('Correct') }}: ${currentScore}`;
+                        showFeedback(true, correctAnswerAttr);
+                    } else {
+                        // Incorrect state
+                        if (window.sfx) window.sfx.wrong();
+                        input.classList.remove('bg-white');
+                        input.classList.add('bg-rose-500', 'text-white', 'shake');
+                        showFeedback(false, correctAnswerAttr);
+                    }
                 });
             }
 
@@ -189,47 +188,39 @@
                 stopTimer();
 
                 const container = document.getElementById('q_' + currentQIndex);
-                const optionBtns = container.querySelectorAll('.opt-btn');
-                const correctAnswer = container.getAttribute('data-correct').trim();
+                const input = container.querySelector('.quiz-input');
+                const verifyBtn = container.querySelector('.verify-btn');
+                const correctAnswerAttr = container.getAttribute('data-correct').trim();
 
-                // Select the first radio input by default (or let validation fail on backend, but here we select first option so form is valid)
-                const firstRadioId = optionBtns[0].getAttribute('data-label-id');
-                const radioInput = document.getElementById(firstRadioId);
-                if (radioInput) radioInput.checked = true;
-
-                // Disable all option clicks
-                optionBtns.forEach(b => {
-                    b.setAttribute('disabled', 'true');
-                    // Highlight correct option in green
-                    if (b.getAttribute('data-val').trim() === correctAnswer) {
-                        b.classList.remove('bg-white');
-                        b.classList.add('bg-emerald-500', 'text-white');
-                    }
-                });
+                // Set readOnly on text input and highlight red
+                input.readOnly = true;
+                verifyBtn.disabled = true;
+                input.classList.remove('bg-white');
+                input.classList.add('bg-rose-500', 'text-white', 'shake');
 
                 if (window.sfx) window.sfx.wrong();
                 
                 // Show timeout feedback
                 feedback.classList.remove('hidden');
-                fbBox.className = 'rounded-3xl nb p-4 flex items-center justify-between gap-3 bg-rose-400 text-white';
-                fbTitle.textContent = '⏱️ সময় শেষ!';
-                fbText.textContent = 'দ্রুত উত্তর দেওয়ার চেষ্টা করো। সঠিক উত্তরটি দেখে নাও!';
+                fbBox.className = 'rounded-3xl nb p-4 flex items-center justify-between gap-3 bg-rose-500 text-white';
+                fbTitle.textContent = '⏱️ ' + (App.getLocale === 'en' ? "Time's up!" : 'সময় শেষ!');
+                fbText.textContent = App.getLocale === 'en' ? 'Try to answer faster next time!' : 'দ্রুত উত্তর দেওয়ার চেষ্টা করো।';
                 
                 setupNextButton();
             }
 
             // --- Feedback Banner UI ---
-            function showFeedback(isCorrect, correctAnswer) {
+            function showFeedback(isCorrect, correctAnswerAttr) {
                 feedback.classList.remove('hidden');
                 
                 if (isCorrect) {
                     fbBox.className = 'rounded-3xl nb p-4 flex items-center justify-between gap-3 bg-emerald-500 text-white';
-                    fbTitle.textContent = '🎉 অসাধারণ হয়েছে!';
-                    fbText.textContent = 'তুমি সঠিক উত্তর দিয়েছো!';
+                    fbTitle.textContent = '🎉 ' + (App.getLocale === 'en' ? 'Awesome job!' : 'অসাধারণ হয়েছে!');
+                    fbText.textContent = App.getLocale === 'en' ? 'You got it right!' : 'তুমি সঠিক উত্তর দিয়েছো!';
                 } else {
                     fbBox.className = 'rounded-3xl nb p-4 flex items-center justify-between gap-3 bg-rose-500 text-white';
-                    fbTitle.textContent = '😅 ইশ্!';
-                    fbText.textContent = `সঠিক উত্তর: ${correctAnswer}`;
+                    fbTitle.textContent = '😅 ' + (App.getLocale === 'en' ? 'Oops!' : 'ইশ্!');
+                    fbText.textContent = App.getLocale === 'en' ? 'Your answer is incorrect!' : 'তোমার উত্তরটি সঠিক হয়নি।';
                 }
 
                 setupNextButton();
@@ -237,15 +228,14 @@
 
             // --- Setup Next Button Click Handler ---
             function setupNextButton() {
-                // If it is the last question, change next button text to submit
                 if (currentQIndex + 1 >= questionsCount) {
-                    nextBtn.innerHTML = 'কুইজ জমা দাও <i class="fa-solid fa-paper-plane ml-1"></i>';
+                    nextBtn.innerHTML = '{{ __('Submit Quiz') }} <i class="fa-solid fa-paper-plane ml-1"></i>';
                     nextBtn.onclick = () => {
                         feedback.classList.add('hidden');
                         quizForm.submit();
                     };
                 } else {
-                    nextBtn.innerHTML = 'পরের প্রশ্ন <i class="fa-solid fa-arrow-right ml-1"></i>';
+                    nextBtn.innerHTML = '{{ __('Next Question') }} <i class="fa-solid fa-arrow-right ml-1"></i>';
                     nextBtn.onclick = () => {
                         feedback.classList.add('hidden');
                         
@@ -262,6 +252,11 @@
                     };
                 }
             }
+
+            // Get current App locale context helper
+            const App = {
+                getLocale: '{{ App::getLocale() }}'
+            };
 
             // --- Boot ---
             updateProgressBar();

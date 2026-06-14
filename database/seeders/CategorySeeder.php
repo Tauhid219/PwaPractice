@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Question;
+use App\Models\Level;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
@@ -31,10 +32,10 @@ class CategorySeeder extends Seeder
 
             $category = Category::create($catData);
 
-            // Create 10 Levels for each category
+            // Create 5 Levels for each category
             $levels = [];
-            for ($i = 1; $i <= 10; $i++) {
-                $levels[$i] = \App\Models\Level::create([
+            for ($i = 1; $i <= 5; $i++) {
+                $levels[$i] = Level::create([
                     'name' => 'Level ' . $i,
                     'category_id' => $category->id,
                     'order' => $i,
@@ -53,6 +54,12 @@ class CategorySeeder extends Seeder
                 $options = [$qData[2], $qData[3], $qData[4]];
                 shuffle($options);
 
+                $rawAnswer = $qData[5];
+                $answers = preg_split('/[|]+/', $rawAnswer);
+                $answers = array_filter(array_map('trim', $answers));
+                $correctAnswers = array_values($answers);
+                $primaryAnswer = reset($answers) ?: $rawAnswer;
+
                 Question::create([
                     'category_id' => $category->id,
                     'level_id' => $levelId,
@@ -60,7 +67,8 @@ class CategorySeeder extends Seeder
                     'option_1' => $options[0],
                     'option_2' => $options[1],
                     'option_3' => $options[2],
-                    'answer_text' => $qData[5],
+                    'answer_text' => $primaryAnswer,
+                    'correct_answers' => $correctAnswers,
                 ]);
             }
         }

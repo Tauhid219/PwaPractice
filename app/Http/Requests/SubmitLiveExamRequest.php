@@ -23,8 +23,8 @@ class SubmitLiveExamRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'answers' => 'required|array',
-            'answers.*' => 'required|string',
+            'answers' => 'nullable|array',
+            'answers.*' => 'nullable|string',
         ];
     }
 }

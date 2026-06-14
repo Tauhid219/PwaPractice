@@ -1,4 +1,4 @@
-const CACHE_NAME = "genius-kids-pwa-v14";
+const CACHE_NAME = "genius-kids-pwa-v15";
 const OFFLINE_FALLBACK_URL = "/offline";
 const PRECACHE_URLS = [
     OFFLINE_FALLBACK_URL,

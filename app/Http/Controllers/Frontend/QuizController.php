@@ -49,7 +49,7 @@ class QuizController extends Controller
         $questions = $level->questions()->where('category_id', $category->id)->get();
         $totalQuestions = $questions->count();
 
-        $score = QuizScoringService::calculateScore($questions, $request->answers);
+        $score = QuizScoringService::calculateScore($questions, $request->input('answers', []));
         $passed = QuizScoringService::isPassed($score, $totalQuestions);
 
         // Record Attempt

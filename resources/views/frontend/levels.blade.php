@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-@section('title', $category->name . ' - লেভেলসমূহ')
+@section('title', $category->name . ' - ' . __('Levels'))
 
 @section('content')
     <!-- Category Header Card -->
@@ -11,7 +11,7 @@
         $colorMap = [
             'sky' => ['bg' => 'from-sky-300 to-sky-500', 'btn' => 'bg-sky-400 hover:bg-sky-500', 'btnDark' => 'bg-sky-600'],
             'emerald' => ['bg' => 'from-emerald-300 to-emerald-500', 'btn' => 'bg-emerald-400 hover:bg-emerald-500', 'btnDark' => 'bg-emerald-600'],
-            'amber' => ['bg' => 'from-amber-300 to-amber-500', 'btn' => 'bg-amber-400 hover:bg-amber-500', 'btnDark' => 'bg-amber-600'],
+            'amber' => ['bg' => 'from-amber-300 to-amber-500', 'btn' => 'bg-amber-400 hover:bg-amber-500', 'btnDark' => 'bg-emerald-600'],
             'orange' => ['bg' => 'from-orange-300 to-orange-500', 'btn' => 'bg-orange-400 hover:bg-orange-500', 'btnDark' => 'bg-orange-600'],
             'rose' => ['bg' => 'from-rose-300 to-rose-500', 'btn' => 'bg-rose-400 hover:bg-rose-500', 'btnDark' => 'bg-rose-600'],
         ];
@@ -55,7 +55,7 @@
             <i class="fa-solid fa-arrow-left text-lg"></i>
         </a>
         <div class="flex-1">
-            <p class="text-[10px] font-extrabold text-slate-400 mb-0 uppercase tracking-wider">বিষয়</p>
+            <p class="text-[10px] font-extrabold text-slate-400 mb-0 uppercase tracking-wider">{{ __('Subject') }}</p>
             <h1 class="text-xl font-extrabold text-slate-800 mb-0 font-sans">{{ $emoji }} {{ $category->name }}</h1>
         </div>
         <span class="px-3 py-1.5 rounded-2xl {{ $color['btn'] }} text-white font-extrabold nb-sm text-sm shrink-0">
@@ -95,11 +95,7 @@
                         }
                     }
                     
-                    // Determine active level (first unlocked level that is not completed, or fallback to first)
-                    // If not locked and not completed, it is active!
                     $isActive = !$isLocked && !$isCompleted;
-                    
-                    // Alternating offset: left side (even), right side (odd)
                     $alignmentClass = $index % 2 === 0 ? 'justify-start' : 'justify-end';
                 @endphp
 
@@ -108,7 +104,7 @@
                         <!-- Locked Level -->
                         <div class="relative w-24 h-24 rounded-full flex flex-col items-center justify-center font-extrabold border-4 border-slate-900 bg-slate-200 text-slate-400 cursor-not-allowed">
                             <i class="fa-solid fa-lock text-xl"></i>
-                            <span class="text-[10px] mt-1">লেভেল {{ $level->order }}</span>
+                            <span class="text-[10px] mt-1">{{ __('Level') }} {{ $level->order }}</span>
                         </div>
                     @else
                         <!-- Unlocked Level -->
@@ -125,14 +121,14 @@
                             @else
                                 <i class="fa-solid fa-play text-2xl ms-1"></i>
                             @endif
-                            <span class="text-[10px] mt-1">লেভেল {{ $level->order }}</span>
+                            <span class="text-[10px] mt-1">{{ __('Level') }} {{ $level->order }}</span>
                         </button>
                     @endif
                 </div>
             @empty
                 <div class="text-center py-12 bg-white rounded-3xl nb p-6">
                     <div class="text-5xl mb-2">😅</div>
-                    <h3 class="font-extrabold text-lg">দুঃখিত, কোনো লেভেল পাওয়া যায়নি!</h3>
+                    <h3 class="font-extrabold text-lg">{{ __('Sorry, no levels found!') }}</h3>
                 </div>
             @endforelse
         </div>
@@ -142,18 +138,18 @@
     <div id="lvlPopup" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
         <div class="pop bg-white rounded-3xl nb p-6 w-full max-w-sm text-center">
             <div class="text-5xl mb-2">🎯</div>
-            <h3 id="popupTitle" class="font-extrabold text-lg mb-1 text-slate-800">লেভেল শুরু করো!</h3>
-            <p class="text-sm text-slate-500 mb-5">তুমি এখন কী করতে চাও?</p>
+            <h3 id="popupTitle" class="font-extrabold text-lg mb-1 text-slate-800">{{ __('Start Level!') }}</h3>
+            <p class="text-sm text-slate-500 mb-5">{{ __('What would you like to do now?') }}</p>
             
             <a id="popupStudyBtn" href="#" class="w-full mb-3 py-4 rounded-2xl bg-sky-400 text-white font-extrabold nb-sm hover:-translate-y-1 transition text-center block decoration-none text-base">
-                📖 পড়তে চাই (Study)
+                {{ __('📖 I want to read (Study)') }}
             </a>
             <a id="popupQuizBtn" href="#" class="w-full mb-3 py-4 rounded-2xl bg-emerald-500 text-white font-extrabold nb-sm hover:-translate-y-1 transition text-center block decoration-none text-base">
-                🎮 কুইজ খেলি (Quiz)
+                {{ __('🎮 Play Quiz (Quiz)') }}
             </a>
             
             <button onclick="closePopup()" class="text-slate-500 font-bold text-sm bg-transparent border-0 mt-3 outline-none cursor-pointer">
-                বাতিল
+                {{ __('Cancel') }}
             </button>
         </div>
     </div>
@@ -174,7 +170,7 @@
                     const quizUrl = node.getAttribute('data-quiz-url');
 
                     // Set modal contents
-                    popupTitle.textContent = `${levelName} শুরু করো!`;
+                    popupTitle.textContent = `${levelName} ${'{{ __('Start Level!') }}'.replace('Level!', '')}`;
                     studyBtn.setAttribute('href', studyUrl);
                     quizBtn.setAttribute('href', quizUrl);
 

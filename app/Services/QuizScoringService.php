@@ -7,18 +7,35 @@ use Illuminate\Support\Collection;
 class QuizScoringService
 {
     /**
-     * Compare user answer with correct answer in a case-insensitive and space-trimmed manner.
+     * Compare user answer with correct answer variations in a case-insensitive and space-trimmed manner.
      *
      * @param  string|null  $userAnswer
-     * @param  string|null  $correctAnswer
+     * @param  string|array|null  $correctAnswers
      */
-    public static function checkAnswer($userAnswer, $correctAnswer): bool
+    public static function checkAnswer($userAnswer, $correctAnswers): bool
     {
-        if ($userAnswer === null || $correctAnswer === null) {
+        if ($userAnswer === null || $correctAnswers === null) {
             return false;
         }
 
-        return trim(strtolower($userAnswer)) === trim(strtolower($correctAnswer));
+        $answersArray = is_array($correctAnswers) ? $correctAnswers : [$correctAnswers];
+        $userAnswerTrimmed = trim(mb_strtolower($userAnswer, 'UTF-8'));
+        if (class_exists('Normalizer')) {
+            $userAnswerTrimmed = \Normalizer::normalize($userAnswerTrimmed, \Normalizer::FORM_C);
+        }
+
+        foreach ($answersArray as $correct) {
+            $correctTrimmed = trim(mb_strtolower($correct, 'UTF-8'));
+            if (class_exists('Normalizer')) {
+                $correctTrimmed = \Normalizer::normalize($correctTrimmed, \Normalizer::FORM_C);
+            }
+
+            if ($userAnswerTrimmed === $correctTrimmed) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -32,7 +49,12 @@ class QuizScoringService
         $score = 0;
         foreach ($questions as $question) {
             if (array_key_exists($question->id, $userAnswers)) {
-                if (self::checkAnswer($userAnswers[$question->id], $question->answer_text)) {
+                $correctAnswers = $question->correct_answers;
+                if (empty($correctAnswers)) {
+                    $correctAnswers = [$question->answer_text];
+                }
+                
+                if (self::checkAnswer($userAnswers[$question->id], $correctAnswers)) {
                     $score++;
                 }
             }

@@ -30,9 +30,23 @@ class QuestionImport implements ToModel, WithHeadingRow
         // using array_values if row keys are not matching the headers
         $questionText = $row['question_text'] ?? null;
         $answerText = $row['answer_text'] ?? null;
+        $acceptableAnswers = $row['acceptable_answers'] ?? null;
 
         if (! $questionText || ! $answerText) {
             return null; // Skip invalid rows
+        }
+
+        $primaryAnswer = trim($answerText);
+        $correctAnswers = [$primaryAnswer];
+
+        if ($acceptableAnswers) {
+            $alternatives = explode('|', $acceptableAnswers);
+            foreach ($alternatives as $alt) {
+                $trimmedAlt = trim($alt);
+                if ($trimmedAlt !== '' && !in_array($trimmedAlt, $correctAnswers)) {
+                    $correctAnswers[] = $trimmedAlt;
+                }
+            }
         }
 
         return new Question([
@@ -42,7 +56,9 @@ class QuestionImport implements ToModel, WithHeadingRow
             'option_1' => $row['option_1'] ?? '',
             'option_2' => $row['option_2'] ?? '',
             'option_3' => $row['option_3'] ?? '',
-            'answer_text' => $answerText,
+            'option_4' => $row['option_4'] ?? null,
+            'answer_text' => $primaryAnswer,
+            'correct_answers' => $correctAnswers,
         ]);
     }
 

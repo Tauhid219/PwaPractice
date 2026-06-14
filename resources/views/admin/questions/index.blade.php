@@ -36,10 +36,16 @@
                             <ul class="pl-3 mb-0 small text-dark">
                                 <li>এক্সেল ফাইলের প্রথম সারিতে অবশ্যই হেডার থাকতে হবে।</li>
                                 <li>ফাইলের ফরম্যাট অবশ্যই <strong>.xlsx</strong> হতে হবে।</li>
-                                <li>হেডারগুলো হলো: <code class="text-danger bg-gray-light px-1">question_text</code>, <code class="text-danger bg-gray-light px-1">option_1</code>, <code class="text-danger bg-gray-light px-1">option_2</code>, <code class="text-danger bg-gray-light px-1">option_3</code>, <code class="text-danger bg-gray-light px-1">answer_text</code></li>
-                                <li><code class="text-danger bg-gray-light px-1">answer_text</code> ফিল্ডের মান অবশ্যই উপরের ৩টি অপশনের যেকোনো একটির সাথে হুবহু মিলতে হবে।</li>
+                                <li>হেডারগুলো হলো: <code class="text-danger bg-gray-light px-1">question_text</code>, <code class="text-danger bg-gray-light px-1">answer_text</code>, <code class="text-danger bg-gray-light px-1">acceptable_answers</code></li>
+                                <li><code class="text-danger bg-gray-light px-1">answer_text</code> কলামে শুধুমাত্র মূল সঠিক উত্তরটি লিখবেন (যেমন: <code class="text-danger bg-gray-light px-1">কাঁঠাল</code>)। এটিই শিক্ষার্থীদের সঠিক উত্তর হিসেবে প্রদর্শন করা হবে।</li>
+                                <li>অন্যান্য সম্ভাব্য বা বিকল্প সঠিক বানানসমূহ <code class="text-danger bg-gray-light px-1">acceptable_answers</code> কলামে পাইপ (|) দিয়ে আলাদা করে লিখবেন (যেমন: <code class="text-danger bg-gray-light px-1">কাঠাল|kathal</code>)। এটি ঐচ্ছিক (optional)।</li>
                                 <li>ফাইলের সাইজ সর্বোচ্চ ৫ এমবি হতে পারবে।</li>
                             </ul>
+                            <div class="mt-3">
+                                <a href="{{ route('admin.questions.template') }}" class="btn btn-xs btn-primary px-3">
+                                    <i class="fas fa-download mr-1"></i> নমুনা ফাইল (.xlsx) ডাউনলোড করুন
+                                </a>
+                            </div>
                         </div>
                         <style>
                             .dark-mode .import-instructions { background-color: #343a40 !important; color: #fff !important; }
