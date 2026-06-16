@@ -373,9 +373,9 @@
             }
         });
 
-        /* ============================== AUDIO (Web Audio API Synth) ============================== */
+        /* ============================== AUDIO (Web Audio API Synth & Remote MP3s) ============================== */
         let actx;
-        function tone(freq=600, dur=.12, type='sine', vol=.2) {
+        window.tone = function(freq=600, dur=.12, type='sine', vol=.2) {
             try {
                 actx = actx || new (window.AudioContext || window.webkitAudioContext)();
                 const o = actx.createOscillator(), g = actx.createGain();
@@ -386,29 +386,63 @@
                 g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + dur);
                 o.stop(actx.currentTime + dur);
             } catch(e){}
+        };
+
+        // Internet-hosted sounds (fallback to synthesized tones on network/CORS issues)
+        const correctAudioUrl = 'https://raw.githubusercontent.com/techieshruti/Quiz-App-with-Timer/main/sounds/correct.mp3';
+        const wrongAudioUrl = 'https://raw.githubusercontent.com/techieshruti/Quiz-App-with-Timer/main/sounds/wrong.mp3';
+        let correctAudio = null;
+        let wrongAudio = null;
+
+        // Initialize audio objects lazily on user interaction to comply with browser autoplay policies
+        function initAudio() {
+            if (!correctAudio) correctAudio = new Audio(correctAudioUrl);
+            if (!wrongAudio) wrongAudio = new Audio(wrongAudioUrl);
         }
 
-        const sfx = {
-            click: () => tone(440, .06, 'square', .12),
+        window.sfx = {
+            click: () => window.tone(440, .06, 'square', .12),
             correct: () => { 
-                tone(660, .1, 'sine', .2); 
-                setTimeout(() => tone(880, .14, 'sine', .2), 100); 
-                setTimeout(() => tone(1175, .18, 'sine', .2), 220);
+                initAudio();
+                try {
+                    correctAudio.currentTime = 0;
+                    correctAudio.play().catch(() => {
+                        // Fallback to synth if blocked or offline
+                        window.tone(660, .1, 'sine', .2); 
+                        setTimeout(() => window.tone(880, .14, 'sine', .2), 100); 
+                        setTimeout(() => window.tone(1175, .18, 'sine', .2), 220);
+                    });
+                } catch (e) {
+                    window.tone(660, .1, 'sine', .2); 
+                    setTimeout(() => window.tone(880, .14, 'sine', .2), 100); 
+                    setTimeout(() => window.tone(1175, .18, 'sine', .2), 220);
+                }
             },
             wrong: () => { 
-                tone(220, .18, 'sawtooth', .2); 
-                setTimeout(() => tone(160, .22, 'sawtooth', .2), 160);
+                initAudio();
+                try {
+                    wrongAudio.currentTime = 0;
+                    wrongAudio.play().catch(() => {
+                        // Fallback to synth if blocked or offline
+                        window.tone(220, .18, 'sawtooth', .2); 
+                        setTimeout(() => window.tone(160, .22, 'sawtooth', .2), 160);
+                    });
+                } catch (e) {
+                    window.tone(220, .18, 'sawtooth', .2); 
+                    setTimeout(() => window.tone(160, .22, 'sawtooth', .2), 160);
+                }
             },
             win: () => { 
-                [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, .18, 'triangle', .22), i * 120)); 
+                [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => window.tone(f, .18, 'triangle', .22), i * 120)); 
             },
         };
 
         // UI Audio Interaction Logic (Global Event Binder)
         document.addEventListener('mousedown', (e) => {
+            initAudio(); // Initialize audio objects on first interaction
             const clickTarget = e.target.closest('a, button, .level-node, .av-pick, .speak, .nav-btn');
             if (clickTarget) {
-                sfx.click();
+                window.sfx.click();
             }
         });
 

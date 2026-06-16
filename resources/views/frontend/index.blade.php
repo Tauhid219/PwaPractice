@@ -26,11 +26,9 @@
             </div>
             <div class="text-right flex items-center gap-2 sm:flex-col sm:items-end sm:gap-0">
                 @auth
-                    @if(auth()->user()->current_streak > 0)
-                        <div class="px-3 py-1 rounded-full bg-amber-300 text-slate-900 nb-sm font-extrabold text-xs">
-                            🔥 {{ auth()->user()->current_streak }} {{ __('day streak') }}
-                        </div>
-                    @endif
+                    <div class="px-3 py-1 rounded-full bg-amber-300 text-slate-900 nb-sm font-extrabold text-xs">
+                        🔥 {{ auth()->user()->current_streak }} {{ __('day streak') }}
+                    </div>
                     <div class="mt-0 sm:mt-2 px-3 py-1 rounded-full bg-emerald-400 text-white nb-sm font-extrabold text-xs border-white">
                         ⭐ {{ auth()->user()->quizAttempts()->sum('score') * 10 }} XP
                     </div>

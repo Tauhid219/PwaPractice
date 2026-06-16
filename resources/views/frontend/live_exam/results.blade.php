@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-@section('title', 'ফলাফল - ' . $exam->title)
+@section('title', __('Results') . ' - ' . $exam->title)
 
 @section('content')
     <!-- Kid-Friendly Header Block -->
@@ -9,9 +9,9 @@
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             <div>
-                <p class="text-xs opacity-90 font-extrabold text-white mb-0">পরীক্ষার ফলাফল</p>
+                <p class="text-xs opacity-90 font-extrabold text-white mb-0">{{ __('Exam Results') }}</p>
                 <h1 class="text-xl font-extrabold leading-tight text-white mb-0 font-sans">
-                    লিডারবোর্ড ও ফলাফল
+                    {{ __('Leaderboard & Results') }}
                 </h1>
             </div>
         </div>
@@ -19,7 +19,7 @@
 
     <div class="text-center max-w-lg mx-auto mb-6">
         <h2 class="text-lg font-extrabold text-slate-800 mb-1 font-sans">{{ $exam->title }}</h2>
-        <p class="text-xs text-slate-500 font-extrabold">মোট অংশগ্রহণকারী: <span class="text-indigo-600 font-sans font-extrabold">{{ $attempts->total() }} জন</span></p>
+        <p class="text-xs text-slate-500 font-extrabold">{{ __('Total Candidates:') }} <span class="text-indigo-600 font-sans font-extrabold">{{ $attempts->total() }} {{ __('participants') }}</span></p>
     </div>
 
     @if(session('success'))
@@ -38,21 +38,21 @@
                 @endphp
                 @if($myAttempt)
                     <div class="bg-indigo-50 border-3 border-slate-900 rounded-2xl p-4 text-center mb-6 shadow-[3px_3px_0px_#0f172a]">
-                        <h4 class="text-sm font-extrabold text-slate-700 mb-1 font-sans">তোমার প্রাপ্ত নম্বর</h4>
+                        <h4 class="text-sm font-extrabold text-slate-700 mb-1 font-sans">{{ __('Your Score') }}</h4>
                         <div class="text-3xl font-extrabold text-indigo-600 font-sans tracking-tight mb-1">
                             {{ round($myAttempt->score) }}
                         </div>
-                        <p class="text-xs text-slate-500 font-extrabold mb-0">অভিনন্দন! তুমি সফলভাবে কুইজ প্রতিযোগিতায় অংশ নিয়েছ। 🥳</p>
+                        <p class="text-xs text-slate-500 font-extrabold mb-0">{{ __('Congratulations! You have successfully participated in the quiz competition. 🥳') }}</p>
                     </div>
                 @else
-                    <div class="bg-sky-50 border-2 border-slate-900 rounded-2xl p-3 text-center mb-6 text-xs font-extrabold text-slate-600">
-                        <i class="fa-solid fa-circle-notch fa-spin text-sm me-1.5 text-sky-600"></i> তোমার প্রাপ্ত নম্বর প্রসেসিং হচ্ছে অথবা এই তালিকায় নেই।
+                    <div class="bg-sky-50 border-2 border-slate-900 rounded-2xl p-3 text-center mb-6 text-xs font-extrabold text-slate-650">
+                        <i class="fa-solid fa-circle-notch fa-spin text-sm me-1.5 text-sky-600"></i> {{ __('Your score is being processed or is not in this list.') }}
                     </div>
                 @endif
             @endif
 
             <h3 class="text-base font-extrabold text-slate-800 mb-4 pb-2 border-bottom flex items-center justify-center gap-1.5 font-sans">
-                🏆 লিডারবোর্ড (সেরা ফলাফল)
+                🏆 {{ __('Leaderboard (Top Results)') }}
             </h3>
 
             <!-- Leaderboard Table -->
@@ -60,10 +60,10 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-b-3 border-slate-900 text-slate-500 font-extrabold text-xs font-sans uppercase">
-                            <th class="pb-3 text-center w-20">র‍্যাংক</th>
-                            <th class="pb-3 pl-4">নাম</th>
-                            <th class="pb-3 text-center w-24">নম্বর</th>
-                            <th class="pb-3 text-center w-36">সময়</th>
+                            <th class="pb-3 text-center w-20">{{ __('Rank') }}</th>
+                            <th class="pb-3 pl-4">{{ __('Name') }}</th>
+                            <th class="pb-3 text-center w-24">{{ __('Score') }}</th>
+                            <th class="pb-3 text-center w-36">{{ __('Time') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
@@ -88,9 +88,9 @@
                                 </td>
                                 <td class="py-4 pl-4 font-extrabold text-slate-800 text-sm">
                                     <span class="flex items-center gap-1.5">
-                                        {{ $attempt->user->name ?? 'অজ্ঞাত' }}
+                                        {{ $attempt->user->name ?? __('Unknown') }}
                                         @if($isCurrentUser)
-                                            <span class="px-1.5 py-0.5 rounded-md bg-emerald-500 border border-slate-900 text-white text-[9px] font-extrabold">তুমি</span>
+                                            <span class="px-1.5 py-0.5 rounded-md bg-emerald-500 border border-slate-900 text-white text-[9px] font-extrabold">{{ __('You') }}</span>
                                         @endif
                                     </span>
                                 </td>
@@ -106,7 +106,7 @@
                             <tr>
                                 <td colspan="4" class="py-12 text-center text-slate-450 font-bold">
                                     <div class="text-4xl mb-2">📥</div>
-                                    <span>এখনো কোনো ফলাফল তৈরি হয়নি।</span>
+                                    <span>{{ __('No results generated yet.') }}</span>
                                 </td>
                             </tr>
                         @endforelse
@@ -131,7 +131,7 @@
 
                         {{-- Active/Info indicators --}}
                         <span class="text-xs font-extrabold text-slate-650 font-sans mx-1">
-                            পেজ {{ $attempts->currentPage() }} / {{ $attempts->lastPage() }}
+                            {{ __('Page') }} {{ $attempts->currentPage() }} / {{ $attempts->lastPage() }}
                         </span>
 
                         {{-- Next Page Link --}}

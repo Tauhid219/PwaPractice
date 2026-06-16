@@ -2,43 +2,44 @@
     @csrf
 </form>
 
-<form method="post" action="{{ route('profile.update') }}" class="row g-3">
+<form method="post" action="{{ route('profile.update') }}" class="space-y-4">
     @csrf
     @method('patch')
 
-    <div class="col-12">
-        <label for="name" class="form-label text-dark fw-bold">নাম</label>
-        <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name">
+    <div>
+        <label for="name" class="block text-slate-800 font-extrabold text-xs mb-1.5 font-sans">{{ __('Full Name') }}</label>
+        <input type="text" class="w-full px-4 py-2.5 rounded-2xl bg-white border-2 border-slate-900 text-slate-800 font-extrabold text-sm focus:outline-none focus:ring-0 font-sans" id="name" name="name" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name">
         @error('name')
-            <div class="text-danger mt-1"><small>{{ $message }}</small></div>
+            <div class="text-rose-500 font-extrabold text-xs mt-1.5 font-sans"><small>{{ $message }}</small></div>
         @enderror
     </div>
 
-    <div class="col-12">
-        <label for="email" class="form-label text-dark fw-bold">ইমেইল ঠিকানা</label>
-        <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $user->email) }}" required autocomplete="username">
+    <div>
+        <label for="email" class="block text-slate-800 font-extrabold text-xs mb-1.5 font-sans">{{ __('Email Address') }}</label>
+        <input type="email" class="w-full px-4 py-2.5 rounded-2xl bg-white border-2 border-slate-900 text-slate-800 font-extrabold text-sm focus:outline-none focus:ring-0 font-sans" id="email" name="email" value="{{ old('email', $user->email) }}" required autocomplete="username">
         @error('email')
-            <div class="text-danger mt-1"><small>{{ $message }}</small></div>
+            <div class="text-rose-500 font-extrabold text-xs mt-1.5 font-sans"><small>{{ $message }}</small></div>
         @enderror
 
         @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-            <div class="mt-2 text-warning">
-                <small>আপনার ইমেইল ঠিকানা ভেরিফাই করা হয়নি।
-                <button form="send-verification" class="btn btn-link p-0 m-0 align-baseline">ভেরিফিকেশন ইমেইল পুনরায় পাঠাতে এখানে ক্লিক করুন।</button>
-                </small>
+            <div class="mt-2 text-amber-600 font-bold text-xs font-sans">
+                {{ __('Your email address is unverified.') }}
+                <button form="send-verification" class="text-indigo-650 hover:underline font-extrabold p-0 border-0 bg-transparent cursor-pointer">{{ __('Click here to re-send the verification email.') }}</button>
                 @if (session('status') === 'verification-link-sent')
-                    <div class="text-success mt-1">
-                        <small>একটি নতুন ভেরিফিকেশন লিংক আপনার ইমেইলে পাঠানো হয়েছে।</small>
+                    <div class="text-emerald-600 font-extrabold mt-1">
+                        {{ __('A new verification link has been sent to your email address.') }}
                     </div>
                 @endif
             </div>
         @endif
     </div>
 
-    <div class="col-12 mt-4 d-flex align-items-center">
-        <button type="submit" class="btn btn-primary py-2 px-4 rounded-pill">সংরক্ষণ করুন</button>
+    <div class="flex items-center gap-3 pt-2">
+        <button type="submit" class="px-5 py-2.5 rounded-2xl bg-amber-300 hover:bg-amber-400 border-2 border-slate-900 text-slate-900 font-extrabold text-xs transition-all shadow-[2px_2px_0px_#000000] active:translate-y-0.5 active:shadow-none cursor-pointer">{{ __('Save') }}</button>
         @if (session('status') === 'profile-updated')
-            <span class="text-success ms-3"><i class="fa fa-check"></i> <b>সফলভাবে সংরক্ষিত</b></span>
+            <span class="text-emerald-500 font-extrabold text-xs font-sans flex items-center gap-1">
+                <i class="fa-solid fa-circle-check"></i> {{ __('Profile updated successfully') }}
+            </span>
         @endif
     </div>
 </form>

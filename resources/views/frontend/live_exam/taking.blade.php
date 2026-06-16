@@ -1,17 +1,17 @@
 @extends('frontend.layouts.master')
-@section('title', 'Live Exam - ' . $exam->title)
+@section('title', __('Live Exam') . ' - ' . $exam->title)
 
 @section('content')
 <!-- Page Header Start -->
 <div class="rounded-3xl bg-gradient-to-br from-indigo-300 to-purple-500 nb p-5 text-white mb-6" style="user-select: none;">
     <div class="flex items-center justify-between flex-wrap gap-4">
         <div>
-            <p class="text-xs opacity-90 font-extrabold text-white mb-0">লাইভ পরীক্ষা</p>
+            <p class="text-xs opacity-90 font-extrabold text-white mb-0">{{ __('Live Exam') }}</p>
             <h1 class="text-xl font-extrabold leading-tight text-white mb-0 font-sans">{{ $exam->title }}</h1>
         </div>
         <div class="text-right">
             <span class="px-3 py-1.5 rounded-full bg-purple-600/30 border border-white/20 font-extrabold text-xs">
-                ⏱️ সময়: {{ $exam->duration_minutes }} মিনিট
+                ⏱️ {{ __('Time') }}: {{ $exam->duration_minutes }} {{ __('Minutes') }}
             </span>
         </div>
     </div>
@@ -23,7 +23,7 @@
             
             <!-- Sticky Timer Warning Header -->
             <div class="sticky top-3 z-30 bg-white rounded-2xl border-3 border-slate-900 shadow-[3px_3px_0px_#0f172a] p-3 flex justify-between items-center mb-6">
-                <h3 class="mb-0 text-slate-800 font-extrabold text-sm font-sans flex items-center gap-1.5"><i class="fa-solid fa-pen-nib text-indigo-500"></i> পরীক্ষা চলছে...</h3>
+                <h3 class="mb-0 text-slate-800 font-extrabold text-sm font-sans flex items-center gap-1.5"><i class="fa-solid fa-pen-nib text-indigo-500"></i> {{ __('Exam in progress...') }}</h3>
                 <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-rose-100 border-2 border-slate-900 font-extrabold text-rose-700 text-sm animate-pulse">
                     <i class="fa-solid fa-stopwatch"></i> <span id="timer">--:--</span>
                 </div>
@@ -35,14 +35,14 @@
                 
                 @if($questions->isEmpty())
                     <div class="bg-amber-100 border-2 border-slate-900 rounded-2xl p-4 text-center font-extrabold text-amber-850">
-                        এই পরীক্ষায় কোনো প্রশ্ন নেই।
+                        {{ __('No questions in this exam.') }}
                     </div>
                 @else
                     <!-- Progress Bar Start -->
                     <div class="mb-5">
                         <div class="flex justify-between items-center text-xs font-extrabold text-slate-500 mb-1.5">
-                            <span id="progressText">প্রশ্ন ১ / {{ count($questions) }}</span>
-                            <span id="percentageText">০% সম্পন্ন</span>
+                            <span id="progressText">{{ __('Question') }} 1 / {{ count($questions) }}</span>
+                            <span id="percentageText">0% {{ __('completed') }}</span>
                         </div>
                         <div class="w-full h-4 rounded-full bg-white border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a] overflow-hidden">
                             <div id="progressBar" class="h-full bg-amber-300 transition-all duration-300" style="width: 0%"></div>
@@ -63,7 +63,7 @@
                             <!-- Question Text -->
                             <div class="bg-slate-50 rounded-2xl border-2 border-slate-900 p-4 mb-4">
                                 <h4 class="font-extrabold text-sm sm:text-base text-slate-800 leading-snug font-sans">
-                                    <span class="text-indigo-600 font-sans">প্রশ্ন {{ $index + 1 }}:</span> {{ $question->question_text }}
+                                    <span class="text-indigo-600 font-sans">{{ __('Question') }} {{ $index + 1 }}:</span> {{ $question->question_text }}
                                 </h4>
                             </div>
                             
@@ -71,7 +71,7 @@
                             <div class="hidden">
                                 @php
                                     $options = $question->shuffledOptions();
-                                    $labels = ['ক', 'খ', 'গ', 'ঘ'];
+                                    $labels = App::getLocale() === 'en' ? ['A', 'B', 'C', 'D'] : ['ক', 'খ', 'গ', 'ঘ'];
                                 @endphp
                                 @foreach($options as $optIndex => $option)
                                     <input type="radio" name="answers[{{ $question->id }}]" id="opt{{ $optIndex }}_{{ $question->id }}" value="{{ $option }}" required>
@@ -98,11 +98,11 @@
                             <div class="text-end">
                                 @if($index < count($questions) - 1)
                                     <button type="button" class="px-5 py-2.5 rounded-2xl bg-amber-300 hover:bg-amber-400 border-2 border-slate-900 text-slate-900 font-extrabold text-xs transition-all shadow-[2px_2px_0px_#000000] active:translate-y-0.5 active:shadow-none next-btn cursor-pointer" data-index="{{ $index }}">
-                                        পরের প্রশ্ন <i class="fa-solid fa-arrow-right ms-1"></i>
+                                        {{ __('Next Question') }} <i class="fa-solid fa-arrow-right ms-1"></i>
                                     </button>
                                 @else
                                     <button type="button" class="px-6 py-3 rounded-2xl bg-emerald-400 hover:bg-emerald-500 border-2 border-slate-900 text-white font-extrabold text-sm transition-all shadow-[3px_3px_0px_#000000] active:translate-y-0.5 active:shadow-none cursor-pointer pulse-animation" onclick="confirmSubmit()">
-                                        পরীক্ষা জমা দাও <i class="fa-solid fa-paper-plane ms-1"></i>
+                                        {{ __('Submit Exam') }} <i class="fa-solid fa-paper-plane ms-1"></i>
                                     </button>
                                 @endif
                             </div>
@@ -144,7 +144,7 @@
                 });
 
                 // Add active neobrutalist styling to the clicked button
-                this.className = "opt-btn w-full p-4 rounded-2xl bg-amber-350 border-3 border-slate-900 shadow-[2px_2px_0px_#0f172a] translate-y-0.5 transition-all text-slate-900 font-extrabold text-left flex items-center gap-3 outline-none cursor-pointer";
+                this.className = "opt-btn w-full p-4 rounded-2xl bg-amber-300 border-3 border-slate-900 shadow-[2px_2px_0px_#0f172a] translate-y-0.5 transition-all text-slate-900 font-extrabold text-left flex items-center gap-3 outline-none cursor-pointer";
                 const badge = this.querySelector('.label-badge');
                 if (badge) {
                     badge.className = "label-badge w-9 h-9 rounded-xl bg-amber-400 border-2 border-slate-900 flex items-center justify-center text-slate-900 shrink-0 font-sans text-xs";
@@ -160,7 +160,7 @@
                 const checkedOption = container.querySelector('input[type="radio"]:checked');
                 
                 if(!checkedOption) {
-                    alert('দয়া করে একটি উত্তর নির্বাচন করুন!');
+                    alert('{{ __('Please select an answer!') }}');
                     return;
                 }
 
@@ -186,8 +186,10 @@
             const current = index + 1;
             const percentage = Math.round((index / total) * 100);
             
-            document.getElementById('progressText').innerText = `প্রশ্ন ${current} / ${total}`;
-            document.getElementById('percentageText').innerText = `${percentage}% সম্পন্ন`;
+            const questionText = '{{ __('Question') }}';
+            const completedText = '{{ __('completed') }}';
+            document.getElementById('progressText').innerText = `${questionText} ${current} / ${total}`;
+            document.getElementById('percentageText').innerText = `${percentage}% ${completedText}`;
             document.getElementById('progressBar').style.width = percentage + '%';
         }
 
@@ -200,7 +202,7 @@
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.addEventListener('copy', event => {
             event.preventDefault();
-            alert('কপি করা নিষেধ!');
+            alert('{{ __('Copying is prohibited!') }}');
         });
         document.addEventListener('paste', event => event.preventDefault());
         document.addEventListener('cut', event => event.preventDefault());
@@ -242,7 +244,7 @@
                 } else if (e.data.action === 'finished') {
                     isSubmitting = true;
                     timerDisplay.textContent = "00:00";
-                    alert('সময় শেষ! আপনার উত্তর স্বয়ংক্রিয়ভাবে জমা হচ্ছে।');
+                    alert('{{ __('Time Up! Your answers are being submitted automatically.') }}');
                     
                     // Prevent further changes
                     document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
@@ -271,7 +273,7 @@
                 if (durationInSeconds <= 0) {
                     isSubmitting = true;
                     timerDisplay.textContent = "00:00";
-                    alert('সময় শেষ! আপনার উত্তর স্বয়ংক্রিয়ভাবে জমা হচ্ছে।');
+                    alert('{{ __('Time Up! Your answers are being submitted automatically.') }}');
                     document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
                     form.submit();
                 } else {
@@ -285,7 +287,7 @@
         // Prevent accidental page leave
         window.onbeforeunload = function() {
             if (!isSubmitting) {
-                return "আপনি কি নিশ্চিত যে পেজটি বন্ধ করতে চান? আপনার উত্তর সেভ হবে না।";
+                return "{{ __('Are you sure you want to leave? Your progress will not be saved.') }}";
             }
         };
 
@@ -296,11 +298,11 @@
             const checkedOption = lastContainer.querySelector('input[type="radio"]:checked');
             
             if(!checkedOption) {
-                alert('শেষ প্রশ্নের উত্তর দিন তারপর সাবমিট করুন।');
+                alert('{{ __('Please answer the last question before submitting.') }}');
                 return;
             }
 
-            if(confirm('আপনি কি নিশ্চিত যে আপনি সাবমিট করতে চান? সাবমিট করার পর আর পরিবর্তন করা যাবে না।')) {
+            if(confirm('{{ __('Confirm Submission') }}')) {
                 isSubmitting = true;
                 document.getElementById('liveExamForm').submit();
             }
@@ -319,10 +321,10 @@
 
                 if (tabSwitchCount >= maxTabSwitches) {
                     isSubmitting = true;
-                    alert('সতর্কবার্তা: আপনি ৩ বার ট্যাব পরিবর্তন করেছেন। আপনার পরীক্ষাটি এখন সাবমিট হয়ে যাবে।');
+                    alert('{{ __('Warning: You have switched tabs 3 times. Your exam will be submitted now.') }}');
                     form.submit();
                 } else {
-                    alert('সতর্কবার্তা: পরীক্ষা চলাকালীন অন্য ট্যাব বা উইন্ডোতে যাওয়া নিষেধ! আপনার ' + tabSwitchCount + ' টি সতর্কবার্তা জমা হয়েছে। ' + maxTabSwitches + ' বার এমন করলে পরীক্ষা অটো-সাবমিট হয়ে যাবে।');
+                    alert('{{ __('Warning: Switching tabs or windows during the exam is prohibited! You have ') }}' + tabSwitchCount + '{{ __(' warning(s). ') }}' + maxTabSwitches + '{{ __(' times will auto-submit the exam.') }}');
                 }
             }
         });

@@ -1,9 +1,14 @@
 @extends('frontend.layouts.master')
-@section('title', 'জিনিয়াস কিডস - আমার প্রোগ্রেস')
+@section('title', __('Genius Kids - My Progress'))
 
 @section('content')
     <!-- Profile Header Banner (Gamified) -->
-    <header class="rounded-3xl bg-gradient-to-br from-orange-300 to-rose-400 nb p-5 text-white mb-6 text-center">
+    <header class="rounded-3xl bg-gradient-to-br from-orange-300 to-rose-400 nb p-5 text-white mb-6 text-center relative">
+        <!-- Edit Profile Settings Button -->
+        <a href="{{ route('profile.edit') }}" class="absolute top-4 right-4 text-white hover:text-orange-100 text-xl decoration-none" title="{{ __('Update Profile') }}">
+            <i class="fa-solid fa-user-gear"></i>
+        </a>
+        
         <!-- Interactive Avatar Display -->
         <button id="avatarBtn" class="avatar-display w-24 h-24 mx-auto rounded-3xl bg-white text-6xl flex items-center justify-center nb-sm mb-3 hover:-translate-y-1 transition outline-none cursor-pointer">
             {{ session('avatar_emoji', $user->avatar_emoji ?? '🐼') }}
@@ -12,20 +17,20 @@
         @php
             $completedCount = $progressStats['total_completed_levels'];
             if ($completedCount >= 10) {
-                $rank = 'সিনিয়র জিনিয়াস 👑';
+                $rank = __('Senior Genius 👑');
             } elseif ($completedCount >= 5) {
-                $rank = 'জুনিয়র জিনিয়াস 🌟';
+                $rank = __('Junior Genius 🌟');
             } else {
-                $rank = 'নবিশ জিনিয়াস 🌱';
+                $rank = __('Novice Genius 🌱');
             }
         @endphp
-        <p class="text-sm opacity-95 font-extrabold text-white mb-0 uppercase tracking-wide">
-            লেভেল {{ $completedCount }} • {{ $rank }}
+        <p class="text-sm opacity-95 font-extrabold text-white mb-0 uppercase tracking-wide font-sans">
+            {{ __('Level') }} {{ $completedCount }} • {{ $rank }}
         </p>
     </header>
 
     <!-- Interactive Avatar Picker Slider -->
-    <h2 class="font-extrabold mb-2 text-xs text-slate-500 font-sans">তোমার অ্যাভাটার বদলাও</h2>
+    <h2 class="font-extrabold mb-2 text-xs text-slate-500 font-sans">{{ __('Change Your Avatar') }}</h2>
     <div class="flex gap-3 mb-6 overflow-x-auto no-scrollbar pb-2">
         @php
             $avatars = ['🐼','🦁','🐱','🐰','🦊','🐵','🐯','🐧'];
@@ -41,46 +46,46 @@
     <div class="grid grid-cols-3 gap-3 mb-6">
         <div class="bg-sky-100 rounded-2xl nb-sm p-3 text-center">
             <p class="text-2xl font-extrabold text-sky-600 mb-0 font-sans">{{ $quizAttempts->total() }}</p>
-            <p class="text-[10px] font-extrabold text-slate-600 mt-1 mb-0">কুইজ</p>
+            <p class="text-[10px] font-extrabold text-slate-650 mt-1 mb-0">{{ __('Quiz') }}</p>
         </div>
         <div class="bg-amber-100 rounded-2xl nb-sm p-3 text-center">
             <p class="text-2xl font-extrabold text-amber-600 mb-0 font-sans">{{ $user->current_streak }}🔥</p>
-            <p class="text-[10px] font-extrabold text-slate-600 mt-1 mb-0">ধারা</p>
+            <p class="text-[10px] font-extrabold text-slate-650 mt-1 mb-0">{{ __('Streak') }}</p>
         </div>
         <div class="bg-emerald-100 rounded-2xl nb-sm p-3 text-center">
             <p class="text-2xl font-extrabold text-emerald-600 mb-0 font-sans">{{ $quizAttempts->sum('score') * 10 }}</p>
-            <p class="text-[10px] font-extrabold text-slate-600 mt-1 mb-0">XP</p>
+            <p class="text-[10px] font-extrabold text-slate-650 mt-1 mb-0">XP</p>
         </div>
     </div>
 
     <!-- Achievements Badge Grid -->
-    <h2 class="text-lg font-extrabold mb-4 flex items-center gap-2 text-slate-800">🎖️ সাফল্যের ব্যাজ</h2>
+    <h2 class="text-lg font-extrabold mb-4 flex items-center gap-2 text-slate-800">🎖️ {{ __('Achievement Badges') }}</h2>
     <div class="grid grid-cols-2 gap-4 mb-6">
         @php
             $badges = [
                 [
                     'emoji' => '🔥', 
-                    'name' => config('quiz.milestones.streak_bronze') . ' দিনের ধারা', 
+                    'name' => config('quiz.milestones.streak_bronze') . ' ' . __('Day Streak'), 
                     'unlocked' => $user->current_streak >= config('quiz.milestones.streak_bronze'),
-                    'desc' => 'নিয়মিত অধ্যয়নকারী'
+                    'desc' => __('Regular Learner')
                 ],
                 [
                     'emoji' => '🎯', 
-                    'name' => 'প্রথম কুইজ জয়', 
+                    'name' => __('First Quiz Victory'), 
                     'unlocked' => $quizAttempts->where('passed', true)->count() > 0,
-                    'desc' => 'কুইজ দিয়ে কুইজ পাস'
+                    'desc' => __('Pass a quiz by answering')
                 ],
                 [
                     'emoji' => '💯', 
-                    'name' => 'শতক কুইজ', 
+                    'name' => __('Century Quiz'), 
                     'unlocked' => $quizAttempts->total() >= config('quiz.milestones.quiz_century'),
-                    'desc' => '১০০টি কুইজ সম্পন্ন'
+                    'desc' => __('Completed 100 quizzes')
                 ],
                 [
                     'emoji' => '👑', 
-                    'name' => 'লেভেল মাস্টার', 
+                    'name' => __('Level Master'), 
                     'unlocked' => $completedCount >= config('quiz.milestones.level_master'),
-                    'desc' => '১০+ লেভেল সম্পন্ন'
+                    'desc' => __('Completed 10+ levels')
                 ],
             ];
         @endphp
@@ -89,9 +94,9 @@
             <div class="bg-white rounded-2xl nb-sm p-4 text-center transition hover:-translate-y-0.5 {{ $badge['unlocked'] ? '' : 'opacity-40 grayscale' }}">
                 <div class="text-4xl mb-2">{{ $badge['emoji'] }}</div>
                 <p class="text-xs font-extrabold text-slate-800 mb-0.5 font-sans">{{ $badge['name'] }}</p>
-                <p class="text-[9px] font-extrabold text-slate-400 mb-2 font-sans">{{ $badge['desc'] }}</p>
+                <p class="text-[9px] font-extrabold text-slate-450 mb-2 font-sans">{{ $badge['desc'] }}</p>
                 <span class="px-2 py-0.5 rounded-lg text-[9px] font-extrabold {{ $badge['unlocked'] ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400' }}">
-                    {{ $badge['unlocked'] ? '✅ আনলকড' : '🔒 লকড' }}
+                    {{ $badge['unlocked'] ? __('✅ Unlocked') : __('🔒 Locked') }}
                 </span>
             </div>
         @endforeach
@@ -102,7 +107,7 @@
         <!-- Quiz History Column -->
         <div class="lg:col-span-2">
             <div class="bg-white rounded-3xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] p-4 h-full">
-                <h3 class="text-base font-extrabold text-slate-800 mb-4 border-bottom pb-2"><i class="fa-solid fa-clock-rotate-left me-1"></i> কুইজ হিস্ট্রি</h3>
+                <h3 class="text-base font-extrabold text-slate-800 mb-4 border-bottom pb-2 font-sans"><i class="fa-solid fa-clock-rotate-left me-1"></i> {{ __('Quiz History') }}</h3>
                 
                 <div class="space-y-3">
                     @forelse($quizAttempts as $attempt)
@@ -123,14 +128,14 @@
                                     {{ $attempt->score }} / {{ $attempt->total_questions }}
                                 </div>
                                 <span class="px-2 py-1 rounded-xl text-[10px] border-2 border-slate-900 font-extrabold text-white {{ $attempt->passed ? 'bg-emerald-500' : 'bg-rose-400' }}">
-                                    {{ $attempt->passed ? 'উত্তীর্ণ' : 'অনুত্তীর্ণ' }}
+                                    {{ $attempt->passed ? __('Passed') : __('Failed') }}
                                 </span>
                             </div>
                         </div>
                     @empty
                         <div class="text-center py-12">
                             <div class="text-4xl mb-2">🐢</div>
-                            <p class="text-slate-450 font-bold mb-0">তুমি এখনো কোনো কুইজ খেলোনি!</p>
+                            <p class="text-slate-450 font-bold mb-0 font-sans">{{ __('You have not played any quizzes yet!') }}</p>
                         </div>
                     @endforelse
                 </div>
@@ -152,7 +157,7 @@
 
                             {{-- Active/Info indicators --}}
                             <span class="text-xs font-extrabold text-slate-650 font-sans mx-1">
-                                পেজ {{ $quizAttempts->currentPage() }} / {{ $quizAttempts->lastPage() }}
+                                {{ __('Page') }} {{ $quizAttempts->currentPage() }} / {{ $quizAttempts->lastPage() }}
                             </span>
 
                             {{-- Next Page Link --}}
@@ -174,7 +179,7 @@
         <!-- Subject Progress List Column -->
         <div>
             <div class="bg-white rounded-3xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] p-4 h-full">
-                <h3 class="text-base font-extrabold text-slate-800 mb-4 border-bottom pb-2"><i class="fa-solid fa-chart-pie me-1"></i> বিষয়ভিত্তিক অগ্রগতি</h3>
+                <h3 class="text-base font-extrabold text-slate-800 mb-4 border-bottom pb-2 font-sans"><i class="fa-solid fa-chart-pie me-1"></i> {{ __('Subject-wise Progress') }}</h3>
                 
                 <div class="space-y-4 overflow-y-auto no-scrollbar" style="max-height: 480px;">
                     @forelse($userProgress->groupBy('category_id') as $categoryId => $progresses)
@@ -188,15 +193,15 @@
                                         <span class="text-xs font-bold text-slate-750 font-sans">{{ $progress->level->name ?? 'Level' }}</span>
                                         @if($progress->status == 'completed')
                                             <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-extrabold">
-                                                শেষ
+                                                {{ __('Completed') }}
                                             </span>
                                         @elseif($progress->status == 'active')
                                             <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 text-[9px] font-extrabold">
-                                                চলমান
+                                                {{ __('Ongoing') }}
                                             </span>
                                         @else
                                             <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-400 border border-slate-300 text-[9px] font-extrabold">
-                                                লক
+                                                {{ __('Locked') }}
                                             </span>
                                         @endif
                                     </div>
@@ -205,7 +210,7 @@
                         </div>
                     @empty
                         <div class="text-center py-12">
-                            <p class="text-slate-450 font-bold mb-0">অগ্রগতির কোনো ইতিহাস নেই!</p>
+                            <p class="text-slate-450 font-bold mb-0 font-sans">{{ __('No progress history available!') }}</p>
                         </div>
                     @endforelse
                 </div>

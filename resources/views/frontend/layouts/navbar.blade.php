@@ -34,11 +34,9 @@
 
         @auth
             <!-- Streak -->
-            @if(auth()->user()->current_streak > 0)
-                <span class="px-3 py-1.5 rounded-full bg-amber-100 border-2 border-slate-900 font-extrabold text-sm text-slate-800 shadow-sm">
-                    🔥 {{ auth()->user()->current_streak }} {{ __('day streak') }}
-                </span>
-            @endif
+            <span class="px-3 py-1.5 rounded-full bg-amber-100 border-2 border-slate-900 font-extrabold text-sm text-slate-800 shadow-sm">
+                🔥 {{ auth()->user()->current_streak }} {{ __('day streak') }}
+            </span>
 
             <!-- XP Points -->
             <span class="px-3 py-1.5 rounded-full bg-emerald-100 border-2 border-slate-900 font-extrabold text-sm text-slate-800 shadow-sm">
