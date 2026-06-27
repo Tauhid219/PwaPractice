@@ -58,6 +58,22 @@
         </div>
     </div>
 
+    <!-- PWA Install Card for Mobile/Desktop (Visible if not installed) -->
+    <div id="pwa-profile-install-card" class="hidden bg-gradient-to-r from-amber-50 to-orange-100 rounded-2xl nb-sm p-4 border-2 border-slate-900 mb-6">
+        <div class="flex items-center justify-between gap-3 text-left flex-wrap sm:flex-nowrap">
+            <div class="flex items-center gap-3">
+                <img src="{{ asset('icons/icon-72x72.png') }}" width="42" height="42" alt="App Icon" class="rounded-xl border-2 border-slate-900 shadow-[1.5px_1.5px_0px_#000000]">
+                <div>
+                    <h3 class="font-extrabold text-sm text-slate-900 mb-0.5">মোবাইলে অ্যাপটি নামিয়ে নিন!</h3>
+                    <p class="text-[10px] text-slate-650 font-bold mb-0 leading-tight">হোম স্ক্রিন থেকে সরাসরি কুইজ খেলতে অ্যাপটি ইন্সটল করুন।</p>
+                </div>
+            </div>
+            <button id="install-btn" class="px-3 py-1.5 rounded-xl bg-orange-500 hover:bg-orange-600 border-2 border-slate-900 text-white font-extrabold text-xs transition-all shadow-[2px_2px_0px_#000000] active:translate-y-0.5 active:shadow-none whitespace-nowrap">
+                ইন্সটল করুন <i class="fa fa-download ms-1"></i>
+            </button>
+        </div>
+    </div>
+
     <!-- Achievements Badge Grid -->
     <h2 class="text-lg font-extrabold mb-4 flex items-center gap-2 text-slate-800">🎖️ {{ __('Achievement Badges') }}</h2>
     <div class="grid grid-cols-2 gap-4 mb-6">

@@ -65,6 +65,23 @@
 
         @include('frontend.layouts.navbar')
 
+        <!-- Mobile Top PWA Banner -->
+        <div id="mobile-pwa-banner" class="hidden md:hidden sticky top-0 z-40 bg-amber-100 border-b-4 border-slate-900 px-4 py-2.5 items-center justify-between shadow-sm">
+            <div class="flex items-center gap-2">
+                <button id="pwa-banner-close" class="text-slate-500 hover:text-slate-950 p-1 mr-1 text-lg leading-none focus:outline-none" aria-label="বন্ধ করুন">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <img src="{{ asset('icons/icon-72x72.png') }}" width="42" height="42" alt="App Icon" class="rounded-xl border-2 border-slate-900 shadow-[1.5px_1.5px_0px_#000000]">
+                <div>
+                    <div class="font-extrabold text-slate-900 text-xs leading-tight">জিনিয়াস কিডস</div>
+                    <div class="text-[10px] text-slate-600 font-bold leading-tight">কুইজ ও লাইভ এক্সাম</div>
+                </div>
+            </div>
+            <button id="install-btn" class="px-3 py-1.5 rounded-xl bg-orange-500 hover:bg-orange-600 border-2 border-slate-900 text-white font-extrabold text-xs transition-all shadow-[2px_2px_0px_#000000] active:translate-y-0.5 active:shadow-none whitespace-nowrap">
+                ইন্সটল করুন <i class="fa fa-download ms-1"></i>
+            </button>
+        </div>
+
         <main id="app" class="max-w-3xl mx-auto px-4 py-4 md:py-6">
             @yield('content')
         </main>
@@ -181,6 +198,48 @@
             });
         };
 
+        const updateMobileBannerVisibility = () => {
+            const banner = document.getElementById('mobile-pwa-banner');
+            const profileCard = document.getElementById('pwa-profile-install-card');
+            const installed = isEffectivelyInstalled();
+
+            // 1. Update Profile Install Card (visible if not installed)
+            if (profileCard) {
+                if (installed) {
+                    profileCard.classList.add('hidden');
+                } else {
+                    profileCard.classList.remove('hidden');
+                }
+            }
+
+            // 2. Update Mobile Top Banner
+            if (banner) {
+                if (installed) {
+                    banner.classList.add('hidden');
+                    banner.classList.remove('flex');
+                    return;
+                }
+
+                if (sessionStorage.getItem('pwa-banner-dismissed') === '1') {
+                    banner.classList.add('hidden');
+                    banner.classList.remove('flex');
+                    return;
+                }
+
+                // Show banner on mobile screens (width < 768px) if the PWA can be installed
+                const isMobile = window.innerWidth < 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                const canInstall = hasNativeInstallPrompt() || isIosSafari() || isAndroidChrome();
+
+                if (isMobile && canInstall) {
+                    banner.classList.remove('hidden');
+                    banner.classList.add('flex');
+                } else {
+                    banner.classList.add('hidden');
+                    banner.classList.remove('flex');
+                }
+            }
+        };
+
         const showInstallButtons = () => {
             if (isEffectivelyInstalled()) {
                 hideInstallButtons();
@@ -194,10 +253,12 @@
             });
 
             updateInstallButtonState();
+            updateMobileBannerVisibility();
         };
 
         const hideInstallButtons = () => {
             installButtons.forEach((button) => button.classList.add('hidden'));
+            updateMobileBannerVisibility();
         };
 
         const resetInstallOverlay = () => {
@@ -319,21 +380,23 @@
                 showIosModal(
                     'iPhone/iPad-এ ইন্সটল করুন',
                     [
-                        '① নিচের টুলবারে <strong>শেয়ার বাটন (↑)</strong> ট্যাপ করুন',
-                        '② স্ক্রল করে <strong>"Add to Home Screen"</strong> খুঁজুন',
-                        '③ ডানে উপরে <strong>"Add"</strong> ট্যাপ করুন',
+                        '① ব্রাউজারের নিচের টুলবারে <strong>শেয়ার বাটন (↑)</strong> ট্যাপ করুন।',
+                        '② মেনু স্ক্রল করে নিচের দিকে যান এবং <strong>"Add to Home Screen"</strong> অপশনটি সিলেক্ট করুন।',
+                        '③ ডানে উপরে থাকা <strong>"Add"</strong> বাটনে ট্যাপ করুন।'
                     ]
                 );
                 return;
             }
 
-            if (isAndroidChrome()) {
-                alert('Native install prompt এখনও প্রস্তুত হয়নি। কিছুক্ষণ site ব্যবহার করুন বা page reload করে আবার চেষ্টা করুন।');
-                showInstallButtons();
-                return;
-            }
-
-            alert('Native install prompt এখনও available হয়নি। Chrome browser যখন install prompt দেবে, তখন এই বাটনটি দেখা যাবে।');
+            // Android or any other browsers where native prompt is not yet ready/available
+            showIosModal(
+                'অ্যাপ ইন্সটল করার নিয়মাবলী',
+                [
+                    '① ব্রাউজারের উপরে ডানে থাকা <strong>থ্রি-ডট (⋮) মেনু</strong> বা ইন্সটল আইকন ট্যাপ করুন।',
+                    '② অপশনগুলো থেকে <strong>"Install app"</strong> অথবা <strong>"Add to Home Screen"</strong> সিলেক্ট করুন।',
+                    '③ ইন্সটল সম্পন্ন করতে কনফার্মেশন পপ-আপে <strong>"Install"</strong> বা <strong>"Add"</strong> বাটনে চাপুন।'
+                ]
+            );
         });
 
         window.addEventListener('appinstalled', () => {
@@ -368,6 +431,19 @@
                     if (e.target === modal) {
                         modal.classList.remove('flex');
                         modal.classList.add('hidden');
+                    }
+                });
+            }
+
+            // PWA Mobile Banner Close Handler
+            const bannerCloseBtn = document.getElementById('pwa-banner-close');
+            const banner = document.getElementById('mobile-pwa-banner');
+            if (bannerCloseBtn && banner) {
+                bannerCloseBtn.addEventListener('click', () => {
+                    sessionStorage.setItem('pwa-banner-dismissed', '1');
+                    if (banner) {
+                        banner.classList.add('hidden');
+                        banner.classList.remove('flex');
                     }
                 });
             }
