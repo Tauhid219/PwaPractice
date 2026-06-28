@@ -12,7 +12,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Hind Siliguri', 'Nunito', ...defaultTheme.fontFamily.sans],
+                sans: ['Noto Sans Bengali', 'Nunito', ...defaultTheme.fontFamily.sans],
             },
         },
     },
