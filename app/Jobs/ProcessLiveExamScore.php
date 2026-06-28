@@ -15,23 +15,17 @@ class ProcessLiveExamScore
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $exam;
-
-    protected $userId;
+    protected $attempt;
 
     protected $answers;
-
-    protected $tabSwitches;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(LiveExam $exam, int $userId, array $answers, int $tabSwitches = 0)
+    public function __construct(LiveExamAttempt $attempt, array $answers)
     {
-        $this->exam = $exam;
-        $this->userId = $userId;
+        $this->attempt = $attempt;
         $this->answers = $answers;
-        $this->tabSwitches = $tabSwitches;
     }
 
     /**
@@ -39,20 +33,20 @@ class ProcessLiveExamScore
      */
     public function handle(): void
     {
-        $questions = Cache::remember("exam_questions_{$this->exam->id}", 3600, function () {
-            return $this->exam->questions;
+        $exam = $this->attempt->exam;
+        
+        $questions = Cache::remember("exam_questions_{$exam->id}", 3600, function () use ($exam) {
+            return $exam->questions;
         });
 
         $totalQuestions = $questions->count();
         $score = QuizScoringService::calculateScore($questions, $this->answers);
         $passed = QuizScoringService::isPassed($score, $totalQuestions);
 
-        LiveExamAttempt::create([
-            'user_id' => $this->userId,
-            'live_exam_id' => $this->exam->id,
+        $this->attempt->update([
             'score' => $score,
             'passed' => $passed,
-            'tab_switches' => $this->tabSwitches,
+            'status' => 'completed',
         ]);
     }
 }

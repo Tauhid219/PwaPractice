@@ -24,7 +24,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_admin',
         'current_streak',
         'last_quiz_date',
         'avatar_emoji',

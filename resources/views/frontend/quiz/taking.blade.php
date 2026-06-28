@@ -28,11 +28,7 @@
         @csrf
         
         @foreach($questions as $index => $question)
-            @php
-                $correctString = $question->correct_answers ? implode('|', $question->correct_answers) : $question->answer_text;
-            @endphp
-            
-            <div class="question-container" id="q_{{ $index }}" data-correct="{{ trim($correctString) }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
+            <div class="question-container" id="q_{{ $index }}" data-question-id="{{ $question->id }}" style="{{ $index === 0 ? '' : 'display: none;' }}">
                 <!-- Question Text Card -->
                 <div class="bg-white rounded-3xl nb p-6 mb-5 min-h-[120px] flex items-center justify-center text-center">
                     <h2 class="text-lg sm:text-xl font-extrabold leading-snug text-slate-900 mb-0 font-sans">
@@ -127,8 +123,6 @@
                 const container = document.getElementById('q_' + qIndex);
                 const input = container.querySelector('.quiz-input');
                 const verifyBtn = container.querySelector('.verify-btn');
-                const correctAnswerAttr = container.getAttribute('data-correct').trim();
-                const correctAnswers = correctAnswerAttr.split('|').map(a => a.trim().toLowerCase().normalize('NFC'));
                 answered = false;
 
                 // Auto focus input
@@ -156,28 +150,59 @@
                     answered = true;
                     stopTimer();
 
-                    const userTypedLower = userTyped.toLowerCase().normalize('NFC');
-                    const isCorrect = correctAnswers.includes(userTypedLower);
-
                     // Set readOnly on text input to prevent editing but allow form submission
                     input.readOnly = true;
                     verifyBtn.disabled = true;
 
-                    if (isCorrect) {
-                        // Correct state
-                        if (window.sfx) window.sfx.correct();
-                        input.classList.remove('bg-white');
-                        input.classList.add('bg-emerald-500', 'text-white', 'pop');
-                        currentScore++;
-                        scoreText.textContent = `{{ __('Correct') }}: ${currentScore}`;
-                        showFeedback(true, correctAnswerAttr);
-                    } else {
-                        // Incorrect state
-                        if (window.sfx) window.sfx.wrong();
-                        input.classList.remove('bg-white');
-                        input.classList.add('bg-rose-500', 'text-white', 'shake');
-                        showFeedback(false, correctAnswerAttr);
-                    }
+                    // AJAX answer validation
+                    const questionId = container.getAttribute('data-question-id');
+                    fetch('{{ route('quiz.check-answer') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            question_id: questionId,
+                            answer: userTyped
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const isCorrect = data.is_correct;
+                        const correctAnswer = data.correct_answer;
+
+                        if (isCorrect) {
+                            // Correct state
+                            if (window.sfx) window.sfx.correct();
+                            input.classList.remove('bg-white');
+                            input.classList.add('bg-emerald-500', 'text-white', 'pop');
+                            currentScore++;
+                            scoreText.textContent = `{{ __('Correct') }}: ${currentScore}`;
+                            showFeedback(true, correctAnswer);
+                        } else {
+                            // Incorrect state
+                            if (window.sfx) window.sfx.wrong();
+                            input.classList.remove('bg-white');
+                            input.classList.add('bg-rose-500', 'text-white', 'shake');
+                            showFeedback(false, correctAnswer);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // If offline, provide neutral feedback
+                        if (!navigator.onLine) {
+                            input.classList.remove('bg-white');
+                            input.classList.add('bg-slate-500', 'text-white'); // Neutral
+                            showFeedbackOffline();
+                        } else {
+                            // Fallback logic for normal error
+                            if (window.sfx) window.sfx.wrong();
+                            input.classList.remove('bg-white');
+                            input.classList.add('bg-rose-500', 'text-white', 'shake');
+                            showFeedback(false, '');
+                        }
+                    });
                 });
             }
 
@@ -190,7 +215,6 @@
                 const container = document.getElementById('q_' + currentQIndex);
                 const input = container.querySelector('.quiz-input');
                 const verifyBtn = container.querySelector('.verify-btn');
-                const correctAnswerAttr = container.getAttribute('data-correct').trim();
 
                 // Set readOnly on text input and highlight red
                 input.readOnly = true;
@@ -226,13 +250,112 @@
                 setupNextButton();
             }
 
+            function showFeedbackOffline() {
+                feedback.classList.remove('hidden');
+                fbBox.className = 'rounded-3xl nb p-4 flex items-center justify-between gap-3 bg-slate-600 text-white';
+                fbTitle.textContent = '💾 ' + (App.getLocale === 'en' ? 'Saved Offline' : 'অফলাইনে সেভ হয়েছে');
+                fbText.textContent = App.getLocale === 'en' ? 'Your answer is drafted.' : 'আপনার উত্তর লোকালি সংরক্ষণ করা হয়েছে।';
+                setupNextButton();
+            }
+
+            // --- Offline Fallback & IndexedDB ---
+            const dbName = 'PwaQuizDB';
+            const storeName = 'offline_quizzes';
+            let db;
+
+            function initDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(dbName, 1);
+                    request.onupgradeneeded = (e) => {
+                        db = e.target.result;
+                        if (!db.objectStoreNames.contains(storeName)) {
+                            db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+                        }
+                    };
+                    request.onsuccess = (e) => {
+                        db = e.target.result;
+                        resolve(db);
+                    };
+                    request.onerror = (e) => reject(e);
+                });
+            }
+
+            async function saveQuizDraft(formData) {
+                if (!db) await initDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    const dataObj = {};
+                    formData.forEach((value, key) => dataObj[key] = value);
+                    
+                    store.add({
+                        type: 'quiz_submit',
+                        url: quizForm.action,
+                        data: dataObj,
+                        timestamp: new Date().getTime()
+                    });
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = (e) => reject(e);
+                });
+            }
+
+            async function getQuizDrafts() {
+                if (!db) await initDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeName, 'readonly');
+                    const store = tx.objectStore(storeName);
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = (e) => reject(e);
+                });
+            }
+
+            async function clearQuizDrafts() {
+                if (!db) await initDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    const request = store.clear();
+                    request.onsuccess = () => resolve();
+                    request.onerror = (e) => reject(e);
+                });
+            }
+
+            async function handleOfflineSubmit() {
+                alert(App.getLocale === 'en' 
+                    ? 'You are offline. Your quiz has been saved locally and will submit automatically when you reconnect. Please leave this tab open.' 
+                    : 'আপনি অফলাইনে আছেন। আপনার কুইজ লোকালি সেভ করা হয়েছে এবং কানেকশন পেলে নিজে থেকেই সাবমিট হবে। দয়া করে পেজটি বন্ধ করবেন না।');
+                
+                const formData = new FormData(quizForm);
+                await saveQuizDraft(formData);
+                nextBtn.disabled = true;
+                nextBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> ' + (App.getLocale === 'en' ? 'Waiting for connection...' : 'কানেকশনের অপেক্ষায়...');
+            }
+
+            window.addEventListener('online', async () => {
+                if (nextBtn.disabled && nextBtn.innerHTML.includes('fa-spin')) {
+                    // We were waiting for connection to submit
+                    const drafts = await getQuizDrafts();
+                    if (drafts.length > 0) {
+                        // Submit normal form
+                        quizForm.submit();
+                    }
+                }
+            });
+
+            initDB().catch(console.error);
+
             // --- Setup Next Button Click Handler ---
             function setupNextButton() {
                 if (currentQIndex + 1 >= questionsCount) {
                     nextBtn.innerHTML = '{{ __('Submit Quiz') }} <i class="fa-solid fa-paper-plane ml-1"></i>';
                     nextBtn.onclick = () => {
                         feedback.classList.add('hidden');
-                        quizForm.submit();
+                        if (!navigator.onLine) {
+                            handleOfflineSubmit();
+                        } else {
+                            quizForm.submit();
+                        }
                     };
                 } else {
                     nextBtn.innerHTML = '{{ __('Next Question') }} <i class="fa-solid fa-arrow-right ml-1"></i>';

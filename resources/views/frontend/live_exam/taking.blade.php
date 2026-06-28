@@ -149,6 +149,12 @@
                 if (badge) {
                     badge.className = "label-badge w-9 h-9 rounded-xl bg-amber-400 border-2 border-slate-900 flex items-center justify-center text-slate-900 shrink-0 font-sans text-xs";
                 }
+
+                // Continuously save to draft in background
+                if (typeof saveExamDraft === 'function') {
+                    const formData = new FormData(document.getElementById('liveExamForm'));
+                    saveExamDraft(formData).catch(e => console.error("Draft save failed", e));
+                }
             });
         });
 
@@ -207,6 +213,92 @@
         document.addEventListener('paste', event => event.preventDefault());
         document.addEventListener('cut', event => event.preventDefault());
 
+        // --- IndexedDB for Live Exam Drafts ---
+        const dbName = 'PwaLiveExamDB';
+        const storeName = 'offline_live_exams';
+        let db;
+
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, 1);
+                request.onupgradeneeded = (e) => {
+                    db = e.target.result;
+                    if (!db.objectStoreNames.contains(storeName)) {
+                        db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve(db);
+                };
+                request.onerror = (e) => reject(e);
+            });
+        }
+
+        async function saveExamDraft(formData) {
+            if (!db) await initDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                const dataObj = {};
+                formData.forEach((value, key) => dataObj[key] = value);
+                
+                // Keep only one draft per exam ID
+                const examId = '{{ $exam->id }}';
+                dataObj._exam_id = examId;
+                
+                store.put({
+                    id: examId, // Overwrite existing draft for this exam
+                    url: form.action,
+                    data: dataObj,
+                    timestamp: new Date().getTime()
+                });
+                tx.oncomplete = () => resolve();
+                tx.onerror = (e) => reject(e);
+            });
+        }
+
+        async function getExamDrafts() {
+            if (!db) await initDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = (e) => reject(e);
+            });
+        }
+
+        async function handleExamSubmit() {
+            if (!navigator.onLine) {
+                // Offline fallback
+                const formData = new FormData(form);
+                await saveExamDraft(formData);
+                alert('{{ App::getLocale() === 'en' ? 'You are offline. Your exam has been saved locally and will submit automatically when you reconnect. Please leave this tab open.' : 'আপনি অফলাইনে আছেন। আপনার পরীক্ষা লোকালি সেভ করা হয়েছে এবং কানেকশন পেলে নিজে থেকেই সাবমিট হবে। দয়া করে পেজটি বন্ধ করবেন না।' }}');
+                
+                // Disable everything and show waiting UI
+                document.querySelectorAll('.opt-btn, .next-btn').forEach(btn => btn.disabled = true);
+                const submitBtn = document.querySelector('[onclick="confirmSubmit()"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> {{ App::getLocale() === 'en' ? 'Waiting for connection...' : 'কানেকশনের অপেক্ষায়...' }}';
+                }
+            } else {
+                form.submit();
+            }
+        }
+
+        window.addEventListener('online', async () => {
+            if (isSubmitting) {
+                const drafts = await getExamDrafts();
+                if (drafts.length > 0) {
+                    form.submit();
+                }
+            }
+        });
+
+        initDB().catch(console.error);
+
         // Timer Logic (Web Worker Upgrade)
         @php
             $durationSeconds = $exam->duration_minutes * 60;
@@ -249,7 +341,7 @@
                     // Prevent further changes
                     document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
                     
-                    form.submit();
+                    handleExamSubmit();
                 }
             };
         } else if (timerDisplay) {
@@ -275,7 +367,7 @@
                     timerDisplay.textContent = "00:00";
                     alert('{{ __('Time Up! Your answers are being submitted automatically.') }}');
                     document.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
-                    form.submit();
+                    handleExamSubmit();
                 } else {
                     durationInSeconds--;
                 }
@@ -304,7 +396,7 @@
 
             if(confirm('{{ __('Confirm Submission') }}')) {
                 isSubmitting = true;
-                document.getElementById('liveExamForm').submit();
+                handleExamSubmit();
             }
         }
 
@@ -322,7 +414,7 @@
                 if (tabSwitchCount >= maxTabSwitches) {
                     isSubmitting = true;
                     alert('{{ __('Warning: You have switched tabs 3 times. Your exam will be submitted now.') }}');
-                    form.submit();
+                    handleExamSubmit();
                 } else {
                     alert('{{ __('Warning: Switching tabs or windows during the exam is prohibited! You have ') }}' + tabSwitchCount + '{{ __(' warning(s). ') }}' + maxTabSwitches + '{{ __(' times will auto-submit the exam.') }}');
                 }

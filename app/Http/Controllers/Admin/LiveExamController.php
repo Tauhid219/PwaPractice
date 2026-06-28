@@ -178,6 +178,7 @@ class LiveExamController extends Controller implements HasMiddleware
         ]);
 
         $liveExam->questions()->attach($question->id);
+        \Illuminate\Support\Facades\Cache::forget("exam_questions_{$liveExam->id}");
 
         return redirect()->route('admin.live-exams.questions.manage', $liveExam->id)
             ->with('success', 'Question created and added to Live Exam successfully.');
@@ -218,6 +219,8 @@ class LiveExamController extends Controller implements HasMiddleware
             'correct_answers' => [trim($validated['answer_text'])],
         ]);
 
+        \Illuminate\Support\Facades\Cache::forget("exam_questions_{$liveExam->id}");
+
         return redirect()->route('admin.live-exams.questions.manage', $liveExam->id)
             ->with('success', 'Question updated successfully.');
     }
@@ -226,12 +229,13 @@ class LiveExamController extends Controller implements HasMiddleware
     {
         $liveExam->questions()->detach($question->id);
         $question->delete();
+        \Illuminate\Support\Facades\Cache::forget("exam_questions_{$liveExam->id}");
 
         return redirect()->route('admin.live-exams.questions.manage', $liveExam->id)
             ->with('success', 'Question deleted successfully from Live Exam.');
     }
 
-    public function updateQuestions(Request $request, LiveExam $liveExam)
+    public function updateQuestions(Request $request, LiveExam $liveExam, \App\Services\LiveExamService $liveExamService)
     {
         $request->validate([
             'question_ids' => 'array',
@@ -241,32 +245,23 @@ class LiveExamController extends Controller implements HasMiddleware
         $action = $request->input('action'); // 'add' or 'remove'
         $questionIds = $request->input('question_ids', []);
 
-        if ($action === 'add') {
-            $liveExam->questions()->syncWithoutDetaching($questionIds);
-            $message = count($questionIds).' questions added successfully.';
-        } elseif ($action === 'remove') {
-            $liveExam->questions()->detach($questionIds);
-            $message = count($questionIds).' questions removed successfully.';
-        }
+        $message = $liveExamService->syncQuestions($liveExam, $action, $questionIds);
 
-        return back()->with('success', $message ?? 'Updated successfully.');
+        return back()->with('success', $message);
     }
 
-    public function importQuestions(Request $request, LiveExam $liveExam)
+    public function importQuestions(Request $request, LiveExam $liveExam, \App\Services\LiveExamService $liveExamService)
     {
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls,csv,txt',
         ]);
 
         try {
-            Excel::import(new LiveExamQuestionImport($liveExam), $request->file('file'));
+            $liveExamService->importQuestions($liveExam, $request->file('file'));
 
             return redirect()->route('admin.live-exams.questions.manage', $liveExam->id)
                 ->with('success', 'Questions imported and assigned to this Live Exam successfully.');
         } catch (\Exception $e) {
-            \Log::error('Live Exam Import error: ' . $e->getMessage());
-            \Log::error($e->getTraceAsString());
-
             return redirect()->route('admin.live-exams.questions.manage', $liveExam->id)
                 ->with('error', 'Error importing file: ' . $e->getMessage());
         }

@@ -33,9 +33,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => RoleOrPermissionMiddleware::class,
         ]);
     })
-    ->withSchedule(function (Schedule $schedule) {
-        $schedule->command('telescope:prune')->daily();
-    })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

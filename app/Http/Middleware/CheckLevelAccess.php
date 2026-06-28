@@ -34,21 +34,7 @@ class CheckLevelAccess
         }
 
         // Check user progress for paid or higher levels
-        $category = $request->route('category');
-        $categoryId = $category instanceof Category ? $category->id : null;
-
-        if (! $categoryId) {
-            // Try to find category from slug or level questions
-            $slug = $request->route('slug') ?? $request->route('category');
-            if ($slug && is_string($slug)) {
-                $categoryObj = Category::where('slug', $slug)->first();
-                $categoryId = $categoryObj ? $categoryObj->id : null;
-            }
-
-            if (! $categoryId && $level->questions()->first()) {
-                $categoryId = $level->questions()->first()->category_id;
-            }
-        }
+        $categoryId = $level->category_id;
 
         $progress = UserProgress::where('user_id', auth()->id())
             ->where('category_id', $categoryId)
@@ -57,7 +43,11 @@ class CheckLevelAccess
 
         // If no progress exists, or status is expressly locked, redirect
         if (! $progress || $progress->status === 'locked') {
-            $categorySlug = $request->route('category') ?? ($level->questions()->first() ? $level->questions()->first()->category->slug : 'all');
+            $categorySlug = $request->route('slug') ?? $request->route('category');
+            if (!$categorySlug && $level) {
+                $level->loadMissing('category');
+                $categorySlug = $level->category ? $level->category->slug : 'all';
+            }
 
             return redirect()->route('category.levels', $categorySlug)
                 ->with('error', 'এই লেভেলটি এখনও আনলক হয়নি। দয়া করে আগের লেভেলটি পাশ করুন।');

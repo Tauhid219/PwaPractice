@@ -59,7 +59,21 @@ class LiveExamController extends Controller
             return redirect()->route('live-exams.results', $exam)->with('error', 'আপনার উত্তর ইতিমধ্যে জমা দেওয়া হয়েছে।');
         }
 
-        ProcessLiveExamScore::dispatch($exam, Auth::id(), $request->answers ?? [], $request->input('tab_switches', 0));
+        try {
+            $attempt = LiveExamAttempt::create([
+                'live_exam_id' => $exam->id,
+                'user_id' => Auth::id(),
+                'score' => 0,
+                'passed' => false,
+                'tab_switches' => $request->input('tab_switches', 0),
+                'status' => 'pending',
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Catch unique constraint violation (race condition on double submit)
+            return redirect()->route('live-exams.results', $exam)->with('error', 'আপনার উত্তর ইতিমধ্যে জমা দেওয়া হয়েছে।');
+        }
+
+        ProcessLiveExamScore::dispatch($attempt, $request->answers ?? []);
 
         return redirect()->route('live-exams.results', $exam)->with('success', 'আপনার খাতা জমা নেওয়া হয়েছে এবং ফলাফল প্রস্তুত করা হয়েছে!');
     }
@@ -73,7 +87,14 @@ class LiveExamController extends Controller
             return redirect()->route('live-exams.show', $exam)->with('error', 'ফলাফল দেখতে আপনাকে পরীক্ষায় অংশগ্রহণ করতে হবে অথবা পরীক্ষা শেষ হওয়া পর্যন্ত অপেক্ষা করতে হবে।');
         }
 
-        $attempts = $exam->attempts()->with('user')->orderByDesc('score')->orderBy('created_at')->paginate(50);
+        $page = request()->get('page', 1);
+        $version = Cache::get("exam_results_version_{$exam->id}", 1);
+        $cacheKey = "exam_results_{$exam->id}_v{$version}_page_{$page}";
+        $ttl = now()->isAfter($exam->end_time) ? 86400 * 30 : 60;
+
+        $attempts = Cache::remember($cacheKey, $ttl, function () use ($exam) {
+            return $exam->attempts()->with('user')->orderByDesc('score')->orderBy('created_at')->paginate(50);
+        });
 
         return view('frontend.live_exam.results', compact('exam', 'attempts', 'hasAttempted'));
     }

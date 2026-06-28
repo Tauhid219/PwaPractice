@@ -48,6 +48,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/category/{slug}/level/{level}/quiz', [QuizController::class, 'submit'])->name('quiz.submit')->middleware('throttle:exam-submit');
     });
     Route::get('/quiz/attempt/{attempt}/result', [QuizController::class, 'result'])->name('quiz.result');
+    Route::post('/quiz/check-answer', [QuizController::class, 'checkAnswerAjax'])->name('quiz.check-answer');
+
 
     // Live Exam Routes
     Route::get('/live-exams', [LiveExamController::class, 'index'])->name('live-exams.index');

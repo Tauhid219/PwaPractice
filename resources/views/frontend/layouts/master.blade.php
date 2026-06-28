@@ -34,8 +34,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- NProgress -->
-    <link href="https://unpkg.com/nprogress@0.2.0/nprogress.css" rel="stylesheet">
-    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+    <link href="{{ asset('vendor/nprogress/nprogress.css') }}" rel="stylesheet">
+    <script src="{{ asset('vendor/nprogress/nprogress.js') }}"></script>
 </head>
 
 <body class="min-h-screen pb-28 md:pb-0 md:pt-24 bg-[#FFFBEB]">
@@ -60,7 +60,7 @@
 
         <!-- Online/Offline Banner -->
         <div id="offline-banner" class="offline-status-banner">
-            <i class="fa fa-wifi me-2"></i> <span id="offline-banner-text">ইন্টারনেট সংযোগ নেই - অ্যাপটি অনলাইনে ব্যবহার করুন</span>
+            <i class="fa fa-wifi me-2"></i> <span id="offline-banner-text">ইন্টারনেট সংযোগ নেই - আপনার প্রগ্রেস লোকালি সেভ হচ্ছে</span>
         </div>
 
         @include('frontend.layouts.navbar')
@@ -100,7 +100,7 @@
         </div>
 
     <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="{{ asset('vendor/jquery/jquery-3.4.1.min.js') }}"></script>
 
     <!-- Service Worker Registration & PWA Install -->
     <script>
@@ -465,8 +465,8 @@
         };
 
         // Internet-hosted sounds (fallback to synthesized tones on network/CORS issues)
-        const correctAudioUrl = 'https://raw.githubusercontent.com/techieshruti/Quiz-App-with-Timer/main/sounds/correct.mp3';
-        const wrongAudioUrl = 'https://raw.githubusercontent.com/techieshruti/Quiz-App-with-Timer/main/sounds/wrong.mp3';
+        const correctAudioUrl = '{{ asset('sounds/correct.mp3') }}';
+        const wrongAudioUrl = '{{ asset('sounds/wrong.mp3') }}';
         let correctAudio = null;
         let wrongAudio = null;
 
@@ -539,7 +539,7 @@
         window.addEventListener('offline', () => {
             offlineBanner.classList.remove('is-online');
             offlineBanner.classList.add('is-offline');
-            offlineText.innerText = 'ইন্টারনেট সংযোগ নেই - অ্যাপটি অনলাইনে ব্যবহার করুন';
+            offlineText.innerText = 'ইন্টারনেট সংযোগ নেই - আপনার প্রগ্রেস লোকালি সেভ হচ্ছে';
         });
 
         if (!navigator.onLine) {

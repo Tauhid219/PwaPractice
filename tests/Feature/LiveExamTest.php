@@ -6,6 +6,7 @@ use App\Models\LiveExam;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Carbon\Carbon;  
 
 class LiveExamTest extends TestCase
 {
@@ -88,8 +89,8 @@ class LiveExamTest extends TestCase
     public function test_user_gets_full_duration_when_joining_early()
     {
         $user = User::factory()->create();
-        $now = \Carbon\Carbon::parse('2026-06-14 12:00:00');
-        \Carbon\Carbon::setTestNow($now);
+        $now = Carbon::parse('2026-06-14 12:00:00');
+        Carbon::setTestNow($now);
 
         $exam = LiveExam::factory()->create([
             'start_time' => $now->copy()->subMinutes(10), // 11:50
@@ -103,7 +104,7 @@ class LiveExamTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('let durationInSeconds = 1800;'); // 30 mins * 60 = 1800
         
-        \Carbon\Carbon::setTestNow(); // Reset time
+        Carbon::setTestNow(); // Reset time
     }
 
     /**
@@ -112,8 +113,8 @@ class LiveExamTest extends TestCase
     public function test_user_gets_restricted_duration_when_joining_late()
     {
         $user = User::factory()->create();
-        $now = \Carbon\Carbon::parse('2026-06-14 12:00:00');
-        \Carbon\Carbon::setTestNow($now);
+        $now = Carbon::parse('2026-06-14 12:00:00');
+        Carbon::setTestNow($now);
 
         $exam = LiveExam::factory()->create([
             'start_time' => $now->copy()->subMinutes(25), // 11:35
@@ -127,6 +128,39 @@ class LiveExamTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('let durationInSeconds = 300;'); // Capped at 5 mins * 60 = 300
         
-        \Carbon\Carbon::setTestNow(); // Reset time
+        Carbon::setTestNow(); // Reset time
+    }
+
+    /**
+     * Test user cannot submit an exam twice (double submission prevention).
+     */
+    public function test_user_cannot_submit_exam_twice()
+    {
+        $user = User::factory()->create();
+        $exam = \App\Models\LiveExam::factory()->create([
+            'start_time' => now()->subMinutes(10),
+            'end_time' => now()->addMinutes(50),
+            'duration_minutes' => 30,
+            'is_active' => true,
+        ]);
+
+        // First submission (simulating the pending record creation before job dispatch)
+        \App\Models\LiveExamAttempt::create([
+            'live_exam_id' => $exam->id,
+            'user_id' => $user->id,
+            'status' => 'pending',
+            'score' => 0,
+            'passed' => false,
+        ]);
+
+        // Second submission attempt via endpoint
+        $response = $this->actingAs($user)->post(route('live-exams.submit', $exam->id), [
+            'answers' => []
+        ]);
+
+        // Controller should redirect back to results with info if attempt already exists
+        $response->assertRedirect(route('live-exams.results', $exam->id));
+        $response->assertSessionHas('error');
+        $this->assertEquals(1, \App\Models\LiveExamAttempt::where('user_id', $user->id)->count());
     }
 }

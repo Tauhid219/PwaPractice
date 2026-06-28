@@ -20,8 +20,17 @@ class Question extends Model
 
     protected static function booted()
     {
-        static::saved(fn () => Cache::flush());
-        static::deleted(fn () => Cache::flush());
+        static::saved(function ($question) {
+            if ($question->level_id) {
+                Cache::forget("level_questions_{$question->level_id}");
+            }
+        });
+
+        static::deleted(function ($question) {
+            if ($question->level_id) {
+                Cache::forget("level_questions_{$question->level_id}");
+            }
+        });
     }
 
     public function category()

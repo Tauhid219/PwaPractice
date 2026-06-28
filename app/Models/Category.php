@@ -16,8 +16,20 @@ class Category extends Model
 
     protected static function booted()
     {
-        static::saved(fn () => Cache::flush());
-        static::deleted(fn () => Cache::flush());
+        static::saved(function ($category) {
+            Cache::forget('global_categories_all');
+            Cache::forget('categories_all');
+            Cache::forget('category_full_' . $category->slug);
+            if ($category->wasChanged('slug')) {
+                Cache::forget('category_full_' . $category->getOriginal('slug'));
+            }
+        });
+
+        static::deleted(function ($category) {
+            Cache::forget('global_categories_all');
+            Cache::forget('categories_all');
+            Cache::forget('category_full_' . $category->slug);
+        });
     }
 
     public function questions()

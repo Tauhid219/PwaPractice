@@ -11,6 +11,8 @@ use App\Models\UserProgress;
 use App\Services\QuizScoringService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Request;
+use App\Models\Question;
 
 class QuizController extends Controller
 {
@@ -24,15 +26,18 @@ class QuizController extends Controller
         });
 
         // Access is handled by CheckLevelAccess middleware
-        // Fetch questions for this level and category
-        $questions = $level->questions()
-            ->where('category_id', $category->id)
-            ->inRandomOrder()
-            ->get();
+        // Fetch questions from cache or DB, and shuffle in memory
+        $questions = Cache::remember("level_questions_{$level->id}", 3600, function () use ($level, $category) {
+            return $level->questions()
+                ->where('category_id', $category->id)
+                ->get();
+        });
 
         if ($questions->isEmpty()) {
             return redirect()->back()->with('error', 'No questions found for this level.');
         }
+
+        $questions = $questions->shuffle();
 
         return view('frontend.quiz.taking', compact('category', 'level', 'questions'));
     }
@@ -46,7 +51,9 @@ class QuizController extends Controller
             return Category::where('slug', $slug)->firstOrFail();
         });
 
-        $questions = $level->questions()->where('category_id', $category->id)->get();
+        $questions = Cache::remember("level_questions_{$level->id}", 3600, function () use ($level, $category) {
+            return $level->questions()->where('category_id', $category->id)->get();
+        });
         $totalQuestions = $questions->count();
 
         $score = QuizScoringService::calculateScore($questions, $request->input('answers', []));
@@ -108,5 +115,33 @@ class QuizController extends Controller
         $totalQuestions = $attempt->total_questions;
 
         return view('frontend.quiz.result', compact('attempt', 'level', 'totalQuestions', 'category'));
+    }
+
+    /**
+     * Check single quiz question answer via AJAX.
+     */
+    public function checkAnswerAjax(Request $request)
+    {
+        $validated = $request->validate([
+            'question_id' => 'required|integer|exists:questions,id',
+            'answer' => 'nullable|string',
+        ]);
+
+        $question = Question::findOrFail($validated['question_id']);
+        
+        $correctAnswers = $question->correct_answers;
+        if (empty($correctAnswers)) {
+            $correctAnswers = [$question->answer_text];
+        }
+
+        $isCorrect = QuizScoringService::checkAnswer($validated['answer'], $correctAnswers);
+
+        // Combine correct answers into a readable string to display if the user was incorrect
+        $correctAnswersCombinedString = implode(' | ', $correctAnswers);
+
+        return response()->json([
+            'is_correct' => $isCorrect,
+            'correct_answer' => $correctAnswersCombinedString,
+        ]);
     }
 }

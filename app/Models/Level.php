@@ -20,8 +20,21 @@ class Level extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn () => Cache::flush());
-        static::deleted(fn () => Cache::flush());
+        static::saved(function ($level) {
+            $level->loadMissing('category');
+            if ($level->category) {
+                Cache::forget('category_full_' . $level->category->slug);
+            }
+            Cache::forget("level_questions_{$level->id}");
+        });
+
+        static::deleted(function ($level) {
+            $level->loadMissing('category');
+            if ($level->category) {
+                Cache::forget('category_full_' . $level->category->slug);
+            }
+            Cache::forget("level_questions_{$level->id}");
+        });
     }
 
     public function category(): BelongsTo

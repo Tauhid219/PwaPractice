@@ -210,9 +210,7 @@ class UserController extends Controller implements HasMiddleware
                 }
             }
 
-            if ($request->roles) {
-                $user->syncRoles($request->roles);
-            }
+            $user->syncRoles($request->roles ?? []);
         }
 
         // Update is_admin flag for backward compatibility
