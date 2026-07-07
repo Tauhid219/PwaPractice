@@ -11,15 +11,14 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Frontend\LiveExamController;
 use App\Http\Controllers\Frontend\QuizController;
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Frontend & Study Progress Routes
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/category/{slug}', [FrontendController::class, 'categoryLevels'])->name('category.levels');
-Route::get('/category/{slug}/level/{level}', [FrontendController::class, 'levelQuestions'])->name('level.questions');
 Route::view('/offline', 'offline')->name('offline');
-Route::post('/mark-read', [FrontendController::class, 'markQuestionAsRead'])->name('mark.read');
 Route::get('/locale/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'bn'])) {
         session(['locale' => $locale]);
@@ -42,22 +41,38 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Quiz Routes
-    Route::middleware(['check.level.access'])->group(function () {
-        Route::get('/category/{slug}/level/{level}/quiz', [QuizController::class, 'start'])->name('quiz.start');
-        Route::post('/category/{slug}/level/{level}/quiz', [QuizController::class, 'submit'])->name('quiz.submit')->middleware('throttle:exam-submit');
+    // Payment Routes
+    Route::get('/payment/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
+    Route::post('/payment/pay', [PaymentController::class, 'pay'])->name('payment.pay');
+
+    // Routes requiring payment
+    Route::middleware(['paid'])->group(function () {
+        Route::get('/category/{slug}/level/{level}', [FrontendController::class, 'levelQuestions'])->name('level.questions');
+        Route::post('/mark-read', [FrontendController::class, 'markQuestionAsRead'])->name('mark.read');
+
+        // Quiz Routes
+        Route::middleware(['check.level.access'])->group(function () {
+            Route::get('/category/{slug}/level/{level}/quiz', [QuizController::class, 'start'])->name('quiz.start');
+            Route::post('/category/{slug}/level/{level}/quiz', [QuizController::class, 'submit'])->name('quiz.submit')->middleware('throttle:exam-submit');
+        });
+        Route::get('/quiz/attempt/{attempt}/result', [QuizController::class, 'result'])->name('quiz.result');
+        Route::post('/quiz/check-answer', [QuizController::class, 'checkAnswerAjax'])->name('quiz.check-answer');
+
+
+        // Live Exam Routes
+        Route::get('/live-exams', [LiveExamController::class, 'index'])->name('live-exams.index');
+        Route::get('/live-exams/{exam}', [LiveExamController::class, 'show'])->name('live-exams.show');
+        Route::get('/live-exams/{exam}/join', [LiveExamController::class, 'join'])->name('live-exams.join');
+        Route::post('/live-exams/{exam}/submit', [LiveExamController::class, 'submit'])->name('live-exams.submit')->middleware('throttle:exam-submit');
+        Route::get('/live-exams/{exam}/results', [LiveExamController::class, 'results'])->name('live-exams.results');
     });
-    Route::get('/quiz/attempt/{attempt}/result', [QuizController::class, 'result'])->name('quiz.result');
-    Route::post('/quiz/check-answer', [QuizController::class, 'checkAnswerAjax'])->name('quiz.check-answer');
-
-
-    // Live Exam Routes
-    Route::get('/live-exams', [LiveExamController::class, 'index'])->name('live-exams.index');
-    Route::get('/live-exams/{exam}', [LiveExamController::class, 'show'])->name('live-exams.show');
-    Route::get('/live-exams/{exam}/join', [LiveExamController::class, 'join'])->name('live-exams.join');
-    Route::post('/live-exams/{exam}/submit', [LiveExamController::class, 'submit'])->name('live-exams.submit')->middleware('throttle:exam-submit');
-    Route::get('/live-exams/{exam}/results', [LiveExamController::class, 'results'])->name('live-exams.results');
 });
+
+// SSLCommerz Webhooks (No Auth Required)
+Route::post('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::post('/payment/fail', [PaymentController::class, 'fail'])->name('payment.fail');
+Route::post('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+Route::post('/payment/ipn', [PaymentController::class, 'ipn'])->name('payment.ipn');
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {

@@ -9,7 +9,9 @@
     <meta content="জিনিয়াস কিডস কুইজ প্রতিযোগিতার স্মার্ট গাইডবুক। বিভিন্ন ক্যাটাগরির কুইজ, প্রগ্রেস ট্র্যাকিং এবং অনলাইন প্রস্তুতির জন্য একটি Bangla-first learning app।" name="description">
 
     <!-- PWA Meta Tags -->
-    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    @if(auth()->check() && auth()->user()->is_paid)
+        <link rel="manifest" href="{{ asset('manifest.json') }}">
+    @endif
     <meta name="theme-color" content="#FE5D37">
     <meta name="application-name" content="Genius Kids">
     <meta name="mobile-web-app-capable" content="yes">
@@ -118,6 +120,7 @@
         }
 
         // PWA Install Prompt Logic
+        const isUserPaid = {{ auth()->check() && auth()->user()->is_paid ? 'true' : 'false' }};
         let deferredPrompt = null;
         let installProgressInterval = null;
         let installFinalizeTimeout = null;
@@ -178,6 +181,13 @@
                     return;
                 }
 
+                if (!isUserPaid) {
+                    button.innerHTML = 'অ্যাপ ডাউনলোড করুন <i class="fa fa-lock ms-2"></i>';
+                    button.removeAttribute('data-install-pending');
+                    button.removeAttribute('aria-disabled');
+                    return;
+                }
+
                 if (isIosSafari()) {
                     button.innerHTML = 'অ্যাপ ইন্সটল করুন <i class="fa fa-download ms-2"></i>';
                     button.removeAttribute('data-install-pending');
@@ -228,7 +238,7 @@
 
                 // Show banner on mobile screens (width < 768px) if the PWA can be installed
                 const isMobile = window.innerWidth < 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-                const canInstall = hasNativeInstallPrompt() || isIosSafari() || isAndroidChrome();
+                const canInstall = hasNativeInstallPrompt() || isIosSafari() || isAndroidChrome() || !isUserPaid;
 
                 if (isMobile && canInstall) {
                     banner.classList.remove('hidden');
@@ -246,7 +256,7 @@
                 return;
             }
 
-            const shouldShowButton = hasNativeInstallPrompt() || isIosSafari() || isAndroidChrome();
+            const shouldShowButton = hasNativeInstallPrompt() || isIosSafari() || isAndroidChrome() || !isUserPaid;
 
             installButtons.forEach((button) => {
                 button.classList.toggle('hidden', !shouldShowButton);
@@ -351,6 +361,12 @@
             if (!installBtn) return;
 
             e.preventDefault();
+
+            if (!isUserPaid) {
+                window.location.href = "{{ route('payment.checkout') }}";
+                return;
+            }
+
             console.log('Install button clicked, deferredPrompt status:', !!deferredPrompt);
 
             if (deferredPrompt) {

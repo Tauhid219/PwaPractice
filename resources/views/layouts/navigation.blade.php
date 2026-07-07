@@ -25,6 +25,12 @@
                             {{ __('Admin Area') }}
                         </x-nav-link>
                     @endif
+
+                    @if (!Auth::user()->is_paid)
+                        <x-nav-link :href="route('payment.checkout')" :active="request()->routeIs('payment.checkout')" class="text-purple-600 font-semibold hover:text-purple-800">
+                            {{ __('Subscribe') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -90,8 +96,14 @@
             </x-responsive-nav-link>
 
             @if (Auth::user()->is_admin)
-                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->requestIs('admin.*')">
                     {{ __('Admin Area') }}
+                </x-responsive-nav-link>
+            @endif
+
+            @if (!Auth::user()->is_paid)
+                <x-responsive-nav-link :href="route('payment.checkout')" :active="request()->routeIs('payment.checkout')" class="text-purple-600 font-semibold">
+                    {{ __('Subscribe') }}
                 </x-responsive-nav-link>
             @endif
         </div>

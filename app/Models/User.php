@@ -27,6 +27,7 @@ class User extends Authenticatable
         'current_streak',
         'last_quiz_date',
         'avatar_emoji',
+        'is_paid',
     ];
 
     /**
@@ -50,6 +51,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'last_quiz_date' => 'date',
+            'is_paid' => 'boolean',
         ];
     }
 
@@ -61,6 +63,11 @@ class User extends Authenticatable
     public function quizAttempts()
     {
         return $this->hasMany(QuizAttempt::class);
+    }
+
+    public function paymentOrders()
+    {
+        return $this->hasMany(PaymentOrder::class);
     }
 
     public function getAvatarAttribute()

@@ -23,6 +23,14 @@
             <span class="text-[10px] mt-0.5">{{ __('Profile') }}</span>
         </a>
 
+        @if(!auth()->user()->is_paid)
+            <!-- Subscribe -->
+            <a href="{{ route('payment.checkout') }}" class="flex flex-col items-center justify-center px-3 py-1.5 rounded-2xl font-extrabold decoration-none text-slate-850 {{ Request::routeIs('payment.checkout') ? 'bg-amber-300 nb-sm' : '' }}">
+                <i class="fa-solid fa-crown text-lg text-purple-600"></i>
+                <span class="text-[10px] mt-0.5 text-purple-700">{{ __('Subscribe') }}</span>
+            </a>
+        @endif
+
         @if(auth()->user()->can('access dashboard') || auth()->user()->hasRole('super-admin'))
             <!-- Admin -->
             <a href="{{ route('admin.dashboard') }}" class="flex flex-col items-center justify-center px-3 py-1.5 rounded-2xl font-extrabold decoration-none text-slate-850 bg-sky-200 border-2 border-slate-900 shadow-[2px_2px_0px_#0f172a]">
