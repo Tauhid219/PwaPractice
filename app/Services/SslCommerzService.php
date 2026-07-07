@@ -14,9 +14,9 @@ class SslCommerzService
 
     public function __construct()
     {
-        $this->storeId = env('SSLCOMMERZ_STORE_ID');
-        $this->storePassword = env('SSLCOMMERZ_STORE_PASSWORD');
-        $this->isSandbox = env('SSLCOMMERZ_IS_SANDBOX', true);
+        $this->storeId = config('services.sslcommerz.store_id');
+        $this->storePassword = config('services.sslcommerz.store_password');
+        $this->isSandbox = config('services.sslcommerz.is_sandbox', true);
         
         $this->baseUrl = $this->isSandbox 
             ? 'https://sandbox.sslcommerz.com' 
