@@ -132,12 +132,12 @@
     <div class="block sm:hidden pb-12 mt-2">
         <div class="flex flex-col items-center">
             @forelse($hexRows as $rowIndex => $row)
-                <div class="flex justify-center gap-3 relative" style="z-index: {{ 20 - $rowIndex }}; {{ $rowIndex > 0 ? 'margin-top: -20px;' : '' }}">
+                <div class="flex justify-center gap-3 relative" style="z-index: {{ 20 - $rowIndex }}; {{ $rowIndex > 0 ? 'margin-top: -18px;' : '' }}">
                     @foreach($row as $item)
                         @if($item)
                             <div style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));">
                                 <a href="{{ route('category.levels', $item->category->slug) }}" 
-                                   class="relative flex flex-col items-center justify-center text-center text-slate-800 decoration-none transition-transform active:scale-95 w-[110px] h-[124px]"
+                                   class="relative flex flex-col items-center justify-center text-center text-slate-800 decoration-none transition-transform active:scale-95 w-[100px] h-[112px]"
                                    style="-webkit-mask-image: url(&quot;data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 146'%3E%3Cpolygon points='65,10 120,41.5 120,104.5 65,136 10,104.5 10,41.5' fill='black' stroke='black' stroke-width='22' stroke-linejoin='round'/%3E%3C/svg%3E&quot;); -webkit-mask-size: 100% 100%; mask-image: url(&quot;data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 130 146'%3E%3Cpolygon points='65,10 120,41.5 120,104.5 65,136 10,104.5 10,41.5' fill='black' stroke='black' stroke-width='22' stroke-linejoin='round'/%3E%3C/svg%3E&quot;); mask-size: 100% 100%;">
                                     
                                     <!-- Background -->
@@ -147,17 +147,17 @@
                                     <!-- Inner Content -->
                                     <div class="relative z-10 flex flex-col items-center w-full px-2 pt-2">
                                         <div class="text-3xl mb-1 filter drop-shadow-md">{{ $item->emoji }}</div>
-                                        <h3 class="font-bold text-[11px] leading-tight text-slate-900 mb-1 line-clamp-2 w-full">{{ $item->category->name }}</h3>
+                                        <h3 class="font-bold text-[10px] leading-tight text-slate-900 mb-1 line-clamp-2 w-full">{{ $item->category->name }}</h3>
                                         
                                         <!-- Progress -->
-                                        <div class="w-10 h-1.5 bg-white/60 rounded-full overflow-hidden mt-1 shadow-inner">
+                                        <div class="w-10 h-1.5 bg-white/60 rounded-full overflow-hidden mt-0.5 shadow-inner">
                                             <div class="h-full {{ $item->color['btn'] }}" style="width: {{ $item->progressPercent }}%"></div>
                                         </div>
                                     </div>
                                 </a>
                             </div>
                         @else
-                            <div class="w-[110px] h-[124px] opacity-0 pointer-events-none"></div>
+                            <div class="w-[100px] h-[112px] opacity-0 pointer-events-none"></div>
                         @endif
                     @endforeach
                 </div>
