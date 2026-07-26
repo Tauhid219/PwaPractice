@@ -58,10 +58,14 @@ class FrontendController extends Controller
         $query = Question::where('category_id', $category->id)
             ->where('level_id', $level->id);
 
-        if (! auth()->check() && ! $level->is_free && $level->order !== 1) {
-            // Unauthenticated users can only view level 1 properly.
-            // Though route should protect this, adding explicit fallback check
-            abort(403, 'এই লেভেলের প্রশ্নগুলো দেখতে অনুগ্রহ করে লগিন করুন।');
+        // For levels > 1 and not free, require authentication and payment
+        if ($level->order !== 1 && !$level->is_free) {
+            if (!auth()->check()) {
+                return redirect()->route('login')->with('error', 'এই লেভেলের প্রশ্নগুলো দেখতে অনুগ্রহ করে লগিন করুন।');
+            }
+            if (!auth()->user()->is_paid && !auth()->user()->hasRole('super-admin')) {
+                return redirect()->route('payment.checkout')->with('error', 'এই লেভেলটি দেখতে অনুগ্রহ করে সাবস্ক্রাইব করুন।');
+            }
         }
 
         $questions = $query->paginate(config('quiz.pagination.frontend_questions', 10)); // Based on user preference or config

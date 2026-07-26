@@ -20,9 +20,16 @@ class PermissionController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $permissions = Permission::paginate(15);
+        $query = Permission::query();
+        
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where('name', 'like', "%{$searchTerm}%");
+        }
+
+        $permissions = $query->paginate(15);
 
         return view('admin.permissions.index', compact('permissions'));
     }

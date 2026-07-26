@@ -32,6 +32,23 @@
             <div class="card card-outline card-primary shadow-sm">
                 <div class="card-header">
                     <h3 class="card-title">Permissions List</h3>
+                    <div class="card-tools">
+                        <form method="GET" action="{{ route('admin.permissions.index') }}">
+                            <div class="input-group input-group-sm" style="width: 250px;">
+                                <input type="text" name="search" class="form-control float-right" placeholder="Search permissions..." value="{{ request('search') }}">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    @if(request('search'))
+                                        <a href="{{ route('admin.permissions.index') }}" class="btn btn-default text-danger" title="Clear">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body p-0">

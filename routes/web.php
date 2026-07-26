@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 // Frontend & Study Progress Routes
 Route::get('/', [FrontendController::class, 'index'])->name('home');
 Route::get('/category/{slug}', [FrontendController::class, 'categoryLevels'])->name('category.levels');
+Route::get('/category/{slug}/level/{level}', [FrontendController::class, 'levelQuestions'])->name('level.questions');
+Route::post('/mark-read', [FrontendController::class, 'markQuestionAsRead'])->name('mark.read');
 Route::view('/offline', 'offline')->name('offline');
 Route::get('/locale/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'bn'])) {
@@ -47,9 +49,6 @@ Route::middleware('auth')->group(function () {
 
     // Routes requiring payment
     Route::middleware(['paid'])->group(function () {
-        Route::get('/category/{slug}/level/{level}', [FrontendController::class, 'levelQuestions'])->name('level.questions');
-        Route::post('/mark-read', [FrontendController::class, 'markQuestionAsRead'])->name('mark.read');
-
         // Quiz Routes
         Route::middleware(['check.level.access'])->group(function () {
             Route::get('/category/{slug}/level/{level}/quiz', [QuizController::class, 'start'])->name('quiz.start');

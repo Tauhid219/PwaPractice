@@ -60,6 +60,14 @@ class QuestionController extends Controller implements HasMiddleware
             $query->where('level_id', $request->level_id);
         }
 
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('question_text', 'like', "%{$searchTerm}%")
+                  ->orWhere('answer_text', 'like', "%{$searchTerm}%");
+            });
+        }
+
         $totalQuestions = $query->count();
         $questions = $query->paginate(config('quiz.pagination.admin_questions', 50));
         $levels = Level::all();

@@ -101,7 +101,7 @@
             <div class="card card-outline card-info shadow-sm">
                 <div class="card-body py-2">
                     <form method="GET" action="{{ route('admin.questions.index') }}" class="row align-items-center">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group mb-0 d-flex align-items-center">
                                 <label for="category_id" class="mr-2 mb-0 text-nowrap">Category:</label>
                                 <select name="category_id" id="category_id" class="form-control form-control-sm" onchange="this.form.submit()">
@@ -127,14 +127,22 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-2 d-flex align-items-center">
-                            @if(request('category_id') || request('level_id'))
-                                <a href="{{ route('admin.questions.index') }}" class="btn btn-xs btn-outline-danger">
+                        <div class="col-md-3">
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="search" class="form-control" placeholder="Search questions..." value="{{ request('search') }}">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-center justify-content-end">
+                            @if(request('category_id') || request('level_id') || request('search'))
+                                <a href="{{ route('admin.questions.index') }}" class="btn btn-xs btn-outline-danger mr-2">
                                     <i class="fas fa-times mr-1"></i> Clear
                                 </a>
                             @endif
-                        </div>
-                        <div class="col-md-3 text-right d-flex align-items-center justify-content-end">
                             <span class="badge badge-info p-2 px-3 small">
                                 Total: {{ $totalQuestions }} Qs
                             </span>

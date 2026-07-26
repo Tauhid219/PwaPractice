@@ -131,12 +131,18 @@
     <!-- Quiz CTA Trigger -->
     <div class="mt-8 mb-12 text-center flex flex-col items-center">
         @auth
+            @if(auth()->user()->is_paid || auth()->user()->hasRole('super-admin') || $level->is_free)
             <a href="{{ route('quiz.start', ['slug' => $category->slug, 'level' => $level->id]) }}" class="hidden w-full py-4 rounded-3xl bg-orange-500 hover:bg-orange-600 text-white text-base font-extrabold nb shadow-[4px_4px_0px_#0f172a] hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none transition decoration-none mb-4" id="quiz-btn">
                 {{ __('Play Quiz') }} <i class="fa-solid fa-arrow-right ms-2 bouncy inline-block"></i>
             </a>
+            @else
+            <a href="{{ route('payment.checkout') }}" class="hidden w-full py-4 rounded-3xl bg-orange-500 hover:bg-orange-600 text-white text-base font-extrabold nb shadow-[4px_4px_0px_#0f172a] hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none transition decoration-none mb-4" id="quiz-btn">
+                {{ __('Subscribe to Play Quiz') }} <i class="fa-solid fa-arrow-right ms-2 bouncy inline-block"></i>
+            </a>
+            @endif
         @else
             <a href="{{ route('login') }}" class="hidden w-full py-4 rounded-3xl bg-orange-500 hover:bg-orange-600 text-white text-base font-extrabold nb shadow-[4px_4px_0px_#0f172a] hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none transition decoration-none mb-4" id="quiz-btn">
-                {{ __('Play Quiz') }} <i class="fa-solid fa-arrow-right ms-2 bouncy inline-block"></i>
+                {{ __('Login to Play Quiz') }} <i class="fa-solid fa-arrow-right ms-2 bouncy inline-block"></i>
             </a>
         @endauth
         <a href="{{ route('category.levels', $category->slug) }}" class="px-4 py-2 rounded-2xl bg-white hover:bg-amber-50 border-2 border-slate-900 text-slate-800 font-extrabold text-sm decoration-none">

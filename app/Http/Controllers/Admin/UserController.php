@@ -41,9 +41,17 @@ class UserController extends Controller implements HasMiddleware
      * 
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
         $query = User::with('roles')->orderBy('id', 'desc');
+
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                  ->orWhere('email', 'like', "%{$searchTerm}%");
+            });
+        }
 
         // Normal students or users without 'manage users' can only see themselves
         if (! auth()->user()->can('manage users')) {
